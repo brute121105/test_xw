@@ -1,0 +1,13 @@
+1、assets目录下添加xposed_init文件，内容是：xposed入口类名（包名+类名）
+2、build.gradle引入xposed包：provided 'de.robv.android.xposed:api:82'
+3、AndroidManifest.xml添加，如下：
+
+<meta-data
+   android:name="xposedmodule"
+   android:value="true"/>
+<meta-data
+   android:name="xposeddescription"
+   android:value="hyj test"/>
+<meta-data
+   android:name="xposedminversion"
+   android:value="82"/>
