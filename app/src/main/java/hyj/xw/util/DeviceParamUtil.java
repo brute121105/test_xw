@@ -6,7 +6,7 @@ import android.telephony.TelephonyManager;
 import com.alibaba.fastjson.JSON;
 
 import hyj.xw.GlobalApplication;
-import hyj.xw.mode.DeviceInfo;
+import hyj.xw.model.DeviceInfo;
 
 /**
  * Created by asus on 2017/12/11.

@@ -1,4 +1,4 @@
-package hyj.xw.mode;
+package hyj.xw.model;
 
 /**
  * Created by asus on 2017/12/11.

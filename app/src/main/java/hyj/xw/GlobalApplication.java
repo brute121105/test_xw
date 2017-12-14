@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 
+import org.litepal.LitePalApplication;
 
 
 /**
@@ -21,7 +22,7 @@ public class GlobalApplication extends Application {
         //程序崩溃错误捕捉
         CrashHandler crashHandler = CrashHandler.getInstance();
         crashHandler.init(context);
-        //LitePalApplication.initialize(context);
+        LitePalApplication.initialize(context);
     }
 
     public static Context getContext(){

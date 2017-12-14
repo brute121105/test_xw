@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="test_xw_db" ></dbname>
+    <!--modeld对象增加属性后必须记得修改版本号，否则数据保存不成功-->
+    <version value="1" ></version>
+
+    <list>
+        <mapping class="hyj.weixin_008.daoModel.Wx008Data"></mapping>
+    </list>
+</litepal>
