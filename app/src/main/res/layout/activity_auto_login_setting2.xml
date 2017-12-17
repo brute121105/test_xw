@@ -6,24 +6,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@android:style/Theme.Black.NoTitleBar"
-    tools:context="hyj.xw.MainActivity">
+    tools:context="hyj.xw.activity.AutoLoginSettingActivity">
+    <EditText
+        android:id="@+id/appconfig_accounts"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:lines="5"/>
+
     <Button
-        android:id="@+id/auto_login"
+        android:id="@+id/autoLoginSet_back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="自动登录配置"
-        android:textSize="18sp" />
-    <Button
-        android:id="@+id/open_assist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="开始运行"
-        android:textSize="18sp" />
-    <Button
-        android:id="@+id/del_upload_file"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="上传错误日志"
+        android:text="返回"
         android:textSize="18sp" />
 
 </LinearLayout>

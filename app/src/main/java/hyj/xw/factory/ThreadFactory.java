@@ -14,12 +14,12 @@ import hyj.xw.thread.TestThread;
 
 public class ThreadFactory {
 
-    public static BaseThread getThread(String name, AccessibilityService context, Map<String,String> record){
+    public static BaseThread getThread(String name, AccessibilityService context, Map<String,String> record,Map<String,Object> parameters){
         switch (name){
             case "login":
-                return new AutoLoginThread(context,record);
+                return new AutoLoginThread(context,record,parameters);
             case "test":
-                return new TestThread(context,record);
+                return new TestThread(context,record,parameters);
 
         }
         throw new RuntimeException("【"+name+"】没有相关服务！");

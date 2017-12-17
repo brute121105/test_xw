@@ -11,14 +11,16 @@ import java.util.concurrent.Callable;
  */
 
 public abstract class BaseThread implements Callable<Object> {
+    public Map<String,Object> parameters;
     public Map<String,String> record;
     public AccessibilityService context;
 
     public BaseThread(){
     }
-    public BaseThread(AccessibilityService context, Map<String,String> record) {
+    public BaseThread(AccessibilityService context, Map<String,String> record,Map<String,Object> parameters) {
         this.record = record;
         this.context = context;
+        this.parameters = parameters;
     }
 
 }

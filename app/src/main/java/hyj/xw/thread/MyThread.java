@@ -17,8 +17,8 @@ import hyj.xw.util.ParseRootUtil;
 public class MyThread extends BaseThread {
 
     public  final String TAG = this.getClass().getSimpleName();
-    public MyThread(AccessibilityService context, Map<String, String> record){
-        super(context,record);
+    public MyThread(AccessibilityService context, Map<String, String> record,Map<String,Object> parameters){
+        super(context,record,parameters);
     }
     @Override
     public Object call() throws Exception {

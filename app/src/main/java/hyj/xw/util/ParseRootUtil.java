@@ -161,7 +161,7 @@ public class ParseRootUtil {
             for(List<NodeAttr> levelNodes :treeNodes){
                 for(NodeAttr levelNode:levelNodes){
                     levelNode.setNode(null);
-                    System.out.println("debug:"+ JSON.toJSONString(levelNode));
+                    System.out.println("-->debug:"+ JSON.toJSONString(levelNode));
                 }
             }
     }
@@ -169,8 +169,30 @@ public class ParseRootUtil {
         List<NodeAttr> nodes = new ArrayList<NodeAttr>();
         List<List<NodeAttr>> treeNodes =  ParseRootUtil.createLevelNodes(root);
         for(List<NodeAttr> levelNodes :treeNodes){
-            nodes.addAll(levelNodes);
+            for(NodeAttr node :levelNodes){
+                if("null".equals(node.getDesc())&&"null".equals(node.getText())) continue;
+                if("分隔栏".equals(node.getDesc())) continue;
+                node.setNode(null);
+                nodes.add(node);
+                System.out.println("-->debug not null:"+ JSON.toJSONString(node));
+            }
         }
         return nodes;
+    }
+    public static String getCurrentViewAllTexts(AccessibilityNodeInfo root){
+        StringBuffer sb = new StringBuffer();
+        List<List<NodeAttr>> treeNodes =  ParseRootUtil.createLevelNodes(root);
+        for(List<NodeAttr> levelNodes :treeNodes){
+            for(NodeAttr node :levelNodes){
+                if(!"null".equals(node.getText())){
+                    sb.append(node.getText()).append("|");
+                }
+                if(!"null".equals(node.getDesc())&&!"分隔栏".equals(node.getDesc())){
+                    sb.append(node.getDesc()).append("|");
+                }
+            }
+        }
+        System.out.println("getCurrentViewAllTexts-->"+sb.toString());
+        return sb.toString();
     }
 }

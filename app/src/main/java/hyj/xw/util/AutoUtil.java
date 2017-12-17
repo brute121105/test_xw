@@ -47,37 +47,41 @@ public class AutoUtil {
             e.printStackTrace();
         }
     }
-    public static void performSetText(AccessibilityNodeInfo nodeInfo,String text,Map<String,String> record,String recordAction){
-        if(nodeInfo == null) return;
+    public static boolean performSetText(AccessibilityNodeInfo nodeInfo,String text,Map<String,String> record,String recordAction){
+        boolean flag = false;
+        if(nodeInfo == null) return flag;
         if(nodeInfo.isEditable()){
-            nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,createBuddleText(text));
+            flag = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,createBuddleText(text));
         }else{
-            performSetText(nodeInfo.getParent(),text,record,recordAction);
+            flag = performSetText(nodeInfo.getParent(),text,record,recordAction);
         }
         recordAndLog(record,recordAction);
+        return flag;
     }
     //执行点击、记录下次操作、并打印日志、休眠
-    public static void performClick(AccessibilityNodeInfo nodeInfo,Map<String,String> record, String recordAction, long ms) {
-        if(nodeInfo == null)  return;
+    public static boolean performClick(AccessibilityNodeInfo nodeInfo,Map<String,String> record, String recordAction, long ms) {
+        boolean isClick = false;
+        if(nodeInfo == null)  return false;
         if(nodeInfo.isClickable()) {
-            nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            isClick = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
             recordAndLog(record,recordAction);
             sleep(ms);
         } else {
-            performClick(nodeInfo.getParent(),record,recordAction,ms);
+            isClick = performClick(nodeInfo.getParent(),record,recordAction,ms);
         }
+        return isClick;
     }
     //执行点击、记录下次操作、并打印日志
-    public static void performClick(AccessibilityNodeInfo nodeInfo,Map<String,String> record, String recordAction) {
-        if(nodeInfo == null)  return;
+    public static boolean performClick(AccessibilityNodeInfo nodeInfo,Map<String,String> record, String recordAction) {
+        boolean isClick = false;
+        if(nodeInfo == null)  return false;
         if(nodeInfo.isClickable()) {
-            nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            isClick = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
             recordAndLog(record,recordAction);
-            //record.put("recordAction",recordAction);
-            //System.out.println("------>"+record);
         } else {
-            performClick(nodeInfo.getParent(),record,recordAction);
+            isClick = performClick(nodeInfo.getParent(),record,recordAction);
         }
+        return isClick;
     }
     public static void performScroll(AccessibilityNodeInfo nodeInfo,Map<String,String> record, String recordAction) {
         if(nodeInfo == null)  return;
@@ -216,7 +220,7 @@ public class AutoUtil {
     }
     //核对状态
     public static boolean actionContains(Map<String,String> record, String str){
-        if(record.get("recordAction").startsWith(str))
+        if(record.get("recordAction").contains(str))
             return true;
         return false;
     }

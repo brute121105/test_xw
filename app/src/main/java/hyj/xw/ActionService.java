@@ -16,7 +16,7 @@ import hyj.xw.util.AutoUtil;
  */
 
 public class ActionService  extends AccessibilityService {
-
+    public Map<String,Object> parameters;
     Map<String,String> record = new HashMap<String,String>();
     ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -24,8 +24,8 @@ public class ActionService  extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
 
-        executorService.submit(ThreadFactory.getThread("test",this,record));
-        //executorService.submit(ThreadFactory.getThread("login",this,record));
+        //executorService.submit(ThreadFactory.getThread("test",this,record,parameters));
+        executorService.submit(ThreadFactory.getThread("login",this,record,parameters));
 
         AutoUtil.startWx();
     }

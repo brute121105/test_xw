@@ -17,13 +17,13 @@ import hyj.xw.util.ParseRootUtil;
 public class TestThread extends BaseThread {
 
     public  final String TAG = this.getClass().getSimpleName();
-    public TestThread(AccessibilityService context, Map<String, String> record){
-        super(context,record);
+    public TestThread(AccessibilityService context, Map<String, String> record,Map<String,Object> parameters){
+        super(context,record,parameters);
     }
     @Override
     public Object call() throws Exception {
         while (true){
-            AutoUtil.sleep(1000);
+            AutoUtil.sleep(3000);
             LogUtil.d(TAG,Thread.currentThread().getName());
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){
@@ -31,7 +31,9 @@ public class TestThread extends BaseThread {
                 AutoUtil.sleep(500);
                 continue;
             }
-            ParseRootUtil.debugRoot(root);
+            System.out.println("deb==================================");
+            //ParseRootUtil.debugRoot(root);
+            ParseRootUtil.getCurrentViewAllNode(root);
 
         }
     }

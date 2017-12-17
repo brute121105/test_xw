@@ -6,5 +6,5 @@
     android:accessibilityFlags="flagDefault"
     android:notificationTimeout="100"
     android:canRequestFilterKeyEvents="true"
-    android:packageNames="com.soft.apk008v,com.tencent.mm,com.android.settings"
+    android:packageNames="com.soft.apk008v,com.tencent.mm"
     />

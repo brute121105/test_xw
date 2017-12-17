@@ -2,9 +2,10 @@
 <litepal>
     <dbname value="test_xw_db" ></dbname>
     <!--modeld对象增加属性后必须记得修改版本号，否则数据保存不成功-->
-    <version value="1" ></version>
+    <version value="4" ></version>
 
     <list>
-        <mapping class="hyj.weixin_008.daoModel.Wx008Data"></mapping>
+        <mapping class="hyj.xw.model.LitePalModel.WxNode"></mapping>
+        <mapping class="hyj.xw.model.LitePalModel.AppConfig"></mapping>
     </list>
 </litepal>

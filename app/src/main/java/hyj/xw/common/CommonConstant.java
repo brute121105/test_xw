@@ -6,4 +6,5 @@ package hyj.xw.common;
 
 public class CommonConstant {
     public static String AUTOLOGINTHREAD = "autoLogin";
+    public static String APPCONFIG_LOGIN_ACCOUNT = "loginAccount";
 }
