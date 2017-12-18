@@ -21,7 +21,7 @@ public class TestThread extends BaseThread {
         super(context,record,parameters);
     }
     @Override
-    public Object call() throws Exception {
+    public Object call()  {
         while (true){
             AutoUtil.sleep(3000);
             LogUtil.d(TAG,Thread.currentThread().getName());

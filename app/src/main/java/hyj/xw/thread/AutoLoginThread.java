@@ -26,9 +26,7 @@ public class AutoLoginThread  extends BaseThread {
     public AutoLoginThread(AccessibilityService context,Map<String, String> record,Map<String,Object> parameters){
         super(context,record,parameters);
         AutoUtil.recordAndLog(record,"init");
-        chatWxids.add("hyj5690");
-        chatWxids.add("zhq686366");
-        chatWxids.add("zhjj520366");
+        chatWxids.add("mm77375");
     }
     int loginIndex=-1,sendMsgCount,autoChatWxidIndex;
     private void intiParam(){
@@ -37,7 +35,7 @@ public class AutoLoginThread  extends BaseThread {
     }
     List<String[]> acts = AppConfigDao.findAcountsListByCode(CommonConstant.APPCONFIG_LOGIN_ACCOUNT);
     @Override
-    public Object call() throws Exception {
+    public Object call() {
         while (true){
             AutoUtil.sleep(1500);
             LogUtil.d(TAG,Thread.currentThread().getName());
