@@ -3,6 +3,9 @@ package hyj.xw.thread;
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,7 @@ public class AutoLoginThread  extends BaseThread {
     @Override
     public Object call() {
         while (true){
+            try {
             AutoUtil.sleep(1500);
             LogUtil.d(TAG,Thread.currentThread().getName());
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
@@ -49,7 +53,9 @@ public class AutoLoginThread  extends BaseThread {
             //ParseRootUtil.getCurrentViewAllNode(root);
              autoChat(root,record,chatWxids.get(autoChatWxidIndex));
              autoLogin(root,record);
-
+            }catch (Exception e){
+              LogUtil.logError(e);
+            }
 
         }
     }

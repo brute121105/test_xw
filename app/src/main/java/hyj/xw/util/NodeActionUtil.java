@@ -1,6 +1,7 @@
 package hyj.xw.util;
 
 import android.accessibilityservice.AccessibilityService;
+import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.Map;
@@ -34,16 +35,16 @@ public class NodeActionUtil {
             nodeInfo = ParseRootUtil.getNodePath(root,nodePath);
         }
         if(nodeInfo==null){
-            System.out.println("doClickByNodePathAndText nodeText获取-->"+nodeText);
+             LogUtil.d("NodeActionUtil","doClickByNodePathAndText nodeText获取-->"+nodeText);
             nodeInfo = AutoUtil.findNodeInfosByText(root,nodeText);
         }
         if(isContainsStrs){
             isClick = AutoUtil.performClick(nodeInfo,record,action,ms);
         }
-        System.out.println("doClickByNodePathAndText -->"+str2);
-        System.out.println("doClickByNodePathAndText isContainsStrs -->"+isContainsStrs);
-        System.out.println("doClickByNodePathAndText nodeInfo -->"+nodeInfo);
-        System.out.println("doClickByNodePathAndText isclick -->"+isClick+" "+action);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText -->"+str2);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText isContainsStrs -->"+isContainsStrs);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText nodeInfo -->"+nodeInfo);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText isclick -->"+isClick+" "+action);
         return isClick;
     }
     public static boolean doBack(AccessibilityService context,AccessibilityNodeInfo root, String str2, Map<String,String> record, String action, long ms){
@@ -52,8 +53,8 @@ public class NodeActionUtil {
         if(isContainsStrs){
             AutoUtil.performBack(context,record,action);
         }
-        System.out.println("doClickByNodePathAndText -->"+str2);
-        System.out.println("doClickByNodePathAndText isContainsStrs -->"+isContainsStrs);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText -->"+str2);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText isContainsStrs -->"+isContainsStrs);
         return isClick;
     }
     public static boolean doClickByNodePathAndText(AccessibilityNodeInfo root,String str2,String nodePath,String nodeText,Map<String,String> record,String action){
@@ -66,16 +67,16 @@ public class NodeActionUtil {
             nodeInfo = ParseRootUtil.getNodePath(root,nodePath);
         }
         if(nodeInfo==null){
-            System.out.println("doClickByNodePathAndText nodeText获取-->"+nodeText);
+            LogUtil.d("NodeActionUtil","doClickByNodePathAndText nodeText获取-->"+nodeText);
             nodeInfo = AutoUtil.findNodeInfosByText(root,nodeText);
         }
         if(isContainsStrs){
             isClick = AutoUtil.performClick(nodeInfo,record,action);
         }
-        System.out.println("doClickByNodePathAndText -->"+str2);
-        System.out.println("doClickByNodePathAndText isContainsStrs -->"+isContainsStrs);
-        System.out.println("doClickByNodePathAndText nodeInfo -->"+nodeInfo);
-        System.out.println("doClickByNodePathAndText isclick -->"+isClick+" "+action);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText -->"+str2);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText isContainsStrs -->"+isContainsStrs);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText nodeInfo -->"+nodeInfo);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText isclick -->"+isClick+" "+action);
         return isClick;
     }
     public static boolean doInputByNodePathAndText(AccessibilityNodeInfo root,String str2,String nodePath,String inputStr,Map<String,String> record,String action,long ms){
@@ -88,10 +89,10 @@ public class NodeActionUtil {
                 AutoUtil.sleep(ms);
             }
         }
-        System.out.println("doClickByNodePathAndText -->"+str2);
-        System.out.println("doClickByNodePathAndText isContainsStrs -->"+isContainsStrs);
-        System.out.println("doClickByNodePathAndText nodeInfo -->"+nodeInfo);
-        System.out.println("doClickByNodePathAndText isclick -->"+isInput+" "+action+"  >"+inputStr);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText -->"+str2);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText isContainsStrs -->"+isContainsStrs);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText nodeInfo -->"+nodeInfo);
+         LogUtil.d("NodeActionUtil","doClickByNodePathAndText isclick -->"+isInput+" "+action+"  >"+inputStr);
         return isInput;
     }
 

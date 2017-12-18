@@ -1,7 +1,16 @@
 package hyj.xw.util;
 
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/5/15.
@@ -49,5 +58,13 @@ public class LogUtil {
         String dateTime = sdf.format(new Date());
         String fileName = "bakData_"+dateTime+".txt";
         FileUtil.writeContent2File(path,fileName,msg);
+    }
+
+    public static void logError(Exception e) {
+        Writer writer = new StringWriter();
+        e.printStackTrace(new PrintWriter(writer));
+        System.out.println("打印错误:"+writer.toString());
+        LogUtil.d("error",writer.toString().replaceAll("\n","|"));
+
     }
 }
