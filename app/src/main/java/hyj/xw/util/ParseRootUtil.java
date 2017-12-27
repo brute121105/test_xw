@@ -36,6 +36,7 @@ public class ParseRootUtil {
         List<NodeAttr> nexLlevelNodes = new ArrayList<NodeAttr>();
         if(levelNodes!=null&&levelNodes.size()>0){
             for(NodeAttr levelNode:levelNodes){
+                if( levelNode.getNode()==null) continue;
                 int childCount = levelNode.getNode().getChildCount();
                 if(childCount>0){
                     for(int i=0;i<childCount;i++){
@@ -72,6 +73,7 @@ public class ParseRootUtil {
     private static boolean haveNextLevel(List<NodeAttr> levelNodes){
         boolean flag = false;
         for(NodeAttr levelNode:levelNodes){
+            if( levelNode.getNode()==null) continue;
             if(levelNode.getNode()!=null&&levelNode.getNode().getChildCount()>0){
                 flag = true;
                 break;

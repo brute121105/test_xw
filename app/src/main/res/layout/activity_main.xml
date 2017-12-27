@@ -25,5 +25,16 @@
         android:layout_height="wrap_content"
         android:text="上传错误日志"
         android:textSize="18sp" />
+    <TextView
+        android:text="综合参数"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#2E2E2E"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/ext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

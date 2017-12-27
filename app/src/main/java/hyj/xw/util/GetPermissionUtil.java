@@ -32,6 +32,15 @@ public class GetPermissionUtil {
         if (ContextCompat.checkSelfPermission(context,Manifest.permission.WRITE_SETTINGS)!=PackageManager.PERMISSION_GRANTED) {
             permissionList.add(Manifest.permission.WRITE_SETTINGS);
         }
+        if (ContextCompat.checkSelfPermission(context,Manifest.permission.READ_SMS)!=PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.READ_SMS);
+        }
+        if (ContextCompat.checkSelfPermission(context,Manifest.permission.RECEIVE_SMS)!=PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.RECEIVE_SMS);
+        }
+        if (ContextCompat.checkSelfPermission(context,Manifest.permission.READ_PHONE_STATE)!=PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.READ_PHONE_STATE);
+        }
         if(!permissionList.isEmpty()){
             String[] permisions = permissionList.toArray(new String[permissionList.size()]);
             ActivityCompat.requestPermissions(activity,permisions,1);

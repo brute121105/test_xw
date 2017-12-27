@@ -18,7 +18,7 @@ public class DeviceParamUtil {
         DeviceInfo info = new DeviceInfo();
         TelephonyManager tm = (TelephonyManager) GlobalApplication.getContext().getSystemService(Context.TELEPHONY_SERVICE);
         info.setDeviceId(tm.getDeviceId());
-        info.setLine1Number(tm.getLine1Number());
+        info.setLine1Number(tm.getLine1Number());//手机号码
         info.setSubscriberId(tm.getSubscriberId());
         info.setNetworkCountryIso(tm.getNetworkCountryIso());
         //tm.getDeviceSoftwareVersion();

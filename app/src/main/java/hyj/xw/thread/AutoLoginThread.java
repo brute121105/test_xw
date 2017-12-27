@@ -23,18 +23,20 @@ import hyj.xw.util.ParseRootUtil;
  */
 
 public class AutoLoginThread  extends BaseThread {
-    private  final int SendMsgNum =3;
+    private  int countRootNull =0;
+    private  int SendMsgNum;
     public  final String TAG = this.getClass().getSimpleName();
     List<String> chatWxids = new ArrayList<String>();
     public AutoLoginThread(AccessibilityService context,Map<String, String> record,Map<String,Object> parameters){
         super(context,record,parameters);
         AutoUtil.recordAndLog(record,"init");
         chatWxids.add("mm77375");
+        intiParam();
     }
     int loginIndex=-1,sendMsgCount,autoChatWxidIndex;
     private void intiParam(){
-        sendMsgCount=0;
-        autoChatWxidIndex =0;
+        SendMsgNum = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT));
+        LogUtil.d("SendMsgNum",SendMsgNum+"");
     }
     List<String[]> acts = AppConfigDao.findAcountsListByCode(CommonConstant.APPCONFIG_LOGIN_ACCOUNT);
     @Override
@@ -43,12 +45,24 @@ public class AutoLoginThread  extends BaseThread {
             try {
             AutoUtil.sleep(1500);
             LogUtil.d(TAG,Thread.currentThread().getName());
+
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){
                 LogUtil.d(TAG,"root is null");
                 AutoUtil.sleep(1500);
+                countRootNull  = countRootNull+1;
+                if(countRootNull>5){
+                    LogUtil.d(TAG,"root is max num:getPackageName1:");
+                    AutoUtil.startWx();
+                }
                 continue;
             }
+            if(NodeActionUtil.doClickByNodePathAndText(root,"请选择要使用的应用|取消","020","微信",record,record.get("recordAction"),3000)) continue;
+            if(root.getPackageName().toString().indexOf("tencent")==-1){
+                LogUtil.d(TAG,"not in the weixin view getPackageName2:"+root.getPackageName());
+                AutoUtil.startWx();
+            }
+
             ParseRootUtil.debugRoot(root);
             //ParseRootUtil.getCurrentViewAllNode(root);
              autoChat(root,record,chatWxids.get(autoChatWxidIndex));
@@ -74,7 +88,8 @@ public class AutoLoginThread  extends BaseThread {
                         sendMsgCount=0;
                     }else {
                         AutoUtil.recordAndLog(record,"autoLogin");
-                        intiParam();
+                        sendMsgCount=0;
+                        autoChatWxidIndex =0;
                         return;
                     }
                 }

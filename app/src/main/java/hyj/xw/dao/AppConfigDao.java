@@ -23,6 +23,16 @@ public class AppConfigDao {
         return lsit;
     }
 
+    public static String findContentByCode(String code){
+        List<AppConfig> list =DataSupport.where("configCode=?",code).find(AppConfig.class);
+        String content = "";
+        if(list!=null&&list.size()==1){
+            content = list.get(0).getConfigContent();
+        }
+        System.out.println(TAG+" findAcountsStrByCode-->"+ content);
+        return content;
+    }
+
     public static String findAcountsStrByCode(String code){
         List<AppConfig> list =DataSupport.where("configCode=?",code).find(AppConfig.class);
         String content = "";

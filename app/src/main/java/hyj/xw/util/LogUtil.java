@@ -64,7 +64,15 @@ public class LogUtil {
         Writer writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));
         System.out.println("打印错误:"+writer.toString());
-        LogUtil.d("error",writer.toString().replaceAll("\n","|"));
+        dError("error",writer.toString().replaceAll("\n","|"));
 
+    }
+    public static void dError(String tab,String msg){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateTime = sdf.format(new Date());
+        String logMsg = dateTime+" "+tab+"--hyj---->"+msg;
+        //以天为单位生成日志文件
+        System.out.println(logMsg);
+        FileUtil.writeContent2File("/sdcard/A_hyj_crash/","log_"+dateTime.substring(0,17)+".txt",logMsg);
     }
 }
