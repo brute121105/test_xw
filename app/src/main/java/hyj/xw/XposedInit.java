@@ -33,10 +33,12 @@ public class XposedInit implements IXposedHookLoadPackage {
 
         if(packageName.equals(PACKAGE_NAME)||"hyj.weixin_008".equals(packageName)){
             new Phone(lpparam);
+
+
         }
 
 
-          XposedHelpers.findAndHookMethod("hyj.weixin_008.MainActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
+         /* XposedHelpers.findAndHookMethod("hyj.weixin_008.MainActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         Class c=lpparam.classLoader.loadClass("hyj.weixin_008.MainActivity");
@@ -46,6 +48,6 @@ public class XposedInit implements IXposedHookLoadPackage {
                         EditText textView= (EditText) field.get(param.thisObject);
                         System.out.println("hyj-->"+textView.getText());
                     }
-                });
+                });*/
     }
 }
