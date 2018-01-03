@@ -13,6 +13,7 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import hyj.xw.hook.Phone;
 
 import static de.robv.android.xposed.XposedBridge.log;
 
@@ -29,6 +30,10 @@ public class XposedInit implements IXposedHookLoadPackage {
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) {
         String packageName = lpparam.packageName;
         System.out.println("hyj xw hyj-->"+packageName);
+
+        if(packageName.equals(PACKAGE_NAME)||"hyj.weixin_008".equals(packageName)){
+            new Phone(lpparam);
+        }
 
 
           XposedHelpers.findAndHookMethod("hyj.weixin_008.MainActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
