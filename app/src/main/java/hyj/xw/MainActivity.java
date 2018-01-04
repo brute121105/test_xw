@@ -1,5 +1,7 @@
 package hyj.xw;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.provider.Settings;
@@ -10,10 +12,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.common.CommonConstant;
+import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.LitePalModel.AppConfig;
+import hyj.xw.model.PhoneInfo;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.util.DeviceParamUtil;
 import hyj.xw.util.GetPermissionUtil;
@@ -35,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         openAssitBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-                Toast.makeText(MainActivity.this, "打开启权限，才能运行", Toast.LENGTH_LONG).show();
+                //startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                //Toast.makeText(MainActivity.this, "打开启权限，才能运行", Toast.LENGTH_LONG).show();
                 testMethod();
             }
         });
@@ -51,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         //综合参数
         editText = (EditText)findViewById(R.id.ext);
         editText.setText(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT));
+
+        PhoneInfo phoneInfo = PhoneConf.createPhoneInfo();
 
 
     }
@@ -98,12 +114,71 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
     public void testMethod(){
+        //ActivityManager localActivityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
         //CreateNode2DB.create();
-        LogUtil.d("tt","tt");
+       // LogUtil.d("tt","tt");
         //WxNodeDao.findAllNode();
         //AppConfig config = new AppConfig(CommonConstant.APPCONFIG_LOGIN_ACCOUNT,"nnk4869-,szinfo0002-huang121105".replaceAll("-,|-，","-huang121105,"));
         //AppConfigDao.saveOrUpdate(config);
         //AppConfigDao.findAcountsListByCode(CommonConstant.APPCONFIG_LOGIN_ACCOUNT);
+
+        exeShell("pm clear com.tencent.mm" );
+        killPro(this, "com.tencent.mm");
+        Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();
+    }
+
+    public static boolean killPro(Context paramContext, String paramString)
+    {
+        List localList = ((ActivityManager)paramContext.getSystemService(Context.ACTIVITY_SERVICE)).getRunningAppProcesses();
+        ArrayList localArrayList = new ArrayList();
+        new HashMap();
+        Iterator localIterator = localList.iterator();
+        while (true)
+        {
+            if (!localIterator.hasNext())
+                return false;
+            ActivityManager.RunningAppProcessInfo localRunningAppProcessInfo = (ActivityManager.RunningAppProcessInfo)localIterator.next();
+            if (localRunningAppProcessInfo.uid > 1000)
+            {
+                localArrayList.add(localRunningAppProcessInfo);
+                String[] arrayOfString = localRunningAppProcessInfo.pkgList;
+                int i = arrayOfString.length;
+                for (int j = 0; j < i; j++)
+                    if (arrayOfString[j].equals(paramString))
+                    {
+                        exeShell("kill " + localRunningAppProcessInfo.pid);
+                        ((ActivityManager)paramContext.getSystemService(Context.ACTIVITY_SERVICE)).killBackgroundProcesses(paramString);
+                        return true;
+                    }
+            }
+        }
+    }
+
+
+    public static boolean a = false;
+    private static DataOutputStream b;
+    private static Process c;
+    private static InputStream d;
+
+    public static String exeShell(String paramString)
+    {
+        try
+        {
+            if (b == null)
+            {
+                c = Runtime.getRuntime().exec("su");
+                b = new DataOutputStream(c.getOutputStream());
+                d = c.getInputStream();
+            }
+            b.writeBytes(paramString + "\n");
+            b.flush();
+            return "";
+        }
+        catch (Exception localException)
+        {
+            localException.printStackTrace();
+        }
+        return "";
     }
 
 }

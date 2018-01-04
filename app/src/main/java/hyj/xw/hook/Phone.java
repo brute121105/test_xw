@@ -3,33 +3,80 @@ package hyj.xw.hook;
 import android.content.ContentResolver;
 import android.os.Build;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import hyj.xw.conf.PhoneConf;
+import hyj.xw.model.LitePalModel.Wx008Data;
+import hyj.xw.model.PhoneInfo;
 
 /**
  * Created by Administrator on 2017/4/17 0017.
  */
 
 public class Phone {
+    PhoneInfo phoneInfo;
+    ClassLoader classLoader;
     public Phone(XC_LoadPackage.LoadPackageParam sharePkgParam) {
-        Telephony(sharePkgParam);
+        classLoader = sharePkgParam.classLoader;
+        phoneInfo = PhoneConf.createPhoneInfo();
         hookBuild();
+        Telephony(sharePkgParam);
     }
+
+    private PhoneInfo createInfo(){
+        PhoneInfo phoneInfo = new PhoneInfo();
+        phoneInfo.setAndroidId("cc307385e3bf7bcc");
+        phoneInfo.setBrand("Coolpad");
+        phoneInfo.setBuildId("fb7be2db9556");
+        phoneInfo.setDevice("Coolpad 8720L");
+        phoneInfo.setDeviceId("864093024001182");
+        phoneInfo.setDisplay("51e3ce7be76c");
+        phoneInfo.setFingerprint("samsung/ja3gzc/ja3g:4.4.2/KOT49H/I9500ZCUHNH4:user/release-keys");
+        phoneInfo.setHardware("universal5410");
+        phoneInfo.setLineNumber("8970359836");
+        phoneInfo.setManufacturer("Coolpad");
+        phoneInfo.setModel("Coolpad 8720L");
+        phoneInfo.setNetworkCountryIso("cn");
+        phoneInfo.setNetworkOperator("46007");
+        phoneInfo.setNetworkOperatorName("中国移动");
+        phoneInfo.setNetworkType(13);
+        phoneInfo.setPhoneType(1);
+        phoneInfo.setProductName("8720L");
+        phoneInfo.setRelease("6.0");
+        phoneInfo.setSdk("23");
+        phoneInfo.setSerialno("b086ae09");
+        phoneInfo.setSimCountryIso("cn");
+        phoneInfo.setSimOperator("46007");
+        phoneInfo.setSimOperatorName("中国移动");
+        phoneInfo.setSimSerialNumber("89860256460528372004");
+        phoneInfo.setSimState(1);
+        phoneInfo.setSubscriberId("460075646052837");
+        return phoneInfo;
+    }
+
+
+
 
 
 
     public void Telephony(XC_LoadPackage.LoadPackageParam loadPkgParam) {
 
-        String TelePhone = "android.telephony.TelephonyManager";
+        String TelePhone = TelephonyManager.class.getName();
 
-        HookTelephony(TelePhone,loadPkgParam, "getDeviceId","868062024507544");  //序列号
+        HookTelephony(TelePhone,loadPkgParam, "getDeviceId",phoneInfo.getDeviceId());  //序列号
         //android_id
         try {
             XposedHelpers.findAndHookMethod("android.provider.Settings.Secure", loadPkgParam.classLoader, "getString",ContentResolver.class, String.class, new XC_MethodHook() {
@@ -38,27 +85,38 @@ public class Phone {
                 protected void afterHookedMethod(MethodHookParam param)
                         throws Throwable {
                     if (param.args[1].equals(Settings.Secure.ANDROID_ID)) {
-                        param.setResult("1c6ac00087a21cfc");
+                        param.setResult(phoneInfo.getAndroidId());
                     }
                 }
             });
         } catch (Exception ex) {
             XposedBridge.log(" Android ID 错误: " + ex.getMessage());
         }
-        HookTelephony(TelePhone,loadPkgParam, "getLine1Number","14782730591");//手机号码
-        HookTelephony(TelePhone,loadPkgParam, "getSimSerialNumber","89860313540282921804");//手机卡序列号
-        HookTelephony(TelePhone,loadPkgParam, "getSubscriberId","460031354028292");//IMSI
 
-        HookTelephony(TelePhone,loadPkgParam, "getSimCountryIso","cn");  //手机卡国家
-        HookTelephony(TelePhone,loadPkgParam, "getSimOperator","46003");//运营商
-        HookTelephony(TelePhone,loadPkgParam, "getSimOperatorName","中国电信");//运营商名字
-        HookTelephony(TelePhone,loadPkgParam, "getNetworkCountryIso","cn");//国家iso代码
+        HookTelephony(TelePhone,loadPkgParam, "getLine1Number",phoneInfo.getLineNumber());//手机号码
+        HookTelephony(TelePhone,loadPkgParam, "getSimSerialNumber",phoneInfo.getSimSerialNumber());//手机卡序列号
+        HookTelephony(TelePhone,loadPkgParam, "getSubscriberId",phoneInfo.getSubscriberId());//IMSI
 
-        HookTelephony(TelePhone,loadPkgParam, "getNetworkOperator","46003");  //网络运营商类型
-        HookTelephony(TelePhone,loadPkgParam, "getNetworkOperatorName","中国电信");//网络类型名
-        HookTelephony(TelePhone,loadPkgParam, "getNetworkType",4);//网络类型
-        HookTelephony(TelePhone,loadPkgParam, "getPhoneType",2);//手机类型
-        HookTelephony(TelePhone,loadPkgParam, "getSimState",1);//手机卡状态
+        HookTelephony(TelePhone,loadPkgParam, "getSimCountryIso",phoneInfo.getSimCountryIso());  //手机卡国家
+        HookTelephony(TelePhone,loadPkgParam, "getSimOperator",phoneInfo.getSimOperator());//运营商
+        HookTelephony(TelePhone,loadPkgParam, "getSimOperatorName",phoneInfo.getSimOperatorName());//运营商名字
+        HookTelephony(TelePhone,loadPkgParam, "getNetworkCountryIso",phoneInfo.getSimCountryIso());//国家iso代码
+
+        HookTelephony(TelePhone,loadPkgParam, "getNetworkOperator",phoneInfo.getNetworkOperator());  //网络运营商类型
+        HookTelephony(TelePhone,loadPkgParam, "getNetworkOperatorName",phoneInfo.getNetworkOperatorName());//网络类型名
+        HookTelephony(TelePhone,loadPkgParam, "getNetworkType",phoneInfo.getNetworkType());//网络类型
+        HookTelephony(TelePhone,loadPkgParam, "getPhoneType",phoneInfo.getPhoneType());//手机类型
+        HookTelephony(TelePhone,loadPkgParam, "getSimState",phoneInfo.getSimState());//手机卡状态
+
+        HookTelephony(TelePhone,loadPkgParam, "getSimState",phoneInfo.getSimState());//手机卡状态
+
+        HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam,"getDeviceId",phoneInfo.getDeviceId());
+        HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam, "getImei",phoneInfo.getDeviceId());
+        HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam, "getIccSerialNumber",phoneInfo.getSimSerialNumber());
+        HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam,"getLine1Number",phoneInfo.getLineNumber());
+        HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam,"getSubscriberId",phoneInfo.getSubscriberId());
+        HookTelephony("android.telephony.MSimTelephonyManager",loadPkgParam, "getDeviceId",phoneInfo.getDeviceId());
+        HookTelephony("android.telephony.MSimTelephonyManager",loadPkgParam, "getSubscriberId",phoneInfo.getSubscriberId());
 
         //HookTelephony(TelePhone,loadPkgParam, "getSimState",11);//mac地址
         //HookTelephony(TelePhone,loadPkgParam, "getSimState",11);//无线路由器名称
@@ -66,23 +124,95 @@ public class Phone {
 
         try {
 
-            hookBuild("ro.build.version.release","5.0.2");//系统版本 6.0.1
-            hookBuild("ro.build.version.sdk","21");//系统版本值
-            hookBuild("ro.product.brand","Letv");;//品牌
+            hookBuild("ro.build.version.release",phoneInfo.getRelease());//系统版本 6.0.1
+            hookBuild("ro.build.version.sdk",phoneInfo.getSdk());//系统版本值
+            hookBuild("ro.product.brand",phoneInfo.getBrand());//品牌
 
-            hookBuild("ro.product.model","X900+");//型号
-            hookBuild("ro.build.id","74f8d389ecd5");//ID
-            hookBuild("ro.build.display.id","c5cc02f77432");//display
-            hookBuild("ro.product.name","乐视超级手机Max");//产品名
-            hookBuild("ro.build.display.manufacturer","Letv");//制造商
-            hookBuild("ro.build.display.device","max1");//设备名
-            hookBuild("ro.hardware","qcom");//硬件
-            hookBuild("ro.build.fingerprint","Letv/max1/max1:5.0.2/CEXCNFN5000408171S/22:user/release-keys");//指纹
-            hookBuild("ro.serialno","ef7f6ce1");//串口序列号；
+            hookBuild("ro.product.model",phoneInfo.getModel());//型号
+            hookBuild("ro.build.id",phoneInfo.getBuildId());//ID
+            hookBuild("ro.build.display.id",phoneInfo.getDisplay());//display
+            hookBuild("ro.product.name",phoneInfo.getProductName());//产品名
+            hookBuild("ro.build.display.manufacturer",phoneInfo.getManufacturer());//制造商
+            hookBuild("ro.build.display.device",phoneInfo.getDevice());//设备名
+            hookBuild("ro.hardware",phoneInfo.getHardware());//硬件
+            hookBuild("ro.build.fingerprint",phoneInfo.getFingerprint());//指纹
+            hookBuild("ro.serialno",phoneInfo.getSerialno());//串口序列号；
 
 
         }catch (Exception e){
             XposedBridge.log(" BuilProp 错误: " + e.getMessage());
+        }
+
+
+        for (Method localMethod : XposedHelpers.findClass("android.os.Build", this.classLoader).getDeclaredMethods()){
+            System.out.println("localMethod.getNam-->"+localMethod.getName());
+            if ((localMethod.getName().equals("getString")) && (!Modifier.isAbstract(localMethod.getModifiers()))) {
+                localMethod.setAccessible(true);
+                XposedBridge.hookMethod(localMethod, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam paramMethodHookParam) throws Throwable {
+                        String str1 = paramMethodHookParam.method.getName();
+
+                        if ("getString".equals(str1))
+                        {
+                            String str2 = (String)paramMethodHookParam.args[0];
+                            if ("ro.product.model".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getModel());
+                            }
+                            else if ("ro.build.id".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getBuildId());
+                            }
+                            else if ("ro.build.display.id".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getDisplay());
+                            }
+
+                            else if ("ro.product.brand".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getBrand());
+                            }
+                            else if ("ro.product.device".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getDevice());
+                            }
+
+                            else if ("ro.product.name".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getProductName());
+                            }
+                            else if ("ro.product.manufacturer".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getManufacturer());
+                            }
+                            else if ("ro.hardware".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getHardware());
+                            }
+                            else if ("ro.serialno".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getSerialno());
+                            }
+
+                            else if ("ro.build.version.release".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getRelease());
+                            }
+                            else if ("ro.build.version.sdk".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getSdk());
+                            }
+
+                            else if ("ro.build.fingerprint".equals(str2))
+                            {
+                                paramMethodHookParam.setResult(phoneInfo.getFingerprint());
+                            }
+
+                        }
+                    }
+                });
+            }
         }
 
 
@@ -156,18 +286,18 @@ public class Phone {
 
     private void hookBuild()
     {
-            XposedHelpers.setStaticObjectField(Build.VERSION.class, "RELEASE","5.0.2");
-            XposedHelpers.setStaticObjectField(Build.VERSION.class, "SDK","21");
-        XposedHelpers.setStaticObjectField(Build.class, "BRAND","Letv");
-        XposedHelpers.setStaticObjectField(Build.class, "MODEL","X900+");
-        XposedHelpers.setStaticObjectField(Build.class, "ID","74f8d389ecd5");
-        XposedHelpers.setStaticObjectField(Build.class, "DISPLAY","c5cc02f77432");
-            XposedHelpers.setStaticObjectField(Build.class, "PRODUCT","乐视超级手机Max");
-            XposedHelpers.setStaticObjectField(Build.class, "MANUFACTURER","Letv");
-            XposedHelpers.setStaticObjectField(Build.class, "DEVICE","max1");
-        XposedHelpers.setStaticObjectField(Build.class, "HARDWARE","qcom");
-            XposedHelpers.setStaticObjectField(Build.class, "FINGERPRINT","Letv/max1/max1:5.0.2/CEXCNFN5000408171S/22:user/release-keys");
-            XposedHelpers.setStaticObjectField(Build.class, "SERIAL","ef7f6ce1");
+            XposedHelpers.setStaticObjectField(Build.VERSION.class, "RELEASE",phoneInfo.getRelease());
+            XposedHelpers.setStaticObjectField(Build.VERSION.class, "SDK",phoneInfo.getSdk());
+        XposedHelpers.setStaticObjectField(Build.class, "BRAND",phoneInfo.getBrand());
+        XposedHelpers.setStaticObjectField(Build.class, "MODEL",phoneInfo.getModel());
+        XposedHelpers.setStaticObjectField(Build.class, "ID",phoneInfo.getBuildId());
+        XposedHelpers.setStaticObjectField(Build.class, "DISPLAY",phoneInfo.getDisplay());
+            XposedHelpers.setStaticObjectField(Build.class, "PRODUCT",phoneInfo.getProductName());
+            XposedHelpers.setStaticObjectField(Build.class, "MANUFACTURER",phoneInfo.getManufacturer());
+            XposedHelpers.setStaticObjectField(Build.class, "DEVICE",phoneInfo.getDevice());
+        XposedHelpers.setStaticObjectField(Build.class, "HARDWARE",phoneInfo.getHardware());
+            XposedHelpers.setStaticObjectField(Build.class, "FINGERPRINT",phoneInfo.getFingerprint());
+            XposedHelpers.setStaticObjectField(Build.class, "SERIAL",phoneInfo.getSerialno());
 
         XposedHelpers.setStaticObjectField(Build.class, "BOOTLOADER", "unkown");
 

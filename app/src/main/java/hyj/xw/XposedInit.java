@@ -13,7 +13,13 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import hyj.xw.conf.PhoneConf;
+import hyj.xw.hook.BeginHook;
 import hyj.xw.hook.Phone;
+import hyj.xw.hook.TechnologyHook;
+import hyj.xw.hook.XBuildHook;
+import hyj.xw.hook.XBuildHook2;
+import hyj.xw.model.PhoneInfo;
 
 import static de.robv.android.xposed.XposedBridge.log;
 
@@ -31,10 +37,16 @@ public class XposedInit implements IXposedHookLoadPackage {
         String packageName = lpparam.packageName;
         System.out.println("hyj xw hyj-->"+packageName);
 
-        if(packageName.equals(PACKAGE_NAME)||"hyj.weixin_008".equals(packageName)){
+        if("hyj.weixin_008".equals(packageName)){
             new Phone(lpparam);
+        }
 
-
+        if(packageName.equals(PACKAGE_NAME)){
+            System.out.println("--->"+PACKAGE_NAME);
+             new Phone(lpparam);
+           // PhoneInfo phoneInfo = PhoneConf.createPhoneInfo();
+            //PhoneInfo phoneInfo = new PhoneInfo();
+            //BeginHook.hk(lpparam,phoneInfo);
         }
 
 
