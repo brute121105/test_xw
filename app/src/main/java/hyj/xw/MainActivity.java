@@ -4,13 +4,12 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.common.CommonConstant;
@@ -29,7 +27,7 @@ import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.PhoneInfo;
 import hyj.xw.service.SmsReciver;
-import hyj.xw.util.DeviceParamUtil;
+import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.OkHttpUtil;
@@ -49,9 +47,9 @@ public class MainActivity extends AppCompatActivity {
         openAssitBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-                //Toast.makeText(MainActivity.this, "打开启权限，才能运行", Toast.LENGTH_LONG).show();
                 testMethod();
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                //Toast.makeText(MainActivity.this, "打开启权限，才能运行", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -66,10 +64,9 @@ public class MainActivity extends AppCompatActivity {
         editText = (EditText)findViewById(R.id.ext);
         editText.setText(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT));
 
-        PhoneInfo phoneInfo = PhoneConf.createPhoneInfo();
-
-
+        CommonConstant.index = Integer.parseInt(editText.getText().toString());
     }
+
 
     @Override
     public void onStart() {
@@ -114,17 +111,15 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
     public void testMethod(){
-        //ActivityManager localActivityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-        //CreateNode2DB.create();
-       // LogUtil.d("tt","tt");
-        //WxNodeDao.findAllNode();
-        //AppConfig config = new AppConfig(CommonConstant.APPCONFIG_LOGIN_ACCOUNT,"nnk4869-,szinfo0002-huang121105".replaceAll("-,|-，","-huang121105,"));
-        //AppConfigDao.saveOrUpdate(config);
-        //AppConfigDao.findAcountsListByCode(CommonConstant.APPCONFIG_LOGIN_ACCOUNT);
-
-        exeShell("pm clear com.tencent.mm" );
+        int index  = Integer.parseInt(editText.getText().toString());
+        System.out.println("index--->"+index);
+        PhoneInfo phoneInfo = PhoneConf.createPhoneInfo(index);
+        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(phoneInfo));
+        String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
+        System.out.println("phoneInfo---->"+con);
+        /*exeShell("pm clear com.tencent.mm" );
         killPro(this, "com.tencent.mm");
-        Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();*/
     }
 
     public static boolean killPro(Context paramContext, String paramString)
@@ -180,5 +175,9 @@ public class MainActivity extends AppCompatActivity {
         }
         return "";
     }
+
+
+
+
 
 }

@@ -24,19 +24,15 @@ public class PhoneConf {
 
          str = FileUtil.readAll(imporFileName);
     }
-   public static PhoneInfo createPhoneInfo(){
+   public static PhoneInfo createPhoneInfo(int index){
        System.out.println("str-->" + str);
        List<Wx008Data> datas = JSON.parseArray(str, Wx008Data.class);
-       System.out.println("datas-->"+JSON.toJSONString(datas));
        for(Wx008Data data:datas){
            data.setPhoneInfo(data.getDatas());
        }
-       System.out.println("datas1-->"+JSON.toJSONString(datas));
-      // PhoneInfo phoneInfo = wx008Data.getPhoneInfo();
-       //Wx008Data wx008Data = datas.get(55);
-       Wx008Data wx008Data = datas.get(50);
-       System.out.println("wx008Data-->"+JSON.toJSONString(wx008Data));
+       Wx008Data wx008Data = datas.get(index);
        SimpleDateFormat simpleDateFormat  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+       System.out.println("datas-->"+JSON.toJSONString(datas));
        System.out.println("teime-->"+simpleDateFormat.format(wx008Data.getCreateTime()));
        return wx008Data.getPhoneInfo();
    }

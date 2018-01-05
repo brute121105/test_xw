@@ -5,8 +5,6 @@ import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 
-
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.lang.reflect.Member;
@@ -14,13 +12,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import hyj.xw.conf.PhoneConf;
-import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneInfo;
+import hyj.xw.util.FileUtil;
 
 /**
  * Created by Administrator on 2017/4/17 0017.
@@ -31,7 +27,10 @@ public class Phone {
     ClassLoader classLoader;
     public Phone(XC_LoadPackage.LoadPackageParam sharePkgParam) {
         classLoader = sharePkgParam.classLoader;
-        phoneInfo = PhoneConf.createPhoneInfo();
+         String jsonStr = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
+        System.out.println("xposed--->"+jsonStr);
+         phoneInfo = JSONObject.parseObject(jsonStr,PhoneInfo.class);
+        //phoneInfo = createInfo();
         hookBuild();
         Telephony(sharePkgParam);
     }

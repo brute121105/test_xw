@@ -1,16 +1,10 @@
 package hyj.xw.util;
 
-import android.os.Environment;
-import android.util.Log;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * Created by Administrator on 2017/5/15.
@@ -63,7 +57,7 @@ public class LogUtil {
     public static void logError(Exception e) {
         Writer writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));
-        System.out.println("打印错误:"+writer.toString());
+        System.out.println("-->打印错误:"+writer.toString());
         dError("error",writer.toString().replaceAll("\n","|"));
 
     }

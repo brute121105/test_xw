@@ -5,6 +5,8 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -43,6 +45,21 @@ public class FileUtil {
             Log.i("error:", e+"");
         }
     }
+
+    //内容写入文件
+    public static void writeContent2FileForce(String filePathName,String fileName,String strcontent){
+        createFile2Path(filePathName,fileName);
+        String strFilePath = filePathName+fileName;
+        try {
+            File file = new File(strFilePath);
+            FileWriter fw = new FileWriter(file,false); //设置成true就是追加
+            fw.write(strcontent);
+            fw.close();
+        } catch (Exception e) {
+            Log.e("TestFile", "Error on write File:" + e);
+        }
+    }
+
     //内容写入文件
     public static void writeContent2File(String filePathName,String fileName,String strcontent){
         createFile2Path(filePathName,fileName);
@@ -50,21 +67,6 @@ public class FileUtil {
         // 每次写入时，换行
         String strContent = strcontent + "\r\n";
 
-        /*try {
-            OutputStreamWriter write = null;
-            BufferedWriter out = null;
-            if (fileName != null) {
-                try {   // new FileOutputStream(fileName, true) 第二个参数表示追加写入
-                    out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(strFilePath), "gbk"),8192);
-                } catch (Exception e) {
-                }
-            }
-            out.write(strContent);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            Log.e("TestFile", e.getMessage(), e);
-        }*/
         try {
             File file = new File(strFilePath);
             RandomAccessFile raf = new RandomAccessFile(file, "rwd");
@@ -202,4 +204,45 @@ public class FileUtil {
             //}
         //}).start();
     }*/
+
+    public static void copyFolder(String oldPath, String newPath) {
+
+        try {
+            (new File(newPath)).mkdirs(); //如果文件夹不存在 则建立新文件夹
+            File a=new File(oldPath);
+            String[] file=a.list();
+            File temp=null;
+            for (int i = 0; i < file.length; i++) {
+                if(oldPath.endsWith(File.separator)){
+                    temp=new File(oldPath+file[i]);
+                }
+                else{
+                    temp=new File(oldPath+File.separator+file[i]);
+                }
+
+                if(temp.isFile()){
+                    FileInputStream input = new FileInputStream(temp);
+                    FileOutputStream output = new FileOutputStream(newPath + "/" +
+                            (temp.getName()).toString());
+                    byte[] b = new byte[1024 * 5];
+                    int len;
+                    while ( (len = input.read(b)) != -1) {
+                        output.write(b, 0, len);
+                    }
+                    output.flush();
+                    output.close();
+                    input.close();
+                }
+                if(temp.isDirectory()){//如果是子文件夹
+                    copyFolder(oldPath+"/"+file[i],newPath+"/"+file[i]);
+                }
+            }
+        }
+        catch (Exception e) {
+            System.out.println("复制整个文件夹内容操作出错");
+            e.printStackTrace();
+
+        }
+
+    }
 }
