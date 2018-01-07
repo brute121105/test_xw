@@ -15,6 +15,7 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.hook.BeginHook;
+import hyj.xw.hook.HideApp;
 import hyj.xw.hook.Phone;
 import hyj.xw.hook.TechnologyHook;
 import hyj.xw.hook.XBuildHook;
@@ -38,15 +39,16 @@ public class XposedInit implements IXposedHookLoadPackage {
         System.out.println("hyj xw hyj-->"+packageName);
 
         if("hyj.xw".equals(packageName)){
+            new HideApp(lpparam);
             new Phone(lpparam);
+
         }
 
         if(packageName.equals(PACKAGE_NAME)){
             System.out.println("--->"+PACKAGE_NAME);
+             new HideApp(lpparam);
              new Phone(lpparam);
-           // PhoneInfo phoneInfo = PhoneConf.createPhoneInfo();
-            //PhoneInfo phoneInfo = new PhoneInfo();
-            //BeginHook.hk(lpparam,phoneInfo);
+             //new HideApp(lpparam);
         }
 
 

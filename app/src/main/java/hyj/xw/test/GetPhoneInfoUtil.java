@@ -1,5 +1,6 @@
 package hyj.xw.test;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -49,15 +50,36 @@ public class GetPhoneInfoUtil {
        }
 
        try {
-           String packageName = "com.tencent.mm";
+           String packageName = "de.robv.android.xposed.installer";
            PackageInfo pInfo =  pm.getPackageInfo(packageName,PackageManager.GET_PERMISSIONS);//没有此包名会报错 hook钱替换传入参数
            ApplicationInfo apInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
            List<PackageInfo> installedPackages = pm.getInstalledPackages(0);
+           for(PackageInfo packageInfo :installedPackages){
+               System.out.println(tag+" getInstalledPackages--->"+ packageInfo.packageName);
+           }
            System.out.println(tag+" getPackageInfo--->"+ JSON.toJSONString(pInfo));
            System.out.println(tag+" getApplicationInfo--->"+ JSON.toJSONString(apInfo));
-           System.out.println(tag+" getInstalledPackages--->"+ JSON.toJSONString(installedPackages));
+           ;
        } catch (PackageManager.NameNotFoundException e) {
            LogUtil.logError(e);
+       }
+
+       ActivityManager am = (ActivityManager)GlobalApplication.getContext().getSystemService(Context.ACTIVITY_SERVICE);
+       List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+       List<ActivityManager.RunningServiceInfo> runningServices =  am.getRunningServices(200);
+       for(ActivityManager.RunningServiceInfo runningService : runningServices) {
+           System.out.println(tag+" getRunningServices--->"+ JSON.toJSONString(runningService));
+       }
+       List<ActivityManager.RunningTaskInfo> runningTasks  = am.getRunningTasks(200);
+       for(ActivityManager.RunningTaskInfo runningTask : runningTasks) {
+           System.out.println(tag+" getRunningTasks--->"+ JSON.toJSONString(runningTask));
+       };
+       List<ActivityManager.RecentTaskInfo> recentTasks  =am.getRecentTasks(64, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
+       for(ActivityManager.RecentTaskInfo recentTask : recentTasks) {
+           System.out.println(tag+" getRecentTasks--->"+ JSON.toJSONString(recentTask));
+       };
+       for(ActivityManager.RunningAppProcessInfo processInfo : processInfos) {
+           System.out.println(tag+" getRunningAppProcesses--->"+ JSON.toJSONString(processInfo));
        }
    }
 
@@ -146,8 +168,9 @@ public class GetPhoneInfoUtil {
         System.out.println(tag+"--->subTypeName->"+subTypeName);
         System.out.println(tag+"--->subtype->"+subtype);
 
-        getHideInfo();
+
         getWifiInfo();
+        getHideInfo();
     }
    //WifiInfo暂不处理，NetworkInterface必须处理 NetworkInfo getBluetoothAddress
     public static void getWifiInfo(){
