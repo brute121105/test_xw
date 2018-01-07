@@ -1,5 +1,7 @@
 package hyj.xw.hook;
 
+import com.alibaba.fastjson.JSON;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -9,6 +11,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import hyj.xw.model.PhoneInfo;
+import hyj.xw.util.LogUtil;
 
 /**
  * Created by Administrator on 2018/1/4.
@@ -16,53 +19,56 @@ import hyj.xw.model.PhoneInfo;
 
 
 public abstract class MyMethodHook extends XC_MethodHook {
-    protected String O000000o;
-    protected ClassLoader O00000Oo;
-    protected PhoneInfo O00000o0;
+    private static String tag = "MyMethodHook";
+    protected String packageName;
+    protected ClassLoader classLoader;
+    protected PhoneInfo phoneInfo;
 
     public MyMethodHook(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo) {
-        this.O000000o = paramLoadPackageParam.packageName;
-        this.O00000Oo = paramLoadPackageParam.classLoader;
-        this.O00000o0 = paramPhoneInfo;
+        this.packageName = paramLoadPackageParam.packageName;
+        this.classLoader = paramLoadPackageParam.classLoader;
+        this.phoneInfo = paramPhoneInfo;
     }
 
-    public void O000000o(String paramString1, String paramString2) {
+    //用方法名，不需要知道方法里的参数
+    public void hookMethod(String paramString1, String paramString2) {
         try {
-            for (Method localMethod : XposedHelpers.findClass(paramString1, this.O00000Oo).getDeclaredMethods()){
-                System.out.println("localMethod.getNam-->"+localMethod.getName());
+            for (Method localMethod : XposedHelpers.findClass(paramString1, this.classLoader).getDeclaredMethods()){
+                System.out.println("hookMethod methodName -->"+localMethod.getName());
                 if ((localMethod.getName().equals(paramString2)) && (!Modifier.isAbstract(localMethod.getModifiers()))) {
                     localMethod.setAccessible(true);
                     XposedBridge.hookMethod(localMethod, this);
                 }
             }
         } catch (Throwable localThrowable) {
-            //FVKjWjKo1YaG6p5uD2qz.O00000Oo("Xhook", "addHookWithOnlyMethodName Exception " + paramString1);
+            LogUtil.d(tag," hookMethod excepton clsName:"+paramString1+"  methodName:"+paramString2);
         }
     }
 
-    public void O000000o(String paramString1, String paramString2, Object[] paramArrayOfObject) {
+    //用方法名和参数，需要知道方法里的参数
+    public void hoodMethodByParms(String paramString1, String paramString2, Object[] paramArrayOfObject) {
         try {
             Object[] arrayOfObject = new Object[1 + paramArrayOfObject.length];
             for (int i = 0; i < arrayOfObject.length; i++) {
                 if (i == -1 + arrayOfObject.length) {
                     arrayOfObject[(-1 + arrayOfObject.length)] = this;
-                    XposedHelpers.findAndHookMethod(paramString1, this.O00000Oo, paramString2, arrayOfObject);
+                    XposedHelpers.findAndHookMethod(paramString1, this.classLoader, paramString2, arrayOfObject);
                     return;
                 }
                 arrayOfObject[i] = paramArrayOfObject[i];
             }
         } catch (Throwable localThrowable) {
-            // FVKjWjKo1YaG6p5uD2qz.O00000Oo("Xhook", "addHookMethodWithParms Exception " + paramString1);
+            LogUtil.d(tag," hoodMethodByParms excepton clsName:"+paramString1+"  methodName:"+paramString1);
         }
     }
 
-    public void O000000o(String paramString, Object[] paramArrayOfObject) {
+    public void hookConstructorByParms(String paramString, Object[] paramArrayOfObject) {
         try {
             Object[] arrayOfObject = new Object[1 + paramArrayOfObject.length];
             for (int i = 0; i < arrayOfObject.length; i++) {
                 if (i == -1 + arrayOfObject.length) {
                     arrayOfObject[(-1 + arrayOfObject.length)] = this;
-                    XposedHelpers.findAndHookConstructor(paramString, this.O00000Oo, arrayOfObject);
+                    XposedHelpers.findAndHookConstructor(paramString, this.classLoader, arrayOfObject);
                     return;
                 }
                 arrayOfObject[i] = paramArrayOfObject[i];
@@ -72,9 +78,9 @@ public abstract class MyMethodHook extends XC_MethodHook {
         }
     }
 
-    public void O00000o0(String paramString) {
+    public void hookConstructor(String paramString) {
         try {
-            for (Constructor localConstructor : XposedHelpers.findClass(paramString, this.O00000Oo).getDeclaredConstructors())
+            for (Constructor localConstructor : XposedHelpers.findClass(paramString, this.classLoader).getDeclaredConstructors())
                 if (Modifier.isPublic(localConstructor.getModifiers()))
                     XposedBridge.hookMethod(localConstructor, this);
         } catch (Throwable localThrowable) {

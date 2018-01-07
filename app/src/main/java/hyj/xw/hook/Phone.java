@@ -5,12 +5,17 @@ import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.IOException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Enumeration;
+import java.util.List;
 
+import dalvik.system.DexFile;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -73,6 +78,20 @@ public class Phone {
 
     public void Telephony(XC_LoadPackage.LoadPackageParam loadPkgParam) {
 
+      /*  for (Method localMethod :TelephonyManager.class.getDeclaredMethods()){
+            System.out.println("watch 1 TelephonyManager localMethod.getNam-->"+localMethod.getName());
+            if (!Modifier.isAbstract(localMethod.getModifiers())){
+                localMethod.setAccessible(true);
+                XposedBridge.hookMethod(localMethod, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam paramMethodHookParam) throws Throwable {
+                        String str1 = paramMethodHookParam.method.getName();
+                        System.out.println("watch 2 TelephonyManager method--->android.os.Build methodName:" + str1);
+                    }
+                });
+            }
+        }*/
+
         String TelePhone = TelephonyManager.class.getName();
 
         HookTelephony(TelePhone,loadPkgParam, "getDeviceId",phoneInfo.getDeviceId());  //序列号
@@ -83,7 +102,8 @@ public class Phone {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param)
                         throws Throwable {
-                    if (param.args[1].equals(Settings.Secure.ANDROID_ID)) {
+                    System.out.println("watch0 method--->android.os.Build android.provider.Settings.Secure.getString");
+                   if (param.args[1].equals(Settings.Secure.ANDROID_ID)) {
                         param.setResult(phoneInfo.getAndroidId());
                     }
                 }
@@ -144,14 +164,14 @@ public class Phone {
 
 
         for (Method localMethod : XposedHelpers.findClass("android.os.Build", this.classLoader).getDeclaredMethods()){
-            System.out.println("localMethod.getNam-->"+localMethod.getName());
+            System.out.println("watch1 localMethod.getNam-->"+localMethod.getName());
             if ((localMethod.getName().equals("getString")) && (!Modifier.isAbstract(localMethod.getModifiers()))) {
                 localMethod.setAccessible(true);
                 XposedBridge.hookMethod(localMethod, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam paramMethodHookParam) throws Throwable {
                         String str1 = paramMethodHookParam.method.getName();
-
+                        System.out.println("watch11 method--->android.os.Build methodName:"+str1);
                         if ("getString".equals(str1))
                         {
                             String str2 = (String)paramMethodHookParam.args[0];
@@ -215,7 +235,26 @@ public class Phone {
         }
 
 
+
+
+
+        for (Method localMethod : XposedHelpers.findClass("android.telephony.MSimTelephonyManager", this.classLoader).getDeclaredMethods()){
+            System.out.println("watch2 MSimTelephonyManager localMethod.getNam-->"+localMethod.getName());
+            if (!Modifier.isAbstract(localMethod.getModifiers())){
+                localMethod.setAccessible(true);
+                XposedBridge.hookMethod(localMethod, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam paramMethodHookParam) throws Throwable {
+                        String str1 = paramMethodHookParam.method.getName();
+                        System.out.println("watch21 MSimTelephonyManager method--->android.os.Build methodName:" + str1);
+                    }
+                });
+            }
+        }
+
+
     }
+
 
     private void HookTelephony(String hookClass, XC_LoadPackage.LoadPackageParam loadPkgParam,
                                String funcName, final String value) {
@@ -227,7 +266,7 @@ public class Phone {
                         protected void afterHookedMethod(MethodHookParam param)
                                 throws Throwable {
                             super.afterHookedMethod(param);
-                            System.out.println("--->hook String phone");
+                            System.out.println("watch31 method--->HookTelephony methodName:"+param.method.getName()+" clsName:"+param.thisObject.toString());
                             param.setResult(value);
                         }
 
@@ -246,7 +285,7 @@ public class Phone {
                         protected void afterHookedMethod(MethodHookParam param)
                                 throws Throwable {
                             super.afterHookedMethod(param);
-                            System.out.println("--->hook int phone");
+                            System.out.println("watch32 method--->HookTelephony methodName:"+param.method.getName()+" clsName:"+param.thisObject.toString());
                             param.setResult(value);
                         }
 
@@ -269,7 +308,7 @@ public class Phone {
                                 throws Throwable {
                             super.beforeHookedMethod(param);
                             if (param.args.length > 0 && param.args[0] != null && param.args[0].equals(params1)) {
-                                System.out.println("--->hook build "+value);
+                                System.out.println("watch4 method--->hookBuild methodName:"+param.method.getName());
                                 param.setResult(value);
                             }
                         }
@@ -287,19 +326,19 @@ public class Phone {
     {
             XposedHelpers.setStaticObjectField(Build.VERSION.class, "RELEASE",phoneInfo.getRelease());
             XposedHelpers.setStaticObjectField(Build.VERSION.class, "SDK",phoneInfo.getSdk());
-        XposedHelpers.setStaticObjectField(Build.class, "BRAND",phoneInfo.getBrand());
-        XposedHelpers.setStaticObjectField(Build.class, "MODEL",phoneInfo.getModel());
-        XposedHelpers.setStaticObjectField(Build.class, "ID",phoneInfo.getBuildId());
-        XposedHelpers.setStaticObjectField(Build.class, "DISPLAY",phoneInfo.getDisplay());
+            XposedHelpers.setStaticObjectField(Build.class, "BRAND",phoneInfo.getBrand());
+           XposedHelpers.setStaticObjectField(Build.class, "MODEL",phoneInfo.getModel());
+          XposedHelpers.setStaticObjectField(Build.class, "ID",phoneInfo.getBuildId());
+           XposedHelpers.setStaticObjectField(Build.class, "DISPLAY",phoneInfo.getDisplay());
             XposedHelpers.setStaticObjectField(Build.class, "PRODUCT",phoneInfo.getProductName());
             XposedHelpers.setStaticObjectField(Build.class, "MANUFACTURER",phoneInfo.getManufacturer());
             XposedHelpers.setStaticObjectField(Build.class, "DEVICE",phoneInfo.getDevice());
-        XposedHelpers.setStaticObjectField(Build.class, "HARDWARE",phoneInfo.getHardware());
+           XposedHelpers.setStaticObjectField(Build.class, "HARDWARE",phoneInfo.getHardware());
             XposedHelpers.setStaticObjectField(Build.class, "FINGERPRINT",phoneInfo.getFingerprint());
             XposedHelpers.setStaticObjectField(Build.class, "SERIAL",phoneInfo.getSerialno());
-
-        XposedHelpers.setStaticObjectField(Build.class, "BOOTLOADER", "unkown");
+          XposedHelpers.setStaticObjectField(Build.class, "BOOTLOADER", "unkown");
 
     }
+
 
 }

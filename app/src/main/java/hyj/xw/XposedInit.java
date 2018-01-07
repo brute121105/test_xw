@@ -37,7 +37,7 @@ public class XposedInit implements IXposedHookLoadPackage {
         String packageName = lpparam.packageName;
         System.out.println("hyj xw hyj-->"+packageName);
 
-        if("hyj.weixin_008".equals(packageName)){
+        if("hyj.xw".equals(packageName)){
             new Phone(lpparam);
         }
 

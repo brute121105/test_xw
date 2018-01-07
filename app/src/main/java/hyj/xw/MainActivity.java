@@ -7,13 +7,16 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +30,7 @@ import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.PhoneInfo;
 import hyj.xw.service.SmsReciver;
+import hyj.xw.test.GetPhoneInfoUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
@@ -62,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
         });
         //综合参数
         editText = (EditText)findViewById(R.id.ext);
-        editText.setText(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT));
+        String c = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
+        editText.setText(TextUtils.isEmpty(c)?"0":c);
 
         CommonConstant.index = Integer.parseInt(editText.getText().toString());
     }
@@ -111,15 +116,33 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
     public void testMethod(){
+
+        exeShell("rm -r -f /data/data/com.tencent.mm/MicroMsg" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/app_cache" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/app_dex" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/app_font" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/app_lib" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/app_recover_lib" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/app_tbs" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/cache" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/databases" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/face_detect" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/files" );
+        exeShell("rm -r -f /data/data/com.tencent.mm/shared_prefs" );
+        exeShell("rm -r -f /sdcard/tencent" );
+
         int index  = Integer.parseInt(editText.getText().toString());
         System.out.println("index--->"+index);
         PhoneInfo phoneInfo = PhoneConf.createPhoneInfo(index);
         FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(phoneInfo));
         String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
         System.out.println("phoneInfo---->"+con);
-        /*exeShell("pm clear com.tencent.mm" );
+
+        exeShell("pm clear com.tencent.mm" );
         killPro(this, "com.tencent.mm");
-        Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();*/
+        Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();
+
+        GetPhoneInfoUtil.getPhoneInfo();
     }
 
     public static boolean killPro(Context paramContext, String paramString)
