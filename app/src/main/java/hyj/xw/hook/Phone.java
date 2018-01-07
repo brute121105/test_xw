@@ -1,6 +1,7 @@
 package hyj.xw.hook;
 
 import android.content.ContentResolver;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -12,6 +13,10 @@ import java.io.IOException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -33,64 +38,16 @@ public class Phone {
     public Phone(XC_LoadPackage.LoadPackageParam sharePkgParam) {
         classLoader = sharePkgParam.classLoader;
          String jsonStr = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
-        System.out.println("xposed--->"+jsonStr);
          phoneInfo = JSONObject.parseObject(jsonStr,PhoneInfo.class);
+        System.out.println("xposedJS phoneInfo--->"+JSON.toJSONString(phoneInfo));
         //phoneInfo = createInfo();
         hookBuild();
         Telephony(sharePkgParam);
     }
 
-    private PhoneInfo createInfo(){
-        PhoneInfo phoneInfo = new PhoneInfo();
-        phoneInfo.setAndroidId("cc307385e3bf7bcc");
-        phoneInfo.setBrand("Coolpad");
-        phoneInfo.setBuildId("fb7be2db9556");
-        phoneInfo.setDevice("Coolpad 8720L");
-        phoneInfo.setDeviceId("864093024001182");
-        phoneInfo.setDisplay("51e3ce7be76c");
-        phoneInfo.setFingerprint("samsung/ja3gzc/ja3g:4.4.2/KOT49H/I9500ZCUHNH4:user/release-keys");
-        phoneInfo.setHardware("universal5410");
-        phoneInfo.setLineNumber("8970359836");
-        phoneInfo.setManufacturer("Coolpad");
-        phoneInfo.setModel("Coolpad 8720L");
-        phoneInfo.setNetworkCountryIso("cn");
-        phoneInfo.setNetworkOperator("46007");
-        phoneInfo.setNetworkOperatorName("中国移动");
-        phoneInfo.setNetworkType(13);
-        phoneInfo.setPhoneType(1);
-        phoneInfo.setProductName("8720L");
-        phoneInfo.setRelease("6.0");
-        phoneInfo.setSdk("23");
-        phoneInfo.setSerialno("b086ae09");
-        phoneInfo.setSimCountryIso("cn");
-        phoneInfo.setSimOperator("46007");
-        phoneInfo.setSimOperatorName("中国移动");
-        phoneInfo.setSimSerialNumber("89860256460528372004");
-        phoneInfo.setSimState(1);
-        phoneInfo.setSubscriberId("460075646052837");
-        return phoneInfo;
-    }
-
-
-
-
 
 
     public void Telephony(XC_LoadPackage.LoadPackageParam loadPkgParam) {
-
-      /*  for (Method localMethod :TelephonyManager.class.getDeclaredMethods()){
-            System.out.println("watch 1 TelephonyManager localMethod.getNam-->"+localMethod.getName());
-            if (!Modifier.isAbstract(localMethod.getModifiers())){
-                localMethod.setAccessible(true);
-                XposedBridge.hookMethod(localMethod, new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam paramMethodHookParam) throws Throwable {
-                        String str1 = paramMethodHookParam.method.getName();
-                        System.out.println("watch 2 TelephonyManager method--->android.os.Build methodName:" + str1);
-                    }
-                });
-            }
-        }*/
 
         String TelePhone = TelephonyManager.class.getName();
 
@@ -129,6 +86,20 @@ public class Phone {
 
         HookTelephony(TelePhone,loadPkgParam, "getSimState",phoneInfo.getSimState());//手机卡状态
 
+        HookTelephony("android.bluetooth.BluetoothAdapter",loadPkgParam, "getAddress",phoneInfo.getBlueAddress());
+        HookTelephony(NetworkInfo.class.getName(),loadPkgParam, "getExtraInfo","");
+
+        hookMethodRefrectBuild(Build.class.getName(), "getRadioVersion",phoneInfo.getRadioVersion());//可以hook静态方法
+
+        //基站位置、系统架构等未hook
+        // HookTelephony(InetAddress.class.getName(),loadPkgParam, "getHostAddress","127.0.0.1");
+        //HookTelephony(NetworkInterface.class.getName(),loadPkgParam, "getInetAddresses",JSONObject.parseArray("[\"127.0.0.2\"]",InetAddress.class));
+        //HookTelephony(NetworkInterface.class.getName(),loadPkgParam, "getHardwareAddress",getAddressByte("ba8e4f7favvv"));
+        //HookTelephony(NetworkInterface.class.getName(),loadPkgParam, "getName","");
+        //HookTelephony(NetworkInterface.class.getName(),loadPkgParam, "getDisplayName","");
+        // HookTelephony(NetworkInterface.class.getName(),loadPkgParam, "getInterfaceAddresses",JSONObject.parseArray("[{\"address\":\"127.0.0.3\",\"networkPrefixLength\":8}]", InterfaceAddress.class));
+
+
         HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam,"getDeviceId",phoneInfo.getDeviceId());
         HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam, "getImei",phoneInfo.getDeviceId());
         HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam, "getIccSerialNumber",phoneInfo.getSimSerialNumber());
@@ -140,9 +111,123 @@ public class Phone {
         //HookTelephony(TelePhone,loadPkgParam, "getSimState",11);//mac地址
         //HookTelephony(TelePhone,loadPkgParam, "getSimState",11);//无线路由器名称
         //HookTelephony(TelePhone,loadPkgParam, "getSimState",11);//无线路由器地址
+    }
 
+
+   /* private void HookTelephony(String hookClass, XC_LoadPackage.LoadPackageParam loadPkgParam,
+                               String funcName, final String value) {
         try {
+            XposedHelpers.findAndHookMethod(hookClass,
+                    loadPkgParam.classLoader, funcName, new XC_MethodHook() {
 
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param)
+                                throws Throwable {
+                            super.afterHookedMethod(param);
+                            System.out.println("watch31 method--->HookTelephony methodName:"+param.method.getName()+" clsName:"+param.thisObject.toString());
+                            param.setResult(value);
+                        }
+
+                    });
+        } catch (Exception e) {
+
+        }
+    }*/
+    private void HookTelephony(String hookClass, XC_LoadPackage.LoadPackageParam loadPkgParam,
+                               String funcName, final Object value) {
+        try {
+            XposedHelpers.findAndHookMethod(hookClass,
+                    loadPkgParam.classLoader, funcName, new XC_MethodHook() {
+
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param)
+                                throws Throwable {
+                            super.afterHookedMethod(param);
+                            System.out.println("--->watch method--->HookTelephony methodName:"+param.method.getName()+" clsName:"+param.thisObject.toString());
+                            param.setResult(value);
+                        }
+
+                    });
+        } catch (Exception e) {
+
+        }
+    }
+
+    private void hookBuild()
+    {
+            XposedHelpers.setStaticObjectField(Build.VERSION.class, "RELEASE",phoneInfo.getRelease());
+            XposedHelpers.setStaticObjectField(Build.VERSION.class, "SDK",phoneInfo.getSdk());
+            XposedHelpers.setStaticObjectField(Build.class, "BRAND",phoneInfo.getBrand());
+            XposedHelpers.setStaticObjectField(Build.class, "MODEL",phoneInfo.getModel());
+            XposedHelpers.setStaticObjectField(Build.class, "ID",phoneInfo.getBuildId());
+            XposedHelpers.setStaticObjectField(Build.class, "DISPLAY",phoneInfo.getDisplay());
+            XposedHelpers.setStaticObjectField(Build.class, "PRODUCT",phoneInfo.getProductName());
+            XposedHelpers.setStaticObjectField(Build.class, "MANUFACTURER",phoneInfo.getManufacturer());
+            XposedHelpers.setStaticObjectField(Build.class, "DEVICE",phoneInfo.getDevice());
+            XposedHelpers.setStaticObjectField(Build.class, "HARDWARE",phoneInfo.getHardware());
+            XposedHelpers.setStaticObjectField(Build.class, "FINGERPRINT",phoneInfo.getFingerprint());
+            XposedHelpers.setStaticObjectField(Build.class, "SERIAL",phoneInfo.getSerialno());
+            XposedHelpers.setStaticObjectField(Build.class, "BOOTLOADER", "unkown");
+           XposedHelpers.setStaticObjectField(Build.class, "BOOTLOADER", "unkown");
+
+
+
+
+        //008没做的
+        XposedHelpers.setStaticObjectField(Build.class, "TAGS", phoneInfo.getBUILD_TAGS());
+        XposedHelpers.setStaticObjectField(Build.class, "TYPE", phoneInfo.getBUILD_TYPE());
+        XposedHelpers.setStaticObjectField(Build.class, "USER", phoneInfo.getBUILD_USER());
+
+    }
+
+
+
+   /* private static InetAddress getInetAddress(String paramString)
+    {
+        int[] arrayOfInt1 = new int[4];
+        int[] arrayOfInt2 = new int[4];
+        String[] arrayOfString1 = new String[4];
+        byte[] arrayOfByte = new byte[4];
+        String[] arrayOfString2 = paramString.split("\\.");
+        int i = 0;
+        if (i < 4)
+        {
+            arrayOfInt1[i] = Integer.valueOf(arrayOfString2[i]).intValue();
+            if ((arrayOfInt1[i] <= 127) && (arrayOfInt1[i] >= -127))
+                arrayOfInt2[i] = arrayOfInt1[i];
+            while (true)
+            {
+                arrayOfString1[i] = String.valueOf(arrayOfInt2[i]);
+                arrayOfByte[i] = Byte.parseByte(arrayOfString1[i]);
+                i++;
+                break;
+                arrayOfInt2[i] = (-256 + arrayOfInt1[i]);
+            }
+        }
+        try
+        {
+            InetAddress localInetAddress = InetAddress.getByAddress(arrayOfByte);
+            return localInetAddress;
+        }
+        catch (UnknownHostException localUnknownHostException)
+        {
+            localUnknownHostException.printStackTrace();
+        }
+        return null;
+    }*/
+
+    public byte[] getAddressByte(String paramString)
+    {
+        byte[] arrayOfByte = new byte[6];
+        String[] arrayOfString = paramString.split(":");
+        for (int i = 0; i < arrayOfString.length; i++)
+            arrayOfByte[i] = ((byte)Integer.parseInt(arrayOfString[i], 16));
+        return arrayOfByte;
+    }
+
+    //暂时用不到，防止
+    private void hookMay(){
+        try {
             hookBuild("ro.build.version.release",phoneInfo.getRelease());//系统版本 6.0.1
             hookBuild("ro.build.version.sdk",phoneInfo.getSdk());//系统版本值
             hookBuild("ro.product.brand",phoneInfo.getBrand());//品牌
@@ -172,6 +257,9 @@ public class Phone {
                     protected void afterHookedMethod(MethodHookParam paramMethodHookParam) throws Throwable {
                         String str1 = paramMethodHookParam.method.getName();
                         System.out.println("watch11 method--->android.os.Build methodName:"+str1);
+                        if ("getRadioVersion".equals(str1)){
+                            paramMethodHookParam.setResult(phoneInfo.getRadioVersion());
+                        }
                         if ("getString".equals(str1))
                         {
                             String str2 = (String)paramMethodHookParam.args[0];
@@ -235,9 +323,6 @@ public class Phone {
         }
 
 
-
-
-
         for (Method localMethod : XposedHelpers.findClass("android.telephony.MSimTelephonyManager", this.classLoader).getDeclaredMethods()){
             System.out.println("watch2 MSimTelephonyManager localMethod.getNam-->"+localMethod.getName());
             if (!Modifier.isAbstract(localMethod.getModifiers())){
@@ -252,48 +337,25 @@ public class Phone {
             }
         }
 
-
     }
 
-
-    private void HookTelephony(String hookClass, XC_LoadPackage.LoadPackageParam loadPkgParam,
-                               String funcName, final String value) {
-        try {
-            XposedHelpers.findAndHookMethod(hookClass,
-                    loadPkgParam.classLoader, funcName, new XC_MethodHook() {
-
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param)
-                                throws Throwable {
-                            super.afterHookedMethod(param);
-                            System.out.println("watch31 method--->HookTelephony methodName:"+param.method.getName()+" clsName:"+param.thisObject.toString());
-                            param.setResult(value);
-                        }
-
-                    });
-        } catch (Exception e) {
-
+    //方法名hook方法，XposedBridge.hookMethod，不需要知道方法里面有何参数，不需要知道方法里有多少个参数
+    private void hookMethodRefrectBuild(String clsName,String methodName,final Object value){
+        for (Method localMethod : XposedHelpers.findClass(clsName, this.classLoader).getDeclaredMethods()){
+            if ((localMethod.getName().equals(methodName)) && (!Modifier.isAbstract(localMethod.getModifiers()))) {
+                localMethod.setAccessible(true);
+                XposedBridge.hookMethod(localMethod, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam paramMethodHookParam) throws Throwable {
+                        String str1 = paramMethodHookParam.method.getName();
+                        System.out.println("hookMethodRefrect watch11 method--->android.os.Build methodName:"+str1);
+                        paramMethodHookParam.setResult(value);
+                    }
+                });
+            }
         }
     }
-    private void HookTelephony(String hookClass, XC_LoadPackage.LoadPackageParam loadPkgParam,
-                               String funcName, final int value) {
-        try {
-            XposedHelpers.findAndHookMethod(hookClass,
-                    loadPkgParam.classLoader, funcName, new XC_MethodHook() {
 
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param)
-                                throws Throwable {
-                            super.afterHookedMethod(param);
-                            System.out.println("watch32 method--->HookTelephony methodName:"+param.method.getName()+" clsName:"+param.thisObject.toString());
-                            param.setResult(value);
-                        }
-
-                    });
-        } catch (Exception e) {
-
-        }
-    }
 
     private void hookBuild(final String params1 ,final String value){
 
@@ -315,30 +377,44 @@ public class Phone {
                     });
                 }
             }
-
         } catch (ClassNotFoundException e) {
             XposedBridge.log(" DESCRIPTION 错误: " + e.getMessage());
         }
 
     }
 
-    private void hookBuild()
-    {
-            XposedHelpers.setStaticObjectField(Build.VERSION.class, "RELEASE",phoneInfo.getRelease());
-            XposedHelpers.setStaticObjectField(Build.VERSION.class, "SDK",phoneInfo.getSdk());
-            XposedHelpers.setStaticObjectField(Build.class, "BRAND",phoneInfo.getBrand());
-           XposedHelpers.setStaticObjectField(Build.class, "MODEL",phoneInfo.getModel());
-          XposedHelpers.setStaticObjectField(Build.class, "ID",phoneInfo.getBuildId());
-           XposedHelpers.setStaticObjectField(Build.class, "DISPLAY",phoneInfo.getDisplay());
-            XposedHelpers.setStaticObjectField(Build.class, "PRODUCT",phoneInfo.getProductName());
-            XposedHelpers.setStaticObjectField(Build.class, "MANUFACTURER",phoneInfo.getManufacturer());
-            XposedHelpers.setStaticObjectField(Build.class, "DEVICE",phoneInfo.getDevice());
-           XposedHelpers.setStaticObjectField(Build.class, "HARDWARE",phoneInfo.getHardware());
-            XposedHelpers.setStaticObjectField(Build.class, "FINGERPRINT",phoneInfo.getFingerprint());
-            XposedHelpers.setStaticObjectField(Build.class, "SERIAL",phoneInfo.getSerialno());
-          XposedHelpers.setStaticObjectField(Build.class, "BOOTLOADER", "unkown");
-
+    private PhoneInfo createInfo(){
+        PhoneInfo phoneInfo = new PhoneInfo();
+        phoneInfo.setAndroidId("cc307385e3bf7bcc");
+        phoneInfo.setBrand("Coolpad");
+        phoneInfo.setBuildId("fb7be2db9556");
+        phoneInfo.setDevice("Coolpad 8720L");
+        phoneInfo.setDeviceId("864093024001182");
+        phoneInfo.setDisplay("51e3ce7be76c");
+        phoneInfo.setFingerprint("samsung/ja3gzc/ja3g:4.4.2/KOT49H/I9500ZCUHNH4:user/release-keys");
+        phoneInfo.setHardware("universal5410");
+        phoneInfo.setLineNumber("8970359836");
+        phoneInfo.setManufacturer("Coolpad");
+        phoneInfo.setModel("Coolpad 8720L");
+        phoneInfo.setNetworkCountryIso("cn");
+        phoneInfo.setNetworkOperator("46007");
+        phoneInfo.setNetworkOperatorName("中国移动");
+        phoneInfo.setNetworkType(13);
+        phoneInfo.setPhoneType(1);
+        phoneInfo.setProductName("8720L");
+        phoneInfo.setRelease("6.0");
+        phoneInfo.setSdk("23");
+        phoneInfo.setSerialno("b086ae09");
+        phoneInfo.setSimCountryIso("cn");
+        phoneInfo.setSimOperator("46007");
+        phoneInfo.setSimOperatorName("中国移动");
+        phoneInfo.setSimSerialNumber("89860256460528372004");
+        phoneInfo.setSimState(1);
+        phoneInfo.setSubscriberId("460075646052837");
+        return phoneInfo;
     }
+
+
 
 
 }

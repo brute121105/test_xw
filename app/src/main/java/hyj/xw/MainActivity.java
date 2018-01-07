@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         autoLoginBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                GetPhoneInfoUtil.getPhoneInfo();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
             }
         });
@@ -136,13 +137,11 @@ public class MainActivity extends AppCompatActivity {
         PhoneInfo phoneInfo = PhoneConf.createPhoneInfo(index);
         FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(phoneInfo));
         String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
-        System.out.println("phoneInfo---->"+con);
+        System.out.println("写入文件后读取phoneInfo---->"+con);
 
         exeShell("pm clear com.tencent.mm" );
         killPro(this, "com.tencent.mm");
         Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();
-
-        GetPhoneInfoUtil.getPhoneInfo();
     }
 
     public static boolean killPro(Context paramContext, String paramString)

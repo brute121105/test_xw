@@ -3,11 +3,13 @@ package hyj.xw.util;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +53,7 @@ public class FileUtil {
         createFile2Path(filePathName,fileName);
         String strFilePath = filePathName+fileName;
         try {
-            File file = new File(strFilePath);
-            FileWriter fw = new FileWriter(file,false); //设置成true就是追加
+            BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream (strFilePath,false),"gbk"));//设置成true就是追加 false 覆盖
             fw.write(strcontent);
             fw.close();
         } catch (Exception e) {

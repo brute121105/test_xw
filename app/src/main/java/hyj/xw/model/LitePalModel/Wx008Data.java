@@ -57,6 +57,19 @@ public class Wx008Data  {
 
         phoneInfo.setRelease(strs[37+i]);
         phoneInfo.setSdk(strs[39+i]);
+
+        //系统架构
+        String xtjg = strs[41+i];
+        if(xtjg.contains("_")){
+            String[] xtjgs = xtjg.split("_");
+            if(xtjgs!=null&&xtjgs.length==2){
+                phoneInfo.setCPU_ABI(xtjgs[0]);
+                phoneInfo.setCPU_ABI2(xtjgs[1]);
+            }
+        }
+
+        phoneInfo.setRadioVersion(strs[45+i]);//固定版本
+
         phoneInfo.setBrand(strs[47+i]);
         phoneInfo.setModel(strs[49+i]);
         phoneInfo.setBuildId(strs[51+i]);
@@ -68,7 +81,29 @@ public class Wx008Data  {
         phoneInfo.setHardware(strs[63+i]);
         phoneInfo.setFingerprint(strs[65+i]);
         phoneInfo.setSerialno(strs[67+i]);
+        phoneInfo.setBlueAddress(strs[69+i]);
 
+
+        String tags = createTags();
+        phoneInfo.setBUILD_TAGS(tags);
+        phoneInfo.setBUILD_TYPE(tags);
+        phoneInfo.setBUILD_USER(tags);
+
+    }
+
+
+    private  String createTags() {
+        String str = "";
+        for(int i=0;i<12;i++){
+            str = str+getRandomAbc();
+        }
+        return str;
+
+    }
+    private  String getRandomAbc() {
+        String chars = "abcdgijktuxyz12365987";
+        String str = chars.charAt((int)(Math.random() * 20))+"";
+        return str;
     }
 
     public PhoneInfo getPhoneInfo() {
