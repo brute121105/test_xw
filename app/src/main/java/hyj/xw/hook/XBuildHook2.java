@@ -1,10 +1,7 @@
 package hyj.xw.hook;
 
-import android.content.ContentResolver;
 import android.os.Build;
 import android.provider.Settings;
-
-import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;

@@ -6,13 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import hyj.xw.common.CommonConstant;
-import hyj.xw.dao.AppConfigDao;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.OkHttpUtil;
 

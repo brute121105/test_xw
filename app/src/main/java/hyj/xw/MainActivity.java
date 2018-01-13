@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,12 +30,13 @@ import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.PhoneInfo;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.test.GetPhoneInfoUtil;
+import hyj.xw.thread.SendDataThread;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.OkHttpUtil;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     EditText editText;
 
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         autoLoginBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                testMethod1();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
             }
         });
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         String c = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
         editText.setText(TextUtils.isEmpty(c)?"0":c);
 
-        CommonConstant.index = Integer.parseInt(editText.getText().toString());
     }
 
 
@@ -200,7 +200,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void testMethod1(){
+
+        new Thread(new SendDataThread("dbadf668")).start();
+
+    }
 
 
-
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.action_settings) {
+        }
+    }
 }

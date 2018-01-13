@@ -2,10 +2,11 @@
 <litepal>
     <dbname value="test_xw_db" ></dbname>
     <!--modeld对象增加属性后必须记得修改版本号，否则数据保存不成功-->
-    <version value="4" ></version>
+    <version value="5" ></version>
 
     <list>
         <mapping class="hyj.xw.model.LitePalModel.WxNode"></mapping>
         <mapping class="hyj.xw.model.LitePalModel.AppConfig"></mapping>
+        <mapping class="hyj.xw.model.LitePalModel.PyqData"></mapping>
     </list>
 </litepal>

@@ -3,9 +3,7 @@ package hyj.xw.model.LitePalModel;
 
 import com.alibaba.fastjson.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import hyj.xw.model.PhoneInfo;
 

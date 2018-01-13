@@ -1,27 +1,9 @@
 package hyj.xw;
 
-import android.os.Bundle;
-import android.widget.EditText;
-
-import com.alibaba.fastjson.JSON;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import hyj.xw.conf.PhoneConf;
-import hyj.xw.hook.BeginHook;
 import hyj.xw.hook.Phone;
-import hyj.xw.hook.TechnologyHook;
-import hyj.xw.hook.XBuildHook;
-import hyj.xw.hook.XBuildHook2;
-import hyj.xw.model.PhoneInfo;
-
-import static de.robv.android.xposed.XposedBridge.log;
+import hyj.xw.hook.util.HookWxUtil;
 
 /**
  * XposedInit
@@ -41,12 +23,14 @@ public class XposedInit implements IXposedHookLoadPackage {
             new Phone(lpparam);
         }
 
-        if(packageName.equals(PACKAGE_NAME)){
+       /* if(packageName.equals(PACKAGE_NAME)){
             System.out.println("--->"+PACKAGE_NAME);
              new Phone(lpparam);
-           // PhoneInfo phoneInfo = PhoneConf.createPhoneInfo();
-            //PhoneInfo phoneInfo = new PhoneInfo();
-            //BeginHook.hk(lpparam,phoneInfo);
+
+        }*/
+
+        if(packageName.equals(PACKAGE_NAME)){
+            HookWxUtil.hoodPyq(lpparam);
         }
 
 

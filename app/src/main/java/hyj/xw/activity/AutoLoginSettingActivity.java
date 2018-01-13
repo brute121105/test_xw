@@ -1,13 +1,11 @@
 package hyj.xw.activity;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import hyj.xw.MainActivity;
 import hyj.xw.R;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;

@@ -1,7 +1,5 @@
 package hyj.xw.hook;
 
-import android.text.TextUtils;
-
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import hyj.xw.model.PhoneInfo;

@@ -8,7 +8,6 @@ import java.util.Map;
 import hyj.xw.BaseThread;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.LogUtil;
-import hyj.xw.util.ParseRootUtil;
 
 /**
  * Created by Administrator on 2017/12/14.

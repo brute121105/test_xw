@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@android:style/Theme.Black.NoTitleBar"
-    tools:context="hyj.xw.activity.AutoLoginSettingActivity">
+    tools:context=".activity.AutoLoginSettingActivity">
     <EditText
         android:id="@+id/appconfig_accounts"
         android:layout_width="fill_parent"

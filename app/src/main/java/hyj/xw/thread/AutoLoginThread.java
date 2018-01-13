@@ -3,9 +3,6 @@ package hyj.xw.thread;
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
