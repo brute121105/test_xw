@@ -35,6 +35,70 @@ public class PhoneInfo {
     private String hardware;//硬件
     private String fingerprint;//指纹
     private String serialno;//串口序列号；;
+    private String blueAddress;//蓝牙地址
+    private String CPU_ABI;//系统架构1
+    private String CPU_ABI2;//系统架构2
+    private String radioVersion;//固定版本
+
+    private String BUILD_TAGS;
+    private String BUILD_TYPE;
+    private String BUILD_USER;
+
+    public String getBUILD_TAGS() {
+        return BUILD_TAGS;
+    }
+
+    public void setBUILD_TAGS(String BUILD_TAGS) {
+        this.BUILD_TAGS = BUILD_TAGS;
+    }
+
+    public String getBUILD_USER() {
+        return BUILD_USER;
+    }
+
+    public void setBUILD_USER(String BUILD_USER) {
+        this.BUILD_USER = BUILD_USER;
+    }
+
+    public String getBUILD_TYPE() {
+        return BUILD_TYPE;
+    }
+
+    public void setBUILD_TYPE(String BUILD_TYPE) {
+        this.BUILD_TYPE = BUILD_TYPE;
+    }
+
+    public String getCPU_ABI() {
+        return CPU_ABI;
+    }
+
+    public void setCPU_ABI(String CPU_ABI) {
+        this.CPU_ABI = CPU_ABI;
+    }
+
+    public String getCPU_ABI2() {
+        return CPU_ABI2;
+    }
+
+    public void setCPU_ABI2(String CPU_ABI2) {
+        this.CPU_ABI2 = CPU_ABI2;
+    }
+
+    public String getRadioVersion() {
+        return radioVersion;
+    }
+
+    public void setRadioVersion(String radioVersion) {
+        this.radioVersion = radioVersion;
+    }
+
+    public String getBlueAddress() {
+        return blueAddress;
+    }
+
+    public void setBlueAddress(String blueAddress) {
+        this.blueAddress = blueAddress;
+    }
 
     public String getDeviceId() {
         return deviceId;
