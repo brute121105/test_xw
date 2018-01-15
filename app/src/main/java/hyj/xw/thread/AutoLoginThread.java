@@ -10,6 +10,7 @@ import java.util.Map;
 import hyj.xw.BaseThread;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;
+import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.NodeActionUtil;
@@ -24,7 +25,7 @@ public class AutoLoginThread  extends BaseThread {
     private  int SendMsgNum;
     public  final String TAG = this.getClass().getSimpleName();
     List<String> chatWxids = new ArrayList<String>();
-    public AutoLoginThread(AccessibilityService context,Map<String, String> record,Map<String,Object> parameters){
+    public AutoLoginThread(AccessibilityService context,Map<String, String> record,AccessibilityParameters parameters){
         super(context,record,parameters);
         AutoUtil.recordAndLog(record,"init");
         chatWxids.add("mm77375");
@@ -42,7 +43,11 @@ public class AutoLoginThread  extends BaseThread {
             try {
             AutoUtil.sleep(1500);
             LogUtil.d(TAG,Thread.currentThread().getName());
-                AutoUtil.wake();
+            if(parameters.getIsStop()==1){
+                LogUtil.d(TAG,"暂停....");
+                continue;
+            }
+            AutoUtil.wake();
 
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){
@@ -60,6 +65,7 @@ public class AutoLoginThread  extends BaseThread {
                 LogUtil.d(TAG,"not in the weixin view getPackageName2:"+root.getPackageName());
                 AutoUtil.startWx();
             }
+                NodeActionUtil.doClickByNodePathAndText(root,"微信无响应。要将其关闭吗？|确定","01","等待",record,"exception",500);
 
             ParseRootUtil.debugRoot(root);
              //ParseRootUtil.getCurrentViewAllNode(root);

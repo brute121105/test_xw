@@ -5,6 +5,7 @@ import android.accessibilityservice.AccessibilityService;
 import java.util.Map;
 
 import hyj.xw.BaseThread;
+import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.thread.AutoLoginThread;
 import hyj.xw.thread.TestThread;
 
@@ -14,7 +15,7 @@ import hyj.xw.thread.TestThread;
 
 public class ThreadFactory {
 
-    public static BaseThread getThread(String name, AccessibilityService context, Map<String,String> record,Map<String,Object> parameters){
+    public static BaseThread getThread(String name, AccessibilityService context, Map<String,String> record,AccessibilityParameters parameters){
         switch (name){
             case "login":
                 return new AutoLoginThread(context,record,parameters);

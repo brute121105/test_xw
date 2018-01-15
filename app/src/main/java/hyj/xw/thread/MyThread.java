@@ -6,6 +6,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.Map;
 
 import hyj.xw.BaseThread;
+import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.LogUtil;
 
@@ -16,7 +17,7 @@ import hyj.xw.util.LogUtil;
 public class MyThread extends BaseThread {
 
     public  final String TAG = this.getClass().getSimpleName();
-    public MyThread(AccessibilityService context, Map<String, String> record,Map<String,Object> parameters){
+    public MyThread(AccessibilityService context, Map<String, String> record,AccessibilityParameters parameters){
         super(context,record,parameters);
     }
     @Override

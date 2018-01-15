@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:canRetrieveWindowContent="true"
-    android:accessibilityEventTypes="typeWindowContentChanged|typeWindowStateChanged|typeViewLongClicked|typeViewScrolled|typeViewClicked"
+    android:accessibilityEventTypes="typeWindowContentChanged|typeWindowStateChanged"
     android:accessibilityFeedbackType="feedbackGeneric"
-    android:accessibilityFlags="flagDefault"
+    android:accessibilityFlags="flagRequestFilterKeyEvents"
     android:notificationTimeout="100"
     android:canRequestFilterKeyEvents="true"
     android:packageNames="com.soft.apk008v,com.tencent.mm"
