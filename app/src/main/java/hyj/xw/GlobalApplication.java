@@ -31,4 +31,5 @@ public class GlobalApplication extends Application {
     public static ContentResolver getResolver(){
         return resolver;
     }
+
 }

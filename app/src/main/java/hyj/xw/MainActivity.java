@@ -1,13 +1,17 @@
 package hyj.xw;
 
 import android.app.ActivityManager;
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,6 +35,7 @@ import hyj.xw.model.PhoneInfo;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.test.GetPhoneInfoUtil;
 import hyj.xw.thread.SendDataThread;
+import hyj.xw.util.AutoUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
@@ -51,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         openAssitBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                testMethod();
                 startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                 //Toast.makeText(MainActivity.this, "打开启权限，才能运行", Toast.LENGTH_LONG).show();
             }
@@ -69,6 +73,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editText = (EditText)findViewById(R.id.ext);
         String c = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
         editText.setText(TextUtils.isEmpty(c)?"0":c);
+
+
+        //System.out.println("is screen isScreenOn--->"+AutoUtil.isScreenOn());
+        AutoUtil.wake();
 
     }
 
@@ -202,7 +210,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void testMethod1(){
 
-        new Thread(new SendDataThread("dbadf668")).start();
 
     }
 
@@ -211,5 +218,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         if (view.getId() == R.id.action_settings) {
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        LogUtil.d("keyCode",keyCode+"");
+        return super.onKeyDown(keyCode, event);
     }
 }

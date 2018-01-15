@@ -42,6 +42,7 @@ public class AutoLoginThread  extends BaseThread {
             try {
             AutoUtil.sleep(1500);
             LogUtil.d(TAG,Thread.currentThread().getName());
+                AutoUtil.wake();
 
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){
@@ -61,8 +62,8 @@ public class AutoLoginThread  extends BaseThread {
             }
 
             ParseRootUtil.debugRoot(root);
-            //ParseRootUtil.getCurrentViewAllNode(root);
-             autoChat(root,record,chatWxids.get(autoChatWxidIndex));
+             //ParseRootUtil.getCurrentViewAllNode(root);
+             //autoChat(root,record,chatWxids.get(autoChatWxidIndex));
              autoLogin(root,record);
             }catch (Exception e){
               LogUtil.logError(e);
@@ -96,7 +97,7 @@ public class AutoLoginThread  extends BaseThread {
     }
 
     public void autoLogin(AccessibilityNodeInfo root,Map<String,String> record){
-        if(AutoUtil.actionContains(record,"autoLogin")){
+        if(AutoUtil.actionContains(record,"autoLogin")||AutoUtil.actionContains(record,"init")||AutoUtil.actionContains(record,"autoChat")){
             if(AutoUtil.checkAction(record,"autoLogin8点击微信号/QQ号/邮箱登录")||loginIndex==-1){
                 loginIndex = (loginIndex==acts.size()-1)?0:(loginIndex+1);
             }
@@ -114,17 +115,18 @@ public class AutoLoginThread  extends BaseThread {
         NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","040","我",record,"autoLogin1点击我",500);
         NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","00490","设置",record,"autoLogin2点击设置");
         NodeActionUtil.doClickByNodePathAndText(root,"勿扰模式|帐号与安全","002120","退出",record,"autoLogin3点击退出1");
-        NodeActionUtil.doClickByNodePathAndText(root,"退出当前帐号|关闭微信","0000","退出当前帐号",record,"autoLogin4点击退出2");
+        NodeActionUtil.doClickByNodePathAndText(root,"退出登录|关闭微信","0000","退出登录",record,"autoLogin4点击退出2");
         NodeActionUtil.doClickByNodePathAndText(root,"取消|退出后不会删除","02","退出",record,"autoLogin5点击退出3");
-        NodeActionUtil.doClickByNodePathAndText(root,"密码|登录","01",null,record,"autoLogin6点击更多");
-        NodeActionUtil.doClickByNodePathAndText(root,"找回密码|微信安全中心","01000","切换帐号",record,"autoLogin7点击切换帐号");
+        NodeActionUtil.doClickByNodePathAndText(root,"找回密码|紧急冻结|密码","05","更多",record,"autoLogin6点击更多");
+        NodeActionUtil.doClickByNodePathAndText(root,"注册|微信安全中心","01000","切换帐号",record,"autoLogin7点击切换帐号");
         NodeActionUtil.doClickByNodePathAndText(root,"请填写手机号|手机号登录","0033","用微信号/QQ号/邮箱登录",record,"autoLogin8点击微信号/QQ号/邮箱登录");
         boolean flag = false;
         if(!AutoUtil.checkAction(record,"autoLogin11点击登录")){
-            NodeActionUtil.doInputByNodePathAndText(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录","00311",wxid,record,"autoLogin9输入微信号",500);
-            NodeActionUtil.doInputByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","00321",pwd,record,"autoLogin10输入密码",1000);
-            flag =  NodeActionUtil.doClickByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","0034","登录",record,"autoLogin11点击登录",3000);
+            NodeActionUtil.doInputByNodePathAndText(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录","00211",wxid,record,"autoLogin9输入微信号",500);
+            NodeActionUtil.doInputByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","00221",pwd,record,"autoLogin10输入密码",1000);
+            flag =  NodeActionUtil.doClickByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","0024","登录",record,"autoLogin11点击登录",3000);
         }
+        NodeActionUtil.doClickByNodePathAndText(root,"玩一个小游戏才是正经事|开始游戏","0020","进入微信",record,"autoLogin12进入微信",500);
         return flag;
     }
     //自动聊天配置

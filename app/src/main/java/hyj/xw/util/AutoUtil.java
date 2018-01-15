@@ -310,6 +310,7 @@ public class AutoUtil {
             wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "bright");
             //点亮屏幕
             wl.acquire();
+
             //得到键盘锁管理器对象
             km= (KeyguardManager)GlobalApplication.getContext().getSystemService(Context.KEYGUARD_SERVICE);
             kl = km.newKeyguardLock("unLock");
@@ -320,10 +321,54 @@ public class AutoUtil {
         }
 
     }
+
+    public  static void  wake()
+    {
+        PowerManager pm;
+        PowerManager.WakeLock wl;
+        if(!isScreenOn())
+        {
+            System.out.println("--->点亮锁屏");
+            //获取电源管理器对象
+            pm=(PowerManager) GlobalApplication.getContext().getSystemService(Context.POWER_SERVICE);
+            //获取PowerManager.WakeLock对象，后面的参数|表示同时传入两个值，最后的是调试用的Tag
+            wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "bright");
+            //点亮屏幕
+            wl.acquire();
+            //wl.release();
+        }else {
+            System.out.println("--->已经是亮屏");
+        }
+
+    }
+    public  static void  lock()
+    {
+        PowerManager pm;
+        PowerManager.WakeLock wl;
+        if(isScreenOn())
+        {
+            System.out.println("--->熄灭锁屏");
+            //获取电源管理器对象
+            pm=(PowerManager) GlobalApplication.getContext().getSystemService(Context.POWER_SERVICE);
+            //获取PowerManager.WakeLock对象，后面的参数|表示同时传入两个值，最后的是调试用的Tag
+            wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "bright");
+            //点亮屏幕
+            wl.acquire();
+            wl.release();
+        }else {
+            System.out.println("--->已经是熄灭锁屏");
+        }
+
+    }
     public final static boolean isScreenLocked() {
         KeyguardManager mKeyguardManager = (KeyguardManager) GlobalApplication.getContext().getSystemService(GlobalApplication.getContext().KEYGUARD_SERVICE);
         //PowerManager pm = (PowerManager)  GlobalApplication.getContext().getSystemService(Context.POWER_SERVICE);
         return mKeyguardManager.inKeyguardRestrictedInputMode();
+    }
+
+    public final static boolean isScreenOn() {
+        PowerManager powerManager = (PowerManager) GlobalApplication.getContext().getSystemService(Context.POWER_SERVICE);
+        return powerManager.isScreenOn();
     }
 
     public static String getIPAddress(Context context) {
@@ -392,6 +437,10 @@ public class AutoUtil {
         list.add("出发了");
         list.add("可以没有");
         return list;
+    }
+
+    public static void  stopApp(String packageName){
+        execShell("am force-stop "+packageName);
     }
 
 
