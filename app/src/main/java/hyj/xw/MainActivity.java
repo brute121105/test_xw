@@ -1,13 +1,10 @@
 package hyj.xw;
 
 import android.app.ActivityManager;
-import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.PowerManager;
-import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -34,7 +31,6 @@ import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.PhoneInfo;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.test.GetPhoneInfoUtil;
-import hyj.xw.thread.SendDataThread;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
@@ -209,8 +205,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public void testMethod1(){
-
-
+           System.out.println("--file dir-->");
+           System.out.println("--file dir-->"+this.getFilesDir().getPath());
+        //FileUtil.copyFolder(srcFile,destFile);
+        //localConnectivityManager.setAirplaneMode(false);
     }
 
 
