@@ -23,15 +23,15 @@ public class XposedInit implements IXposedHookLoadPackage {
             new Phone(lpparam);
         }
 
-       /* if(packageName.equals(PACKAGE_NAME)){
-            System.out.println("--->"+PACKAGE_NAME);
+       if(packageName.equals(PACKAGE_NAME)){
+             System.out.println("--->"+PACKAGE_NAME);
              new Phone(lpparam);
-
-        }*/
-
-        if(packageName.equals(PACKAGE_NAME)){
-            HookWxUtil.hoodPyq(lpparam);
         }
+
+        //抓取朋友圈数据
+       /* if(packageName.equals(PACKAGE_NAME)){
+            HookWxUtil.hoodPyq(lpparam);
+        }*/
 
 
          /* XposedHelpers.findAndHookMethod("hyj.weixin_008.MainActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {

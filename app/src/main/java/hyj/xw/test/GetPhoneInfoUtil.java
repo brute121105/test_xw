@@ -113,11 +113,11 @@ public class GetPhoneInfoUtil {
         System.out.println(tag+"--->指纹 FINGERPRINT->"+FINGERPRINT);
         System.out.println(tag+"--->串口序列号 SERIAL->"+SERIAL);
 
-        ConnectivityManager connectivity = (ConnectivityManager)GlobalApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        /*ConnectivityManager connectivity = (ConnectivityManager)GlobalApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         String subTypeName = connectivity.getActiveNetworkInfo().getSubtypeName();
         int subtype = connectivity.getActiveNetworkInfo().getSubtype();
         System.out.println(tag+"--->subTypeName->"+subTypeName);
-        System.out.println(tag+"--->subtype->"+subtype);
+        System.out.println(tag+"--->subtype->"+subtype);*/
 
         getHideInfo();
     }

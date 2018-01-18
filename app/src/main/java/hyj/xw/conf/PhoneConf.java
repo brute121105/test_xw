@@ -27,7 +27,10 @@ public class PhoneConf {
    public static PhoneInfo createPhoneInfo(int index){
        System.out.println("str-->" + str);
        List<Wx008Data> datas = JSON.parseArray(str, Wx008Data.class);
+       int i=0;
        for(Wx008Data data:datas){
+           System.out.println("datas-->"+data.getCnNum()+" "+data.getPhone()+" "+i);
+           i = i+1;
            data.setPhoneInfo(data.getDatas());
        }
        Wx008Data wx008Data = datas.get(index);

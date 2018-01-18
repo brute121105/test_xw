@@ -28,7 +28,7 @@ public class Phone {
     public Phone(XC_LoadPackage.LoadPackageParam sharePkgParam) {
         classLoader = sharePkgParam.classLoader;
          String jsonStr = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
-        System.out.println("xposed--->"+jsonStr);
+         System.out.println("xposed--->"+jsonStr);
          phoneInfo = JSONObject.parseObject(jsonStr,PhoneInfo.class);
         //phoneInfo = createInfo();
         hookBuild();

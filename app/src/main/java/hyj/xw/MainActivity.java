@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         autoLoginBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                testMethod1();
+                testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
             }
         });
