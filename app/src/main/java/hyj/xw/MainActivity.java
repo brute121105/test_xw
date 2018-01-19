@@ -8,10 +8,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -28,10 +31,10 @@ import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.LitePalModel.AppConfig;
-import hyj.xw.model.PhoneInfo;
+import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.test.GetPhoneInfoUtil;
-import hyj.xw.util.AutoUtil;
+import hyj.xw.util.DaoUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
@@ -40,40 +43,68 @@ import hyj.xw.util.OkHttpUtil;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     EditText editText;
+    CheckBox isFeedCheckBox;
+
+    private String[] phoneStrs;
+    private Spinner spinner;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         GetPermissionUtil.getReadAndWriteContactPermision(this,MainActivity.this);
 
-        Button openAssitBtn = (Button)this.findViewById(R.id.open_assist);
-        openAssitBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-                //Toast.makeText(MainActivity.this, "打开启权限，才能运行", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        Button autoLoginBtn = (Button)this.findViewById(R.id.auto_login);
-        autoLoginBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                testMethod();
-                startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
-            }
-        });
+        //养号
+        isFeedCheckBox = (CheckBox)this.findViewById(R.id.isFeed);
+        isFeedCheckBox.setOnClickListener(this);
+        isFeedCheckBox.setChecked("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_FEED))?true:false);
         //综合参数
         editText = (EditText)findViewById(R.id.ext);
         String c = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
         editText.setText(TextUtils.isEmpty(c)?"0":c);
 
+       /*
+        下拉框数据开始
+        */
+        phoneStrs = PhoneConf.getAllPhoneList();
+        spinner = (Spinner) findViewById(R.id.Spinner01);
+        //将可选内容与ArrayAdapter连接起来
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, phoneStrs);
+        //设置下拉列表的风格
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //将adapter 添加到spinner中
+        spinner.setAdapter(adapter);
+        //添加事件Spinner事件监听
+        spinner.setOnItemSelectedListener(new SpinnerSelectedListener());
+        //设置默认值
+        spinner.setVisibility(View.VISIBLE);
+         /*
+        下拉框数据结束
+        */
 
-        //System.out.println("is screen isScreenOn--->"+AutoUtil.isScreenOn());
-        AutoUtil.wake();
+        Button openAssitBtn = (Button)this.findViewById(R.id.open_assist);
+        Button autoLoginBtn = (Button)this.findViewById(R.id.auto_login);
+        Button importBakDataBtn = (Button)this.findViewById(R.id.importBakData);
+        Button clearAppDataBtn = (Button)this.findViewById(R.id.clearAppData);
+        openAssitBtn.setOnClickListener(this);
+        autoLoginBtn.setOnClickListener(this);
+        importBakDataBtn.setOnClickListener(this);
+        clearAppDataBtn.setOnClickListener(this);
 
+    }
+
+
+    //使用数组形式操作
+    class SpinnerSelectedListener implements AdapterView.OnItemSelectedListener {
+        public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+            String spinnerValue = phoneStrs[arg2];
+            //截取spiiner的手机号保存到数据库
+            String phone = spinnerValue.substring(spinnerValue.indexOf("-")+1,spinnerValue.indexOf(" "));
+            AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGINACCOUNT,phone);
+        }
+        public void onNothingSelected(AdapterView<?> arg0) {
+        }
     }
 
 
@@ -107,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void save(){
         AppConfig config = new AppConfig(CommonConstant.APPCONFIG_EXT,editText.getText().toString());
         AppConfigDao.saveOrUpdate(config);
+
     }
     @Override
     protected void onStop() {
@@ -120,6 +152,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod(){
+        GetPhoneInfoUtil.getPhoneInfo();
+    }
+
+    public void clearAppData(){
+
+        exeShell("am force-stop com.tencent.mm" );
+        killPro(this, "com.tencent.mm");
+        exeShell("pm clear com.tencent.mm" );
 
         exeShell("rm -r -f /data/data/com.tencent.mm/MicroMsg" );
         exeShell("rm -r -f /data/data/com.tencent.mm/app_cache" );
@@ -134,19 +174,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         exeShell("rm -r -f /data/data/com.tencent.mm/files" );
         exeShell("rm -r -f /data/data/com.tencent.mm/shared_prefs" );
         exeShell("rm -r -f /sdcard/tencent" );
+        Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();
 
-        int index  = Integer.parseInt(editText.getText().toString());
-        System.out.println("index--->"+index);
-        PhoneInfo phoneInfo = PhoneConf.createPhoneInfo(index);
-        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(phoneInfo));
+        String phone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGINACCOUNT);
+        Wx008Data wx008Data = DaoUtil.findByPhone(phone);
+        wx008Data.setPhoneInfo(wx008Data.getDatas());
+
+        //覆盖式写入文件
+        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(wx008Data.getPhoneInfo()));
+        //读取文件
         String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
         System.out.println("phoneInfo---->"+con);
 
-        exeShell("pm clear com.tencent.mm" );
-        killPro(this, "com.tencent.mm");
-        Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();
-
-        GetPhoneInfoUtil.getPhoneInfo();
     }
 
     public static boolean killPro(Context paramContext, String paramString)
@@ -214,13 +253,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.action_settings) {
+        System.out.println("vie --clic000--->"+view.getId());
+        switch (view.getId()){
+            case R.id.importBakData:
+                //Toast.makeText(this, "已删除：" + DaoUtil.deleteAll() + "条", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "已导入数据：" + PhoneConf.importData() + "条", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.auto_login:
+                testMethod();
+                startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
+                break;
+            case R.id.open_assist:
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                break;
+            case R.id.clearAppData:
+                clearAppData();
+                break;
+            case R.id.isFeed:
+                System.out.println("isFeedCheckBox.isChecked()-->"+isFeedCheckBox.isChecked());
+                AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_FEED,isFeedCheckBox.isChecked()?"1":"0");
+                break;
         }
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        LogUtil.d("keyCode",keyCode+"");
-        return super.onKeyDown(keyCode, event);
-    }
+
 }

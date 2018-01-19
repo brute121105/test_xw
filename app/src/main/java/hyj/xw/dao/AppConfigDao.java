@@ -70,4 +70,21 @@ public class AppConfigDao {
         }
 
     }
+
+    //修改操作，以configCode为查询条件
+    public static void saveOrUpdate(String configCode, String configContent){
+        AppConfig config = new AppConfig(configCode,configContent);
+        List<AppConfig> configs =  DataSupport.where("configCode=?",config.getConfigCode()).find(AppConfig.class);
+        if(configs!=null&&configs.size()==1){
+            config.setModifyTime(new Date());
+            int updateCount = config.updateAll("configCode=?",config.getConfigCode());
+            System.out.println(TAG+" update success ,count:"+updateCount+" config:"+JSON.toJSONString(config));
+        }else{
+            config.setCreateTime(new Date());
+            if(config.save()){
+                System.out.println(TAG+" save success:"+" config:"+JSON.toJSONString(config));
+            }
+        }
+
+    }
 }

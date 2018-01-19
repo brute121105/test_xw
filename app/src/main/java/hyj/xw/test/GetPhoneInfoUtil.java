@@ -1,11 +1,9 @@
 package hyj.xw.test;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -47,6 +45,9 @@ public class GetPhoneInfoUtil {
    }
 
     public static void getPhoneInfo(){
+
+        //getHideInfo();
+
         TelephonyManager phone = (TelephonyManager) GlobalApplication.getContext().getSystemService(Context.TELEPHONY_SERVICE);
         String deviceId = phone.getDeviceId(); //序列号
         String tel = phone.getLine1Number();//手机号码
@@ -119,7 +120,6 @@ public class GetPhoneInfoUtil {
         System.out.println(tag+"--->subTypeName->"+subTypeName);
         System.out.println(tag+"--->subtype->"+subtype);*/
 
-        getHideInfo();
     }
 
     // Mac地址

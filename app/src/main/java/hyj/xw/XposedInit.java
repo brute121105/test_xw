@@ -3,7 +3,6 @@ package hyj.xw;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import hyj.xw.hook.Phone;
-import hyj.xw.hook.util.HookWxUtil;
 
 /**
  * XposedInit
@@ -20,6 +19,9 @@ public class XposedInit implements IXposedHookLoadPackage {
         System.out.println("hyj xw hyj-->"+packageName);
 
         if("hyj.xw".equals(packageName)){
+            new Phone(lpparam);
+        }
+        if("hyj.weixin_008".equals(packageName)){
             new Phone(lpparam);
         }
 

@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import hyj.xw.common.CommonConstant;
+import hyj.xw.dao.AppConfigDao;
 import hyj.xw.factory.ThreadFactory;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.util.AutoUtil;
@@ -28,8 +30,12 @@ public class ActionService  extends AccessibilityService {
         super.onServiceConnected();
         parameters.setIsStop(0);
         //executorService.submit(ThreadFactory.getThread("test",this,record,parameters));
-        executorService.submit(ThreadFactory.getThread("login",this,record,parameters));
+        //executorService.submit(ThreadFactory.getThread("login",this,record,parameters));
         //AutoUtil.startWx();
+        if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_FEED))){
+            executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
+            AutoUtil.startWx();
+        }
     }
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {

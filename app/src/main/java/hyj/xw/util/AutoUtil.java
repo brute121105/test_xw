@@ -445,5 +445,29 @@ public class AutoUtil {
         execShell("am force-stop "+packageName);
     }
 
+    public static void clearAppData(){
+        execShell("am force-stop com.tencent.mm" );
+        execShell("pm clear com.tencent.mm" );
+        execShell("rm -r -f /data/data/com.tencent.mm/MicroMsg" );
+        execShell("rm -r -f /data/data/com.tencent.mm/app_cache" );
+        execShell("rm -r -f /data/data/com.tencent.mm/app_dex" );
+        execShell("rm -r -f /data/data/com.tencent.mm/app_font" );
+        execShell("rm -r -f /data/data/com.tencent.mm/app_lib" );
+        execShell("rm -r -f /data/data/com.tencent.mm/app_recover_lib" );
+        execShell("rm -r -f /data/data/com.tencent.mm/app_tbs" );
+        execShell("rm -r -f /data/data/com.tencent.mm/cache" );
+        execShell("rm -r -f /data/data/com.tencent.mm/databases" );
+        execShell("rm -r -f /data/data/com.tencent.mm/face_detect" );
+        execShell("rm -r -f /data/data/com.tencent.mm/files" );
+        execShell("rm -r -f /data/data/com.tencent.mm/shared_prefs" );
+        execShell("rm -r -f /sdcard/tencent" );
+    }
+
+    //开启-休眠ms-关闭飞行模式
+    public static void setAriplaneMode(long ms){
+        execShell("settings put global airplane_mode_on 1 \n am broadcast -a android.intent.action.AIRPLANE_MODE --ez state true" );
+        sleep(ms);
+        execShell("settings put global airplane_mode_on 0 \n am broadcast -a android.intent.action.AIRPLANE_MODE --ez state false");
+    }
 
 }

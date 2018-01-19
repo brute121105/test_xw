@@ -64,4 +64,5 @@ public class AppConfig extends DataSupport {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
 }

@@ -3,6 +3,8 @@ package hyj.xw.model.LitePalModel;
 
 import com.alibaba.fastjson.JSONObject;
 
+import org.litepal.crud.DataSupport;
+
 import java.util.Date;
 
 import hyj.xw.model.PhoneInfo;
@@ -11,7 +13,7 @@ import hyj.xw.model.PhoneInfo;
  * Created by Administrator on 2017/8/22.
  */
 
-public class Wx008Data  {
+public class Wx008Data  extends DataSupport{
     private PhoneInfo phoneInfo = new PhoneInfo();
     private String datas;
     private String phone;
