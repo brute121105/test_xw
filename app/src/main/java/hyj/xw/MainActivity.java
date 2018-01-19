@@ -1,7 +1,5 @@
 package hyj.xw;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -19,13 +17,6 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
@@ -34,6 +25,7 @@ import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.test.GetPhoneInfoUtil;
+import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
@@ -79,6 +71,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spinner.setOnItemSelectedListener(new SpinnerSelectedListener());
         //设置默认值
         spinner.setVisibility(View.VISIBLE);
+        String loginIndex = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX);
+        loginIndex = TextUtils.isEmpty(loginIndex)?"0":loginIndex;
+        spinner.setSelection(Integer.parseInt(loginIndex),true);//spinner下拉框默认值
+
          /*
         下拉框数据结束
         */
@@ -100,8 +96,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
             String spinnerValue = phoneStrs[arg2];
             //截取spiiner的手机号保存到数据库
-            String phone = spinnerValue.substring(spinnerValue.indexOf("-")+1,spinnerValue.indexOf(" "));
-            AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGINACCOUNT,phone);
+            AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGINACCOUNT,spinnerValue.substring(spinnerValue.indexOf("-")+1,spinnerValue.indexOf(" ")));
+            AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,spinnerValue.substring(0,spinnerValue.indexOf("-")));
         }
         public void onNothingSelected(AdapterView<?> arg0) {
         }
@@ -156,24 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void clearAppData(){
-
-        exeShell("am force-stop com.tencent.mm" );
-        killPro(this, "com.tencent.mm");
-        exeShell("pm clear com.tencent.mm" );
-
-        exeShell("rm -r -f /data/data/com.tencent.mm/MicroMsg" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/app_cache" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/app_dex" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/app_font" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/app_lib" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/app_recover_lib" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/app_tbs" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/cache" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/databases" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/face_detect" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/files" );
-        exeShell("rm -r -f /data/data/com.tencent.mm/shared_prefs" );
-        exeShell("rm -r -f /sdcard/tencent" );
+        AutoUtil.clearAppData();
         Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();
 
         String phone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGINACCOUNT);
@@ -187,61 +166,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.out.println("phoneInfo---->"+con);
 
     }
-
-    public static boolean killPro(Context paramContext, String paramString)
-    {
-        List localList = ((ActivityManager)paramContext.getSystemService(Context.ACTIVITY_SERVICE)).getRunningAppProcesses();
-        ArrayList localArrayList = new ArrayList();
-        new HashMap();
-        Iterator localIterator = localList.iterator();
-        while (true)
-        {
-            if (!localIterator.hasNext())
-                return false;
-            ActivityManager.RunningAppProcessInfo localRunningAppProcessInfo = (ActivityManager.RunningAppProcessInfo)localIterator.next();
-            if (localRunningAppProcessInfo.uid > 1000)
-            {
-                localArrayList.add(localRunningAppProcessInfo);
-                String[] arrayOfString = localRunningAppProcessInfo.pkgList;
-                int i = arrayOfString.length;
-                for (int j = 0; j < i; j++)
-                    if (arrayOfString[j].equals(paramString))
-                    {
-                        exeShell("kill " + localRunningAppProcessInfo.pid);
-                        ((ActivityManager)paramContext.getSystemService(Context.ACTIVITY_SERVICE)).killBackgroundProcesses(paramString);
-                        return true;
-                    }
-            }
-        }
-    }
-
-
-    public static boolean a = false;
-    private static DataOutputStream b;
-    private static Process c;
-    private static InputStream d;
-
-    public static String exeShell(String paramString)
-    {
-        try
-        {
-            if (b == null)
-            {
-                c = Runtime.getRuntime().exec("su");
-                b = new DataOutputStream(c.getOutputStream());
-                d = c.getInputStream();
-            }
-            b.writeBytes(paramString + "\n");
-            b.flush();
-            return "";
-        }
-        catch (Exception localException)
-        {
-            localException.printStackTrace();
-        }
-        return "";
-    }
-
 
     public void testMethod1(){
            System.out.println("--file dir-->");
