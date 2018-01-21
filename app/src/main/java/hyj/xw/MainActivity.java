@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         GetPermissionUtil.getReadAndWriteContactPermision(this,MainActivity.this);
 
+
         //养号
         isFeedCheckBox = (CheckBox)this.findViewById(R.id.isFeed);
         isFeedCheckBox.setOnClickListener(this);

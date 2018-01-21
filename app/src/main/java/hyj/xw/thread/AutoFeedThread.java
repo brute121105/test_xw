@@ -1,15 +1,21 @@
 package hyj.xw.thread;
 
 import android.accessibilityservice.AccessibilityService;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+
+
 
 import java.util.List;
 import java.util.Map;
 
 import hyj.xw.BaseThread;
+import hyj.xw.GlobalApplication;
+import hyj.xw.MainActivity;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.AccessibilityParameters;
@@ -45,12 +51,14 @@ public class AutoFeedThread extends BaseThread {
         while (true){
             try {
             AutoUtil.sleep(500);
+                //AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"ddd25"+System.currentTimeMillis());
             if(AutoUtil.checkAction(record,"wx登陆完成"))  return null;
             LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex);
             if(parameters.getIsStop()==1){
                 LogUtil.d(TAG,"暂停....");
                 continue;
             }
+
             //保持屏幕常亮
             AutoUtil.wake();
 
@@ -99,6 +107,7 @@ public class AutoFeedThread extends BaseThread {
                 }
                 autoLoginConfig(root,record);
                 exceptionConfig(root,record);
+
 
 
             }catch (Exception e){
