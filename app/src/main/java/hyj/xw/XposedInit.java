@@ -1,28 +1,10 @@
 package hyj.xw;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.view.MotionEvent;
-import android.widget.Toast;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.StringCodec;
-
-import java.util.ArrayList;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import hyj.xw.conf.PhoneConf;
 import hyj.xw.hook.Phone;
-import hyj.xw.util.AutoUtil;
 
 /**
  * XposedInit
@@ -48,8 +30,8 @@ public class XposedInit implements IXposedHookLoadPackage {
 
        if(packageName.equals(PACKAGE_NAME)){
              System.out.println("hyj context--->"+PACKAGE_NAME);
-            //new Phone(lpparam);
-           //--
+             new Phone(lpparam);
+           //--test start
          /*  Class c1 = XposedHelpers.findClass("android.app.ActivityThread", null);
            Context localContext1 = (Context) XposedHelpers.callMethod(XposedHelpers.callStaticMethod(c1, "currentActivityThread", new Object[0]), "getSystemContext", new Object[0]);
            try {
@@ -62,7 +44,7 @@ public class XposedInit implements IXposedHookLoadPackage {
            }
            */
            //获取context方法2
-           XposedHelpers.findAndHookMethod("android.app.Application", lpparam.classLoader, "attach", Context.class, new XC_MethodHook() {
+          /* XposedHelpers.findAndHookMethod("android.app.Application", lpparam.classLoader, "attach", Context.class, new XC_MethodHook() {
                @Override
                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                    super.afterHookedMethod(param);
@@ -124,8 +106,8 @@ public class XposedInit implements IXposedHookLoadPackage {
                    System.out.println("hyj context--> iew.onTouchEvent => obj.class =" + param.thisObject.getClass());
                    System.out.println("hyj context--> iew.onTouchEvent wxContext666 =" + wxContext.getFilesDir().getPath());
                }
-           });
-           //--
+           });*/
+           //----test end
         }
 
         //抓取朋友圈数据

@@ -1,21 +1,15 @@
 package hyj.xw.thread;
 
 import android.accessibilityservice.AccessibilityService;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-
-
 
 import java.util.List;
 import java.util.Map;
 
 import hyj.xw.BaseThread;
-import hyj.xw.GlobalApplication;
-import hyj.xw.MainActivity;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.AccessibilityParameters;
@@ -33,6 +27,8 @@ import hyj.xw.util.ParseRootUtil;
 
 public class AutoFeedThread extends BaseThread {
     private  int countRootNull =0;
+    private int loginIndex;//登录序号
+    private String isLoginSucessPause;//登录成功是否暂停
     public  final String TAG = this.getClass().getSimpleName();
     public AutoFeedThread(AccessibilityService context, Map<String, String> record, AccessibilityParameters parameters){
         super(context,record,parameters);
@@ -40,20 +36,22 @@ public class AutoFeedThread extends BaseThread {
     }
     List<Wx008Data> wx008Datas;
     Wx008Data currentWx008Data;
-    int loginIndex;
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
         wx008Datas = DaoUtil.getWx008Datas();
         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
+        isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
     }
     @Override
     public Object call() {
         while (true){
             try {
             AutoUtil.sleep(500);
-                //AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"ddd25"+System.currentTimeMillis());
+            LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+
+            //登录完成所有号退出
             if(AutoUtil.checkAction(record,"wx登陆完成"))  return null;
-            LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex);
+
             if(parameters.getIsStop()==1){
                 LogUtil.d(TAG,"暂停....");
                 continue;
@@ -91,9 +89,6 @@ public class AutoFeedThread extends BaseThread {
                     currentWx008Data = wx008Datas.get(loginIndex);
                     currentWx008Data.setPhoneInfo(currentWx008Data.getDatas());
 
-                    /*Wx008Data w = wx008Datas.get(loginIndex);
-                    w.setPhoneInfo(w.getDatas());*/
-
                     //覆盖式写入文件
                     FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(currentWx008Data.getPhoneInfo()));
                     //读取文件
@@ -116,6 +111,7 @@ public class AutoFeedThread extends BaseThread {
 
         }
     }
+
 
     //自动登录配置
     public boolean autoLoginConfig(AccessibilityNodeInfo root,Map<String,String> record){
@@ -163,6 +159,9 @@ public class AutoFeedThread extends BaseThread {
         //判断登陆成功
         if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")&&!AutoUtil.checkAction(record,"飞行模式&清除数据后启动微信")){
             AutoUtil.recordAndLog(record,"wx登陆成功");
+            //登录成功&开启登录成功暂停 修改暂停标识为1
+            if("1".equals(isLoginSucessPause))   parameters.setIsStop(1);
+
             LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd());
             AutoUtil.sleep(3000);
             if(loginIndex==wx008Datas.size()-1){

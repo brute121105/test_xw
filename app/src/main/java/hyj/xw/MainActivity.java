@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     EditText editText;
     CheckBox isFeedCheckBox;
+    CheckBox loginSucessPauseCheckBox;
 
     private String[] phoneStrs;
     private Spinner spinner;
@@ -50,8 +51,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //养号
         isFeedCheckBox = (CheckBox)this.findViewById(R.id.isFeed);
-        isFeedCheckBox.setOnClickListener(this);
         isFeedCheckBox.setChecked("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_FEED))?true:false);
+        isFeedCheckBox.setOnClickListener(this);
+        //登录成功暂停
+        loginSucessPauseCheckBox = (CheckBox)this.findViewById(R.id.loginSucessPause);
+        loginSucessPauseCheckBox.setChecked("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE))?true:false);
+        loginSucessPauseCheckBox.setOnClickListener(this);
         //综合参数
         editText = (EditText)findViewById(R.id.ext);
         String c = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
@@ -197,6 +202,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.isFeed:
                 System.out.println("isFeedCheckBox.isChecked()-->"+isFeedCheckBox.isChecked());
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_FEED,isFeedCheckBox.isChecked()?"1":"0");
+                break;
+            case R.id.loginSucessPause:
+                System.out.println("loginSucessPauseCheckBox.isChecked()-->"+loginSucessPauseCheckBox.isChecked());
+                AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE,loginSucessPauseCheckBox.isChecked()?"1":"0");
                 break;
         }
     }
