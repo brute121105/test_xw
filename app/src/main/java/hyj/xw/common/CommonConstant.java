@@ -12,6 +12,7 @@ public class CommonConstant {
     public static String APPCONFIG_START_LOGIN_INDEX= "startLoginIndex";//开始登陆序号
     public static String APPCONFIG_IS_FEED = "isfeed";//养号
     public static String APPCONFIG_IS_LOGIN_PAUSE = "isLoginSuccessPause";//登录成功暂停
+    public static String APPCONFIG_CN_NUM = "cnNum";//国别
 
     public static int index=0;
 }

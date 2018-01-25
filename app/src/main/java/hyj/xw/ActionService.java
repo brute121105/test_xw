@@ -35,6 +35,9 @@ public class ActionService  extends AccessibilityService {
         if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_FEED))){
             executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
             AutoUtil.startWx();
+         }else{
+            executorService.submit(ThreadFactory.getThread("reg",this,record,parameters));
+            AutoUtil.startWx();
         }
     }
     @Override

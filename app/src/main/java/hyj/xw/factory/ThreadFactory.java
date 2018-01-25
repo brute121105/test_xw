@@ -8,6 +8,7 @@ import hyj.xw.BaseThread;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.thread.AutoFeedThread;
 import hyj.xw.thread.AutoLoginThread;
+import hyj.xw.thread.AutoRegThread;
 import hyj.xw.thread.TestThread;
 
 /**
@@ -24,6 +25,8 @@ public class ThreadFactory {
                 return new TestThread(context,record,parameters);
             case "feed":
                 return new AutoFeedThread(context,record,parameters);
+            case "reg":
+                return new AutoRegThread(context,record,parameters);
 
         }
         throw new RuntimeException("【"+name+"】没有相关服务！");

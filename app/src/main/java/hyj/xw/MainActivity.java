@@ -35,6 +35,7 @@ import hyj.xw.util.OkHttpUtil;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     EditText editText;
+    EditText cnNumEditText;
     CheckBox isFeedCheckBox;
     CheckBox loginSucessPauseCheckBox;
 
@@ -61,6 +62,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editText = (EditText)findViewById(R.id.ext);
         String c = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
         editText.setText(TextUtils.isEmpty(c)?"0":c);
+        //国别
+        cnNumEditText = (EditText)findViewById(R.id.cnNum);
+        String cnNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_CN_NUM);
+        cnNumEditText.setText(TextUtils.isEmpty(cnNum)?"86":cnNum);
 
        /*
         下拉框数据开始
@@ -140,6 +145,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void save(){
         AppConfig config = new AppConfig(CommonConstant.APPCONFIG_EXT,editText.getText().toString());
         AppConfigDao.saveOrUpdate(config);
+        //国别
+        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_CN_NUM,cnNumEditText.getText().toString());
 
     }
     @Override
