@@ -30,7 +30,8 @@ public class NodeActionUtil {
         AccessibilityNodeInfo nodeInfo = null;
         if(nodeText!=null){
             nodeInfo = ParseRootUtil.getNodeByPathAndText(root,nodePath,nodeText);
-        }else {
+        }
+        if(nodeInfo==null){
             nodeInfo = ParseRootUtil.getNodePath(root,nodePath);
         }
         if(nodeInfo==null){

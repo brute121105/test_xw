@@ -90,9 +90,12 @@ public class AutoRegThread extends BaseThread {
         }
         if(AutoUtil.checkAction(record,"wx选择国家")){
             NodeActionUtil.doInputByNodePathAndText(root,"点击上面的“注册”按钮|国家/地区","00201","nname",record,"wx输入昵称",500);
-            NodeActionUtil.doInputByNodePathAndText(root,"点击上面的“注册”按钮|国家/地区","00231","13652956842",record,"wx输入手机",500);
+            NodeActionUtil.doInputByNodePathAndText(root,"点击上面的“注册”按钮|国家/地区","00231","8970358754",record,"wx输入手机",500);
             NodeActionUtil.doInputByNodePathAndText(root,"点击上面的“注册”按钮|国家/地区","00241","wwww12345",record,"wx输入密码",500);
+            NodeActionUtil.doClickByNodePathAndText(root, "点击上面的“注册”按钮|国家/地区", "0025", "注册", record, "wx点击注册2", 500);
         }
+        NodeActionUtil.doClickByNodePathAndText(root, "微信隐私保护指引|不同意", "04", "同意", record, "wx点击同意", 500);
+        NodeActionUtil.doClickByNodePathAndText(root, "为了你的帐号安全|安全校验", "000003", "开始", record, "wx点击开始安全校验", 500);
         return false;
     }
 
