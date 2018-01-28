@@ -1,5 +1,7 @@
 package hyj.xw.conf;
 
+import android.text.TextUtils;
+
 import com.alibaba.fastjson.JSON;
 
 import org.litepal.crud.DataSupport;
@@ -69,7 +71,11 @@ public class PhoneConf {
             String lastLoginTime = sdf.format(wx008Datas.get(i).getCreateTime());
             String cn = wx008Datas.get(i).getCnNum();
             //序号-账号-ac时间 国家 上次登录时间
-            datas.add(i + "-" + wx008Datas.get(i).getPhone() + " " + time + " " + (cn == null ? "86" : cn) + " \n" + lastLoginTime);
+            String wxid = wx008Datas.get(i).getWxId();
+            if(wxid==null){
+                wxid = wx008Datas.get(i).getPhone();
+            }
+            datas.add(i + "-" + wxid + " " + time + " " + (cn == null ? "86" : cn) + " \n" + lastLoginTime);
         }
 
         return datas.toArray(new String[datas.size()]);

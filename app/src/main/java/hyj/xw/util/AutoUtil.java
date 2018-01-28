@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import hyj.xw.GlobalApplication;
 
@@ -468,6 +469,11 @@ public class AutoUtil {
         execShell("settings put global airplane_mode_on 1 \n am broadcast -a android.intent.action.AIRPLANE_MODE --ez state true" );
         sleep(ms);
         execShell("settings put global airplane_mode_on 0 \n am broadcast -a android.intent.action.AIRPLANE_MODE --ez state false");
+    }
+
+    public static String getUUID(){
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        return uuid;
     }
 
 }

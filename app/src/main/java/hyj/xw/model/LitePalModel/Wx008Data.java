@@ -15,6 +15,7 @@ import hyj.xw.model.PhoneInfo;
 
 public class Wx008Data  extends DataSupport{
     private PhoneInfo phoneInfo = new PhoneInfo();
+    private String guid;
     private String datas;
     private String phone;
     private String wxId;
@@ -26,6 +27,7 @@ public class Wx008Data  extends DataSupport{
     private String friends;//好友
     private Date createTime;
     private Date lastLoginTime;
+    private String dataFlag;//008  抓取008数据
 
     public Wx008Data(){
     }
@@ -198,5 +200,21 @@ public class Wx008Data  extends DataSupport{
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getDataFlag() {
+        return dataFlag;
+    }
+
+    public void setDataFlag(String dataFlag) {
+        this.dataFlag = dataFlag;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 }

@@ -17,6 +17,9 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.Date;
+import java.util.List;
+
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.common.CommonConstant;
@@ -200,10 +203,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "已导入数据：" + PhoneConf.importData() + "条", Toast.LENGTH_LONG).show();
                 break;
             case R.id.auto_login:
+                Wx008Data datas0 =  DaoUtil.findOne008NullDatas();
+                System.out.println("findOne008NullDatas---->"+JSON.toJSONString(datas0));
                 testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
             case R.id.open_assist:
+              /*  int i = DaoUtil.setLoginWxidDataTo008NullData("0084945791703","hn027434","84");
+                System.out.println("setLoginDataTo008NullData--->"+i);11-13  24-30
+                DaoUtil.setLoginWxidDataTo008NullData("0084945755941","yp264015","84");
+                DaoUtil.setLoginWxidDataTo008NullData("0084945783615","go615450","84");
+                DaoUtil.setLoginWxidDataTo008NullData("0084945790923","yf055696","84");
+                DaoUtil.setLoginWxidDataTo008NullData("00841265152124","hd671732","84");
+                DaoUtil.setLoginWxidDataTo008NullData("0084945763440","sw240116","84");
+                DaoUtil.setLoginWxidDataTo008NullData("00841289978297","pu949852","84");*/
+
                 startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                 break;
             case R.id.clearAppData:

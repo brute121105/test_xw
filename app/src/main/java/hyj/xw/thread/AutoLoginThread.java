@@ -18,6 +18,7 @@ import hyj.xw.util.ParseRootUtil;
 
 /**
  * Created by Administrator on 2017/12/14.
+ * 适配版本6.6.1
  */
 
 public class AutoLoginThread  extends BaseThread {
