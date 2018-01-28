@@ -81,7 +81,7 @@ public class AutoFeedThread extends BaseThread {
 
             ParseRootUtil.debugRoot(root);
 
-                if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")){
+                if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")){
                     AutoUtil.clearAppData();
                     LogUtil.d(TAG,"清除app数据");
                     AutoUtil.recordAndLog(record,"wx清除app数据");
@@ -157,12 +157,21 @@ public class AutoFeedThread extends BaseThread {
 
         }*/
         //判断登陆成功
-        if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")&&!AutoUtil.checkAction(record,"飞行模式&清除数据后启动微信")){
-            AutoUtil.recordAndLog(record,"wx登陆成功");
+        if((NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")||NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误"))
+                &&!AutoUtil.checkAction(record,"飞行模式&清除数据后启动微信")){
+
+            if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")){
+                AutoUtil.recordAndLog(record,"wx登陆成功");
+                LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd());
+            }
+            if(NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误")){
+                AutoUtil.recordAndLog(record,"wx登陆异常");
+                String excpMsg = NodeActionUtil.getTextByNodePath(root,"00");
+                LogUtil.login(loginIndex+" fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" -"+excpMsg);
+            }
+
             //登录成功&开启登录成功暂停 修改暂停标识为1
             if("1".equals(isLoginSucessPause))   parameters.setIsStop(1);
-
-            LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd());
             AutoUtil.sleep(3000);
             if(loginIndex==wx008Datas.size()-1){
                 AutoUtil.recordAndLog(record,"wx登陆完成");
@@ -173,6 +182,8 @@ public class AutoFeedThread extends BaseThread {
         }
         return flag;
     }
+
+
 
     //异常情况处理
     public void exceptionConfig(AccessibilityNodeInfo root,Map<String,String> record){

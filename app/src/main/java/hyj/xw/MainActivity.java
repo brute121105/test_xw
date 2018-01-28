@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
+import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //设置默认值
         spinner.setVisibility(View.VISIBLE);
         String loginIndex = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX);
-        loginIndex = TextUtils.isEmpty(loginIndex)?"0":loginIndex;
+        loginIndex = TextUtils.isEmpty(loginIndex)||Integer.parseInt(loginIndex)>phoneStrs.length-1?"0":loginIndex;
         spinner.setSelection(Integer.parseInt(loginIndex),true);//spinner下拉框默认值
 
          /*
@@ -94,10 +95,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button autoLoginBtn = (Button)this.findViewById(R.id.auto_login);
         Button importBakDataBtn = (Button)this.findViewById(R.id.importBakData);
         Button clearAppDataBtn = (Button)this.findViewById(R.id.clearAppData);
+        Button apiSettingBtn = (Button)this.findViewById(R.id.apiSetting);
         openAssitBtn.setOnClickListener(this);
         autoLoginBtn.setOnClickListener(this);
         importBakDataBtn.setOnClickListener(this);
         clearAppDataBtn.setOnClickListener(this);
+        apiSettingBtn.setOnClickListener(this);
 
     }
 
@@ -213,6 +216,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.loginSucessPause:
                 System.out.println("loginSucessPauseCheckBox.isChecked()-->"+loginSucessPauseCheckBox.isChecked());
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE,loginSucessPauseCheckBox.isChecked()?"1":"0");
+                break;
+            case R.id.apiSetting:
+                startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
                 break;
         }
     }

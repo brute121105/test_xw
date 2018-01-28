@@ -5,10 +5,12 @@ import android.accessibilityservice.AccessibilityService;
 import java.util.Map;
 
 import hyj.xw.BaseThread;
+import hyj.xw.jm.ALZGetPhoneAndValidCodeThread;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.thread.AutoFeedThread;
 import hyj.xw.thread.AutoLoginThread;
 import hyj.xw.thread.AutoRegThread;
+import hyj.xw.thread.Fetch008DataThread;
 import hyj.xw.thread.TestThread;
 
 /**
@@ -27,6 +29,10 @@ public class ThreadFactory {
                 return new AutoFeedThread(context,record,parameters);
             case "reg":
                 return new AutoRegThread(context,record,parameters);
+            case "alzAPI":
+                return new ALZGetPhoneAndValidCodeThread(parameters.getPa());
+            case "fetch008Data":
+                return new Fetch008DataThread(context,record,parameters);
 
         }
         throw new RuntimeException("【"+name+"】没有相关服务！");

@@ -1,10 +1,7 @@
 package hyj.xw.thread;
 
 import android.accessibilityservice.AccessibilityService;
-import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
-
-import com.alibaba.fastjson.JSON;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +13,6 @@ import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
-import hyj.xw.util.FileUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.NodeActionUtil;
 import hyj.xw.util.ParseRootUtil;
@@ -84,13 +80,13 @@ public class AutoRegThread extends BaseThread {
 
     //自动登录配置
     public boolean autoRegConfig(AccessibilityNodeInfo root,Map<String,String> record) {
-        NodeActionUtil.doClickByNodePathAndText(root, "注册|语言", "00", "注册", record, "wx点击注册1", 500);
+         NodeActionUtil.doClickByNodePathAndText(root, "注册|语言", "01", "注册", record, "wx点击注册1", 500);
         if(cnNum!=null&&!"86".equals(cnNum)){
             selsectCn(root,cnNum);
         }
         if(AutoUtil.checkAction(record,"wx选择国家")){
             NodeActionUtil.doInputByNodePathAndText(root,"点击上面的“注册”按钮|国家/地区","00201","nname",record,"wx输入昵称",500);
-            NodeActionUtil.doInputByNodePathAndText(root,"点击上面的“注册”按钮|国家/地区","00231","8970358754",record,"wx输入手机",500);
+            NodeActionUtil.doInputByNodePathAndText(root,"点击上面的“注册”按钮|国家/地区","00231",parameters.getPa().getPhone(),record,"wx输入手机",500);
             NodeActionUtil.doInputByNodePathAndText(root,"点击上面的“注册”按钮|国家/地区","00241","wwww12345",record,"wx输入密码",500);
             NodeActionUtil.doClickByNodePathAndText(root, "点击上面的“注册”按钮|国家/地区", "0025", "注册", record, "wx点击注册2", 500);
         }

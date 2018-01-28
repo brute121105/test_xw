@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class NodeActionUtil {
 
+    //窗口包含当期全部字符str2，有一个不满足就返回false
     public static boolean isContainsStrs(AccessibilityNodeInfo root,String str2){
         String str1 = ParseRootUtil.getCurrentViewAllTexts(root);
         boolean flag = true;
@@ -22,6 +23,11 @@ public class NodeActionUtil {
             }
         }
         return flag;
+    }
+    //窗口只要包含就返回true
+    public static boolean isWindowContainStr(AccessibilityNodeInfo root,String str2){
+        String str1 = ParseRootUtil.getCurrentViewAllTexts(root);
+        return str1.contains(str2);
     }
 
     public static boolean doClickByNodePathAndText(AccessibilityNodeInfo root,String str2,String nodePath,String nodeText,Map<String,String> record,String action,long ms){
@@ -96,4 +102,12 @@ public class NodeActionUtil {
         return isInput;
     }
 
+   public static String getTextByNodePath(AccessibilityNodeInfo root,String nodePath){
+       String str ="";
+       AccessibilityNodeInfo node = ParseRootUtil.getNodePath(root,nodePath);
+       if(node!=null){
+           str = node.getText()+"";
+       }
+       return str;
+   }
 }

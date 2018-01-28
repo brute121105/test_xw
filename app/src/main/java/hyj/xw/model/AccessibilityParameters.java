@@ -7,6 +7,16 @@ package hyj.xw.model;
 public class AccessibilityParameters {
     private int isStop;//暂停标志
 
+    private PhoneApi pa = new PhoneApi();
+
+    public PhoneApi getPa() {
+        return pa;
+    }
+
+    public void setPa(PhoneApi pa) {
+        this.pa = pa;
+    }
+
     public int getIsStop() {
         return isStop;
     }

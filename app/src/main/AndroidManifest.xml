@@ -10,21 +10,24 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
-    <user-permission android:name="android.permission.DEVICE_POWER"/>
+
+    <user-permission android:name="android.permission.DEVICE_POWER" />
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" ></uses-permission>
-    <uses-permission android:name="android.permission.READ_SMS" ></uses-permission>
-    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" ></uses-permission>
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMINL" />
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
-    <!--  <uses-permission android:name="android.permission.CLEAR_APP_USER_DATA" />
-      <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />-->
 
-
+    <!--
+      <uses-permission android:name="android.permission.CLEAR_APP_USER_DATA" />
+      <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />
+    -->
     <application
         android:name=".GlobalApplication"
         android:allowBackup="true"
@@ -65,14 +68,14 @@
                 android:resource="@xml/envelope_service_config" />
         </service>
 
-        <receiver android:name=".service.SmsReciver" >
+        <receiver android:name=".service.SmsReciver">
             <intent-filter android:priority="999">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
-
-        <activity android:name=".activity.AutoLoginSettingActivity"></activity>
+        <activity android:name=".activity.AutoLoginSettingActivity" />
+        <activity android:name=".activity.ApiSettingActivity"></activity>
     </application>
 
 </manifest>

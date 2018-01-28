@@ -24,21 +24,33 @@ public class ActionService  extends AccessibilityService {
     public AccessibilityParameters parameters = new AccessibilityParameters();
     Map<String,String> record = new HashMap<String,String>();
     ExecutorService executorService = Executors.newFixedThreadPool(10);
+    //综合参数
+    String extValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
         parameters.setIsStop(0);
-        //executorService.submit(ThreadFactory.getThread("test",this,record,parameters));
-        //executorService.submit(ThreadFactory.getThread("login",this,record,parameters));
+        System.out.println("008-->extValue:"+extValue);
         //AutoUtil.startWx();
-        if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_FEED))){
-            executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
-            AutoUtil.startWx();
-         }else{
-            executorService.submit(ThreadFactory.getThread("reg",this,record,parameters));
-            AutoUtil.startWx();
+        if("008".equals(extValue)){
+            executorService.submit(ThreadFactory.getThread("fetch008Data",this,record,parameters));
+        }else {
+            /**
+             * 非综合参数动作
+             */
+            if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_FEED))){
+                //养号
+                executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
+                AutoUtil.startWx();
+            }else{
+                //注册
+                executorService.submit(ThreadFactory.getThread("reg",this,record,parameters));
+                executorService.submit(ThreadFactory.getThread("alzAPI",this,record,parameters));
+                AutoUtil.startWx();
+            }
         }
+
     }
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
