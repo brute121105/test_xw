@@ -72,24 +72,27 @@ public class SetPwdThread implements Runnable {
         NodeActionUtil.doInputByNodePathAndText(root,"为保障你的数据安全，修改密码前请填写原密码。|取消","01",currentWx008Data.getWxPwd(),record,"SetPwdThread输入密码",1000);
         NodeActionUtil.doClickByNodePathAndText(root,"为保障你的数据安全，修改密码前请填写原密码。|取消","03","确定",record,"SetPwdThread输入密码确定",1000);
         String phone = TextUtils.isEmpty(currentWx008Data.getWxId())?currentWx008Data.getPhone():currentWx008Data.getWxId();
-        System.out.println(TAG+"-->phone:"+phone);
+        System.out.println(TAG+"-->phone:"+phone+" ,currentWx008Data.getWxPwd():"+currentWx008Data.getWxPwd());
         String newPwd = "www23"+phone.substring(phone.length()-3);
-        System.out.println(TAG+"-->newPwd:"+newPwd);
         NodeActionUtil.doInputByNodePathAndText(root,"设置密码|完成|请设置微信密码。你可以用","0034",newPwd,record,"SetPwdThread输入密码1",1000);
         NodeActionUtil.doInputByNodePathAndText(root,"设置密码|完成|请设置微信密码。你可以用","0036",newPwd,record,"SetPwdThread输入密码2",1000);
+        if(AutoUtil.checkAction(record,"SetPwdThread输入密码2")){
+            AutoUtil.recordAndLog(record,"wx登陆成功");
+            return;
+        }
         NodeActionUtil.doClickByNodePathAndText(root,"设置密码|完成|请设置微信密码。你可以用","002","完成",record,"SetPwdThread设置微信密码完成",1000);
         if(AutoUtil.checkAction(record,"SetPwdThread设置微信密码完成")){
+            List<Wx008Data> ds1 = DaoUtil.findByDataByColumn("guid",currentWx008Data.getGuid());
+            System.out.println(TAG+"-->findByDataByColumn1:"+ JSON.toJSONString(ds1));
+            System.out.println(TAG+"-->newPwd:"+newPwd+" old:"+currentWx008Data.getWxPwd()+" wxid:"+currentWx008Data.getWxId());
             int cn = DaoUtil.updatePwd(currentWx008Data,newPwd);
-            System.out.println(TAG+"-->currentWx008Data:"+ JSON.toJSONString(currentWx008Data));
-            //List<Wx008Data> ds1 = DaoUtil.findByDataByColumn("phone",currentWx008Data.getPhone());
-            //System.out.println(TAG+"-->findByDataByColumn:"+ JSON.toJSONString(ds1));
             System.out.println(TAG+"-->cn:"+ cn);
             if(cn==1){
                 System.out.println(TAG+"-->updatePwd success");
                 AutoUtil.recordAndLog(record,"wx登陆成功");
+                List<Wx008Data> ds2 = DaoUtil.findByDataByColumn("guid",currentWx008Data.getGuid());
+                System.out.println(TAG+"-->findByDataByColumn2:"+ JSON.toJSONString(ds2));
                 return;
-                //List<Wx008Data> ds2 = DaoUtil.findByDataByColumn("phone",currentWx008Data.getPhone());
-                //System.out.println(TAG+"-->findByDataByColumn:"+ JSON.toJSONString(ds2));
 
             }else {
                 System.out.println(TAG+"-->updatePwd fail cn:"+cn);
