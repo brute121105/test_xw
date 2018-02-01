@@ -1,5 +1,7 @@
 package hyj.xw.util;
 
+import android.text.TextUtils;
+
 import com.alibaba.fastjson.JSON;
 
 import org.litepal.crud.DataSupport;
@@ -16,12 +18,21 @@ import hyj.xw.model.LitePalModel.Wx008Data;
 
 public class DaoUtil {
     public static List<Wx008Data> getWx008Datas(){
-         //List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  not like ? and expMsg  not like ?) or expMsg is null","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
+         List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  not like ? and expMsg  not like ?) or expMsg is null","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  like ? or expMsg  like ?)","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  like ? or expMsg  like ?) and cnNum=?","%被限制登录%","%保护状态%","63").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("cnNum is null and wxId is not null and (expMsg  like ? or expMsg  like ?)","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
-        List<Wx008Data> wx008Datas = findByDataByColumn("dataFlag","008");
 
+        //List<Wx008Data> wx008Datas = findByDataByColumn("dataFlag","008");
+
+        return wx008Datas;
+    }
+
+    public static List<Wx008Data> findSth(){
+        List<Wx008Data> wx008Datas = DataSupport.where("phone is not null and wxId is null and dataFlag=?","008").order("createTime asc").find(Wx008Data.class);
+        for(Wx008Data wx008Data:wx008Datas){
+            System.out.println("--->"+JSON.toJSONString(wx008Data));
+        }
         return wx008Datas;
     }
 
@@ -86,6 +97,18 @@ public class DaoUtil {
             updateCn = wx008Data.updateAll("guid=?",wx008Data.getGuid());
         }
         return updateCn;
+    }
+
+    public static int updatePwd(Wx008Data wx008Data,String pwd){
+        wx008Data.setWxPwd(pwd);
+        String guid = wx008Data.getGuid();
+        int cn=-2 ;
+        if(TextUtils.isEmpty(guid)){
+            cn = wx008Data.updateAll("phone=?",wx008Data.getPhone());
+        }else {
+            cn = wx008Data.updateAll("guid=?",wx008Data.getGuid());
+        }
+        return cn;
     }
 
 

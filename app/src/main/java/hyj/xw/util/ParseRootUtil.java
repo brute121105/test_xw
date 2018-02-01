@@ -194,7 +194,7 @@ public class ParseRootUtil {
                 }
             }
         }
-        System.out.println("getCurrentViewAllTexts-->"+sb.toString());
+        System.out.println("--debug--getCurrentViewAllTexts-->"+sb.toString());
         return sb.toString();
     }
 }

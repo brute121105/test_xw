@@ -36,11 +36,13 @@ public class AutoFeedThread extends BaseThread {
     }
     List<Wx008Data> wx008Datas;
     Wx008Data currentWx008Data;
+    String extValue;
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
         wx008Datas = DaoUtil.getWx008Datas();
         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
+        extValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
     }
     @Override
     public Object call() {
@@ -98,10 +100,14 @@ public class AutoFeedThread extends BaseThread {
                     new SetAirPlaneModeThread(4000).start();
                     AutoUtil.sleep(5000);
                     AutoUtil.startWx();
-                    AutoUtil.recordAndLog(record,"飞行模式&清除数据后启动微信");
+                    AutoUtil.recordAndLog(record,"wx飞行模式&清除数据后启动微信");
                 }
-                autoLoginConfig(root,record);
-                exceptionConfig(root,record);
+
+                if(AutoUtil.actionContains(record,"wx")||AutoUtil.checkAction(record,"init")){
+                    autoLoginConfig(root,record);
+                    exceptionConfig(root,record);
+                    maihao(root,record);
+                }
 
 
 
@@ -153,15 +159,19 @@ public class AutoFeedThread extends BaseThread {
 
         }
         NodeActionUtil.doClickByNodePathAndText(root,"提示|看看手机通讯录里谁在使用微信","02","否",record,"wx否通讯录",500);
+        NodeActionUtil.doClickByNodePathAndText(root,"应急联系人|返回","002","完成",record,"wx完成应急联系人",500);
         /*if(!AutoUtil.checkAction(record,"wx点击登陆1")){
 
         }*/
         //判断登陆成功
         if((NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")||NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误"))
-                &&!AutoUtil.checkAction(record,"飞行模式&清除数据后启动微信")){
+                &&!AutoUtil.checkAction(record,"wx飞行模式&清除数据后启动微信")){
 
             if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")){
-                AutoUtil.recordAndLog(record,"wx登陆成功");
+                /**
+                 * 登录成功判断是否有其他动作
+                 */
+                AutoUtil.recordAndLog(record,getLoginSeccessThenDoAction(extValue));
                 LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd());
             }
             if(NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误")){
@@ -190,6 +200,61 @@ public class AutoFeedThread extends BaseThread {
         NodeActionUtil.doClickByNodePathAndText(root,"SIM卡工具包|尊敬的用户","03","确定",record,"exception确定尊敬的用户",500);
         NodeActionUtil.doClickByNodePathAndText(root,"有人正通过微信密码在|修改密码","01","忽略",record,"wx忽略设备登录你的微信",500);
         NodeActionUtil.doClickByNodePathAndText(root,"玩一个小游戏才是正经事|开始游戏","0020","进入微信",record,"wx进入微信",500);
+    }
+
+    //maihao
+    public void maihao(AccessibilityNodeInfo root,Map<String,String> record){
+        NodeActionUtil.doClickByNodePathAndText(root,"为了你的帐号安全|取消","02","确定",record,"exception确定尊敬的用户",500);
+        NodeActionUtil.doClickByNodePathAndText(root,"请选出你的微信曾经绑定过的手机号|验证身份","06",null,record,"exception确定尊敬的用户",500);
+        NodeActionUtil.doClickByNodePathAndText(root,"请关闭页面重新登录|验证通过","000003",null,record,"exception确定尊敬的用户",500);
+        AccessibilityNodeInfo node = ParseRootUtil.getNodePath(root,"000006");
+        System.out.println("node6-->"+node);
+        if(node!=null&&node.getContentDescription().toString().contains("以上都不是")){
+            System.out.println("node61-->"+node);
+            boolean flag = false;
+            if(NodeActionUtil.isWindowContainStr(root,"请选择你最近一次登录设备的名称")){
+                //情况1--iPhone OS
+                for(int i=1;i<6;i++){
+                    AccessibilityNodeInfo node00 = ParseRootUtil.getNodePath(root,"00000"+i);
+                    if(node00.getContentDescription().toString().contains("iPhone OS")){
+                        AutoUtil.performClick(node00,record,"wxiPhone OS",500);
+                        flag = true;
+                        break;
+                    }
+                }
+                //情况1--iOS
+                if(!flag){
+                    for(int i=1;i<6;i++){
+                        AccessibilityNodeInfo node00 = ParseRootUtil.getNodePath(root,"00000"+i);
+                        if(node00.getContentDescription().toString().contains("iOS")){
+                            AutoUtil.performClick(node00,record,"wxiPhone OS",500);
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+                if(!flag){
+                    AutoUtil.performClick(node,record,"wx以上都不是",500);
+                }
+
+            }else {
+                System.out.println("node62-->"+node);
+                AutoUtil.performClick(node,record,"wx以上都不是",500);
+                if(AutoUtil.checkAction(record,"wx以上都不是")){
+                    AccessibilityNodeInfo node1 = ParseRootUtil.getNodePath(root,"000008");
+                    AutoUtil.performClick(node1,record,"wx以上都不是下一步");
+                }
+
+            }
+
+        }
+
+        if(AutoUtil.checkAction(record,"wx以上都不是")||AutoUtil.checkAction(record,"wxiPhone OS")||AutoUtil.checkAction(record,"wx以上都不是下一步")){
+            AccessibilityNodeInfo node1 = ParseRootUtil.getNodePath(root,"000008");
+            boolean cb = AutoUtil.performClick(node1,record,"wx以上都不是下一步",500);
+            System.out.println("cb-->"+cb+" node1:"+node1);
+        }
+
     }
 
 
@@ -239,6 +304,19 @@ public class AutoFeedThread extends BaseThread {
             }
         }
 
+    }
+
+    //判断登录成功需执行什么动作
+    public String getLoginSeccessThenDoAction(String extValue){
+        String action = "wx登陆成功";
+        if("601".equals(extValue)){
+            action="601SetWxidThread设置微信号";
+            new Thread(new SetWxidThread(context,record,currentWx008Data)).start();
+        }else if("602".equals(extValue)){
+            action="602SetPwdThread设置微信号";
+            new Thread(new SetPwdThread(context,record,currentWx008Data,parameters)).start();
+        }
+        return action;
     }
 
 }

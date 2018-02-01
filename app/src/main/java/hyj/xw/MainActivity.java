@@ -17,6 +17,9 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
+import org.litepal.crud.DataSupport;
+
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -203,20 +206,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "已导入数据：" + PhoneConf.importData() + "条", Toast.LENGTH_LONG).show();
                 break;
             case R.id.auto_login:
-                Wx008Data datas0 =  DaoUtil.findOne008NullDatas();
-                System.out.println("findOne008NullDatas---->"+JSON.toJSONString(datas0));
-                testMethod();
+                String wx = FileUtil.readAll1("/sdcard/wx.txt");
+                String[] strs = wx.split("\n");
+                int ct = 1;
+                /*for(String str :strs){
+                    if(!TextUtils.isEmpty(str)&&str.length()>15){
+                        String[] s = str.split("----");
+                        int i = DaoUtil.setLoginWxidDataTo008NullData(s[0],s[1],"84");
+                        System.out.println("setLoginDataTo008NullData--->"+i+" ct:"+ct);
+                        System.out.println("--->"+s[0]+"-"+s[1]);
+                        ct = ct+1;
+                    }
+                }*/
+                //testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
             case R.id.open_assist:
-              /*  int i = DaoUtil.setLoginWxidDataTo008NullData("0084945791703","hn027434","84");
-                System.out.println("setLoginDataTo008NullData--->"+i);11-13  24-30
-                DaoUtil.setLoginWxidDataTo008NullData("0084945755941","yp264015","84");
-                DaoUtil.setLoginWxidDataTo008NullData("0084945783615","go615450","84");
-                DaoUtil.setLoginWxidDataTo008NullData("0084945790923","yf055696","84");
-                DaoUtil.setLoginWxidDataTo008NullData("00841265152124","hd671732","84");
-                DaoUtil.setLoginWxidDataTo008NullData("0084945763440","sw240116","84");
-                DaoUtil.setLoginWxidDataTo008NullData("00841289978297","pu949852","84");*/
+                /*int i = DaoUtil.setLoginWxidDataTo008NullData("1205257806","wmwx2o03","84");
+                System.out.println("setLoginDataTo008NullData--->"+i);
+                DaoUtil.setLoginWxidDataTo008NullData("1205256766","wmwxohcl","84");
+                DaoUtil.setLoginWxidDataTo008NullData("994369230","wmwxeyy3","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205254616","wmwxmtxl","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205216476","wmwxf46v","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205254206","wmwxnz4o","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205257726","wmwx9te4","84");
+
+                DaoUtil.setLoginWxidDataTo008NullData("1205254176","wmwxnmcu","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205251576","wmwx2zxu","84");
+                DaoUtil.setLoginWxidDataTo008NullData("994361876","wmwxkzv4","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205251216","wmwxp6ju","84");
+
+                DaoUtil.setLoginWxidDataTo008NullData("1205253946","wmwx7mtf","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205250026","wmwxqi3h","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205251276","wmwxt5u1","84");
+                DaoUtil.setLoginWxidDataTo008NullData("993539421","wmwx8eo4","84");
+
+                DaoUtil.setLoginWxidDataTo008NullData("1205249906","wmwx0vmj","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205249936","wmwxqffk","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205253476","wmwxbsqf","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205248476","wmwxiyo5","84");
+
+                DaoUtil.setLoginWxidDataTo008NullData("1205246176","wmwx37xi","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205264716","wmwx78qk","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205250276","wmwxrpxu","84");
+                DaoUtil.setLoginWxidDataTo008NullData("1205261036","wmwx69lu","84");*/
 
                 startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                 break;

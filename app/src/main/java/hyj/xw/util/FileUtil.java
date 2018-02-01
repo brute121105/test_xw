@@ -157,6 +157,30 @@ public class FileUtil {
         }
         return str;
     }
+
+    public static String readAll1(String path) {
+        String str = "";
+        try {
+            String encoding="gbk";
+            File file=new File(path);
+            if(file.isFile() && file.exists()){ //判断文件是否存在
+                InputStreamReader read = new InputStreamReader(
+                        new FileInputStream(file),encoding);//考虑到编码格式
+                BufferedReader bufferedReader = new BufferedReader(read);
+                String lineTxt = null;
+                while((lineTxt = bufferedReader.readLine()) != null){
+                    str = str + lineTxt+"\n";
+                }
+                read.close();
+            }else{
+                System.out.println("找不到指定的文件");
+            }
+        } catch (Exception e) {
+            System.out.println("读取文件内容出错");
+            e.printStackTrace();
+        }
+        return str;
+    }
   /*  //文件上传到服务器
     public static void uploadMultiFile(String url, String data, File file, final String fileName) {
         //开启子线程执行上传，避免主线程堵塞
