@@ -17,12 +17,6 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
-import org.litepal.crud.DataSupport;
-
-import java.io.File;
-import java.util.Date;
-import java.util.List;
-
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.common.CommonConstant;
@@ -222,35 +216,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
             case R.id.open_assist:
-                /*int i = DaoUtil.setLoginWxidDataTo008NullData("1205257806","wmwx2o03","84");
-                System.out.println("setLoginDataTo008NullData--->"+i);
-                DaoUtil.setLoginWxidDataTo008NullData("1205256766","wmwxohcl","84");
-                DaoUtil.setLoginWxidDataTo008NullData("994369230","wmwxeyy3","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205254616","wmwxmtxl","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205216476","wmwxf46v","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205254206","wmwxnz4o","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205257726","wmwx9te4","84");
-
-                DaoUtil.setLoginWxidDataTo008NullData("1205254176","wmwxnmcu","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205251576","wmwx2zxu","84");
-                DaoUtil.setLoginWxidDataTo008NullData("994361876","wmwxkzv4","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205251216","wmwxp6ju","84");
-
-                DaoUtil.setLoginWxidDataTo008NullData("1205253946","wmwx7mtf","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205250026","wmwxqi3h","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205251276","wmwxt5u1","84");
-                DaoUtil.setLoginWxidDataTo008NullData("993539421","wmwx8eo4","84");
-
-                DaoUtil.setLoginWxidDataTo008NullData("1205249906","wmwx0vmj","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205249936","wmwxqffk","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205253476","wmwxbsqf","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205248476","wmwxiyo5","84");
-
-                DaoUtil.setLoginWxidDataTo008NullData("1205246176","wmwx37xi","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205264716","wmwx78qk","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205250276","wmwxrpxu","84");
-                DaoUtil.setLoginWxidDataTo008NullData("1205261036","wmwx69lu","84");*/
-
                 startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                 break;
             case R.id.clearAppData:
@@ -265,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE,loginSucessPauseCheckBox.isChecked()?"1":"0");
                 break;
             case R.id.apiSetting:
+                DaoUtil.updatePwd("fgc279","www23279");
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
                 break;
         }

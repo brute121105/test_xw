@@ -8,9 +8,8 @@ import com.alibaba.fastjson.JSON;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
+import hyj.xw.AccessibilityConfig.LoginSuccessActionConfig;
 import hyj.xw.BaseThread;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;
@@ -39,7 +38,6 @@ public class AutoFeedThread extends BaseThread {
     List<Wx008Data> wx008Datas;
     Wx008Data currentWx008Data;
     String extValue;
-    ExecutorService executorService = Executors.newFixedThreadPool(1);
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
         wx008Datas = DaoUtil.getWx008Datas();
@@ -53,11 +51,9 @@ public class AutoFeedThread extends BaseThread {
             try {
             AutoUtil.sleep(500);
             LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
-
-
-                if(loginIndex==wx008Datas.size()-1){
-                    AutoUtil.recordAndLog(record,"wx登陆完成");
-                }
+            if(currentWx008Data!=null){
+                LogUtil.d(TAG,"wxid:"+currentWx008Data.getWxId()+" pwd:"+currentWx008Data.getWxPwd());
+            }
 
             //登录完成所有号退出
             if(AutoUtil.checkAction(record,"wx登陆完成"))  return null;
@@ -92,11 +88,6 @@ public class AutoFeedThread extends BaseThread {
             ParseRootUtil.debugRoot(root);
 
                 if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")){
-                    executorService.shutdown();
-                    if(!AutoUtil.checkAction(record,"init")){
-                        loginIndex = loginIndex+1;
-                        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
-                    }
 
                     AutoUtil.clearAppData();
                     LogUtil.d(TAG,"清除app数据");
@@ -117,12 +108,17 @@ public class AutoFeedThread extends BaseThread {
                     AutoUtil.recordAndLog(record,"wx飞行模式&清除数据后启动微信");
                 }
 
+                //自动登陆
                 if(AutoUtil.actionContains(record,"wx")||AutoUtil.checkAction(record,"init")){
                     autoLoginConfig(root,record);
                     exceptionConfig(root,record);
                     maihao(root,record);
                 }
-
+                //设置密码
+                if(AutoUtil.actionContains(record,"SetPwdThread")){
+                    LogUtil.d(TAG,"SetPwdThread-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.doSetPwdAction(root,record,currentWx008Data);
+                }
 
 
             }catch (Exception e){
@@ -197,12 +193,12 @@ public class AutoFeedThread extends BaseThread {
             //登录成功&开启登录成功暂停 修改暂停标识为1
             if("1".equals(isLoginSucessPause))   parameters.setIsStop(1);
             AutoUtil.sleep(3000);
-            /*if(loginIndex==wx008Datas.size()-1){
+            if(loginIndex==wx008Datas.size()-1){
                 AutoUtil.recordAndLog(record,"wx登陆完成");
                 return flag;
             }
             loginIndex = loginIndex+1;
-            AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");*/
+            AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
         }
         return flag;
     }
@@ -328,9 +324,7 @@ public class AutoFeedThread extends BaseThread {
             new Thread(new SetWxidThread(context,record,currentWx008Data)).start();
         }else if("602".equals(extValue)){
             action="602SetPwdThread设置微信号";
-            Thread th = new Thread(new SetPwdThread(context,record,currentWx008Data,parameters));
-            executorService.submit(th);
-
+            System.out.println("SetPwdThread--->loginIndex:"+loginIndex+" currentWx008Data:"+JSON.toJSONString(currentWx008Data));
         }
         return action;
     }

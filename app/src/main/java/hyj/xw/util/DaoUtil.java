@@ -18,12 +18,12 @@ import hyj.xw.model.LitePalModel.Wx008Data;
 
 public class DaoUtil {
     public static List<Wx008Data> getWx008Datas(){
-        // List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  not like ? and expMsg  not like ?) or expMsg is null","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
+         List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  not like ? and expMsg  not like ?) or expMsg is null","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  like ? or expMsg  like ?)","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  like ? or expMsg  like ?) and cnNum=?","%被限制登录%","%保护状态%","63").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("cnNum is null and wxId is not null and (expMsg  like ? or expMsg  like ?)","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
 
-        List<Wx008Data> wx008Datas = findByDataByColumn("dataFlag","008");
+       // List<Wx008Data> wx008Datas = findByDataByColumn("dataFlag","008");
 
         return wx008Datas;
     }
@@ -122,5 +122,12 @@ public class DaoUtil {
 
     public static int deleteAll(){
         return DataSupport.deleteAll(Wx008Data.class);
+    }
+
+    public static void updatePwd(String wxid,String pwd){
+        Wx008Data wx008Data = new Wx008Data();
+        wx008Data.setWxPwd(pwd);
+        int cn = wx008Data.updateAll("wxId=?",wxid);
+        System.out.println("更新记录-->cn:"+cn+" wxid:"+wxid+" pwd:"+pwd);
     }
 }
