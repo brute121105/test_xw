@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE,loginSucessPauseCheckBox.isChecked()?"1":"0");
                 break;
             case R.id.apiSetting:
-                DaoUtil.updatePwd("fgc279","www23279");
+                DaoUtil.updatePwd("QlTS2790","www23790");
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
                 break;
         }

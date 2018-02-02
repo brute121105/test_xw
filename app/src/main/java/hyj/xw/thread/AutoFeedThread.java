@@ -174,8 +174,7 @@ public class AutoFeedThread extends BaseThread {
 
         }*/
         //判断登陆成功
-        if((NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")||NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误"))
-                &&!AutoUtil.checkAction(record,"wx飞行模式&清除数据后启动微信")){
+        if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我") &&!AutoUtil.checkAction(record,"wx飞行模式&清除数据后启动微信")){
 
             if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")){
                 /**
@@ -184,23 +183,36 @@ public class AutoFeedThread extends BaseThread {
                 AutoUtil.recordAndLog(record,getLoginSeccessThenDoAction(extValue));
                 LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd());
             }
-            if(NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误")){
-                AutoUtil.recordAndLog(record,"wx登陆异常");
-                String excpMsg = NodeActionUtil.getTextByNodePath(root,"00");
-                LogUtil.login(loginIndex+" fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" -"+excpMsg);
-            }
 
             //登录成功&开启登录成功暂停 修改暂停标识为1
             if("1".equals(isLoginSucessPause))   parameters.setIsStop(1);
             AutoUtil.sleep(3000);
-            if(loginIndex==wx008Datas.size()-1){
-                AutoUtil.recordAndLog(record,"wx登陆完成");
-                return flag;
-            }
-            loginIndex = loginIndex+1;
-            AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
+            //登陆成功或失败序号加1
+            doNextIndexAndRecord2DB();
+
         }
+
+        //判断登陆异常
+        if(AutoUtil.checkAction(record,"wx点击登录")){
+            if(NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误")||NodeActionUtil.isWindowContainStr(root,"长期没有使用，已被回收")){
+                AutoUtil.recordAndLog(record,"wx登陆异常");
+                String excpMsg = NodeActionUtil.getTextByNodePath(root,"00");
+                LogUtil.login(loginIndex+" fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" -"+excpMsg);
+                //登陆成功或失败序号加1
+                doNextIndexAndRecord2DB();
+            }
+        }
+
         return flag;
+    }
+
+    private void doNextIndexAndRecord2DB(){
+        if(loginIndex==wx008Datas.size()-1){
+            AutoUtil.recordAndLog(record,"wx登陆完成");
+            return;
+        }
+        loginIndex = loginIndex+1;
+        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
     }
 
 
