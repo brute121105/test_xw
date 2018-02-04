@@ -31,10 +31,11 @@ public class HideApp {
 
         //待验证是否生效
         hidePackageInfo(sharePkgParam);
+        //影响答题登录
+        //hideApplicationInfo(sharePkgParam)
 
         hideInstalledApplications(sharePkgParam);
         hideInstalledPackages(sharePkgParam);
-        hideApplicationInfo(sharePkgParam);
         hideRecentTasks(sharePkgParam);
         hideRunningTasks(sharePkgParam);
         hideRunningAppProcesses(sharePkgParam);

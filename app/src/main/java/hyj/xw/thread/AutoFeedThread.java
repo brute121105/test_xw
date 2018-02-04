@@ -140,7 +140,11 @@ public class AutoFeedThread extends BaseThread {
 
     //自动登录配置
     public boolean autoLoginConfig(AccessibilityNodeInfo root,Map<String,String> record){
-        NodeActionUtil.doClickByNodePathAndText(root,"注册|语言","00","登录",record,"wx点击登陆1",500);
+        if(NodeActionUtil.isContainsStrs(root,"登录|注册|语言")){
+            AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"登录"),record,"wx点击登陆1",500);
+        }
+        //丢弃，污点语言按钮
+        //NodeActionUtil.doClickByNodePathAndText(root,"注册|语言","00","登录",record,"wx点击登陆1",500);
 
         boolean flag = false;
         String wxid = currentWx008Data.getWxId(),pwd = currentWx008Data.getWxPwd();
@@ -203,7 +207,8 @@ public class AutoFeedThread extends BaseThread {
 
         //判断登陆异常
         if(AutoUtil.checkAction(record,"wx点击登录")){
-            if(NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误")||NodeActionUtil.isWindowContainStr(root,"长期没有使用，已被回收")){
+            if(NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误")
+                    ||NodeActionUtil.isWindowContainStr(root,"长期没有使用，已被回收")||NodeActionUtil.isWindowContainStr(root,"该帐号长期未登录，为保")){
                 AutoUtil.recordAndLog(record,"wx登陆异常");
                 String excpMsg = NodeActionUtil.getTextByNodePath(root,"00");
                 LogUtil.login(loginIndex+" fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" -"+excpMsg+" ip:"+record.remove("ipMsg"));

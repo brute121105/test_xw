@@ -50,7 +50,6 @@ public class PhoneConf {
         List<Wx008Data> datas = JSON.parseArray(str, Wx008Data.class);
         int successCount = 0;
         for (Wx008Data data : datas) {
-
             List<Wx008Data> getData=null;
             if(!TextUtils.isEmpty(data.getWxId())){
                 getData = DataSupport.where("wxId=?", data.getWxId()).find(Wx008Data.class);
@@ -64,6 +63,8 @@ public class PhoneConf {
                     successCount = successCount + 1;
                 }
             }
+           /* if("pqk473".equals(data.getWxId())||"cyv472".equals(data.getWxId())){
+            }*/
         }
         return successCount;
     }

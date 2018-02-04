@@ -225,19 +225,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.auto_login:
-                GetPhoneInfoUtil.getHideInfo();
-                String wx = FileUtil.readAll1("/sdcard/wx.txt");
-                String[] strs = wx.split("\n");
-                int ct = 1;
-                /*for(String str :strs){
-                    if(!TextUtils.isEmpty(str)&&str.length()>15){
-                        String[] s = str.split("----");
-                        int i = DaoUtil.setLoginWxidDataTo008NullData(s[0],s[1],"84");
-                        System.out.println("setLoginDataTo008NullData--->"+i+" ct:"+ct);
-                        System.out.println("--->"+s[0]+"-"+s[1]);
-                        ct = ct+1;
-                    }
-                }*/
+                //importGoumai();
                 //testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
@@ -274,8 +262,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.del_upload_file:
                 AutoUtil.execShell("am force-stop hyj.xw");
                 AutoUtil.execShell("am force-stop hyj.weixin_008");
-                AutoUtil.execShell("am force-stop hyj.weixin_008");
+                AutoUtil.execShell("am force-stop com.soft.apk008v");
                 break;
+        }
+    }
+
+    public void importGoumai(){
+        String wx = FileUtil.readAll1("/sdcard/wx.txt");
+        String[] strs = wx.split("\n");
+        int ct = 1;
+        for(String str :strs){
+            if(!TextUtils.isEmpty(str)&&str.length()>15){
+                String[] s = str.split("----");
+                int i = DaoUtil.setLoginWxidDataTo008NullData(s[0],s[1],"84");
+                System.out.println("setLoginDataTo008NullData--->"+i+" ct:"+ct);
+                System.out.println("导入账号密码--->"+s[0]+"-"+s[1]);
+                ct = ct+1;
+            }
         }
     }
 

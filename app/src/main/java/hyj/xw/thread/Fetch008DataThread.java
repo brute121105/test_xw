@@ -27,6 +27,7 @@ public class Fetch008DataThread extends BaseThread {
     public Fetch008DataThread(AccessibilityService context, Map<String, String> record, AccessibilityParameters parameters){
         super(context,record,parameters);
     }
+    int count=1;
     @Override
     public Object call()  {
         while (true){
@@ -66,6 +67,8 @@ public class Fetch008DataThread extends BaseThread {
                 wx008Data.setCreateTime(new Date());
                 if(wx008Data.save()){
                     LogUtil.d("RegisterService","写入数据库:"+JSON.toJSONString(wx008Data));
+                    System.out.println("写入数据库:--->"+count);
+                    count = count+1;
                 }
 
                 LogUtil.log008(jsonStr);
