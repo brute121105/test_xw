@@ -259,11 +259,22 @@ public class AutoFeedThread extends BaseThread {
                         break;
                     }
                 }
-                //情况1--iOS
+                //情况2--iOS
                 if(!flag){
                     for(int i=1;i<6;i++){
                         AccessibilityNodeInfo node00 = ParseRootUtil.getNodePath(root,"00000"+i);
                         if(node00.getContentDescription().toString().contains("iOS")){
+                            AutoUtil.performClick(node00,record,"wxiPhone OS",500);
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+                //情况3--iPhone
+                if(!flag){
+                    for(int i=1;i<6;i++){
+                        AccessibilityNodeInfo node00 = ParseRootUtil.getNodePath(root,"00000"+i);
+                        if(node00.getContentDescription().toString().contains("iPhone")){
                             AutoUtil.performClick(node00,record,"wxiPhone OS",500);
                             flag = true;
                             break;
