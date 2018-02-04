@@ -29,13 +29,13 @@ public class LoginSuccessActionConfig {
         String phone = TextUtils.isEmpty(currentWx008Data.getWxId())?currentWx008Data.getPhone():currentWx008Data.getWxId();
         System.out.println("SetPwdThread-->phone:"+phone+" ,currentWx008Data.getWxPwd():"+currentWx008Data.getWxPwd());
         String newPwd = "www23"+phone.substring(phone.length()-3);
-        NodeActionUtil.doInputByNodePathAndText(root,"设置密码|完成|请设置微信密码。你可以用","0034",newPwd,record,"SetPwdThread输入密码1",1000);
-        NodeActionUtil.doInputByNodePathAndText(root,"设置密码|完成|请设置微信密码。你可以用","0036",newPwd,record,"SetPwdThread输入密码2",1000);
+        NodeActionUtil.doInputByNodePathAndText(root,"设置密码|完成|设置微信密码","0034",newPwd,record,"SetPwdThread输入密码1",1000);
+        NodeActionUtil.doInputByNodePathAndText(root,"设置密码|完成|设置微信密码","0036",newPwd,record,"SetPwdThread输入密码2",1000);
         /*if(AutoUtil.checkAction(record,"SetPwdThread输入密码2")){
             AutoUtil.recordAndLog(record,"wx登陆成功");
             return;
         }*/
-        NodeActionUtil.doClickByNodePathAndText(root,"设置密码|完成|请设置微信密码。你可以用","002","完成",record,"SetPwdThread设置微信密码完成",1000);
+        NodeActionUtil.doClickByNodePathAndText(root,"设置密码|完成|设置微信密码","002","完成",record,"SetPwdThread设置微信密码完成",1000);
         if(AutoUtil.checkAction(record,"SetPwdThread设置微信密码完成")){
             //List<Wx008Data> ds1 = DaoUtil.findByDataByColumn("guid",currentWx008Data.getGuid());
             //System.out.println("SetPwdThread-->findByDataByColumn1:"+ JSON.toJSONString(ds1));
@@ -54,4 +54,5 @@ public class LoginSuccessActionConfig {
             }
         }
     }
+
 }

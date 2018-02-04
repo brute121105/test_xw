@@ -77,12 +77,17 @@ public class SetWxidThread implements Runnable {
             if(node4!=null&&node41!=null&&!"未设置".equals(node41.getText()+"")){
                 //已经设置，但是wxid没记录到数据库
                 AccessibilityNodeInfo wxidNode = ParseRootUtil.getNodePath(root,"00211");
-                if(wxidNode!=null&&(wxidNode.getText()+"").length()>5&&currentWx008Data.getWxId()==null){
+                LogUtil.d("SetWxidThread node4 wxidNode",wxidNode+"");
+                if(wxidNode!=null){
+                    LogUtil.d("SetWxidThread node4 wxidNode text",wxidNode.getText()+"");
+                }
+                if(wxidNode!=null&&(wxidNode.getText()+"").length()>5&&
+                        (currentWx008Data.getWxId()==null||(currentWx008Data.getWxId()!=null&&currentWx008Data.getWxId().matches("\\d+")))){
                     String wx = wxidNode.getText()+"";
+                    LogUtil.d("SetWxidThread node4 wx",wx+"");
                     currentWx008Data.setWxId(wx);
-                    if(currentWx008Data.updateAll("guid=?",currentWx008Data.getGuid())==1){
-                        LogUtil.d("【SetWxidThread更新微信号成功-原本未插入数据库】",wxid);
-                    };
+                    int cn = currentWx008Data.updateAll("guid=?",currentWx008Data.getGuid());
+                    LogUtil.d("【SetWxidThread更新微信号成功-原本未插入数据库】node4 cn:",cn+"");
                 }
                 AutoUtil.recordAndLog(record,"wx登陆成功");
                 return;

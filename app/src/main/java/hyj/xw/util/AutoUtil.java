@@ -476,4 +476,14 @@ public class AutoUtil {
         return uuid;
     }
 
+
+    //获取网络状态
+     public static boolean isNetworkConnected() {
+         ConnectivityManager mConnectivityManager = (ConnectivityManager) GlobalApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+         NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+         if (mNetworkInfo != null) {
+             return mNetworkInfo.isAvailable();
+         }
+         return false;
+     }
 }

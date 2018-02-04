@@ -17,15 +17,21 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
+import org.litepal.crud.DataSupport;
+
+import java.util.List;
+
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
+import hyj.xw.flowWindow.MyWindowManager;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.test.GetPhoneInfoUtil;
+import hyj.xw.thread.IpNetThread;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.FileUtil;
@@ -48,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MyWindowManager.createSmallWindow(getApplicationContext());
+        MyWindowManager.createSmallWindow2(getApplicationContext());
         GetPermissionUtil.getReadAndWriteContactPermision(this,MainActivity.this);
 
 
@@ -86,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String loginIndex = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX);
         loginIndex = TextUtils.isEmpty(loginIndex)||Integer.parseInt(loginIndex)>phoneStrs.length-1?"0":loginIndex;
         spinner.setSelection(Integer.parseInt(loginIndex),true);//spinner下拉框默认值
-
          /*
         下拉框数据结束
         */
@@ -94,13 +102,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button openAssitBtn = (Button)this.findViewById(R.id.open_assist);
         Button autoLoginBtn = (Button)this.findViewById(R.id.auto_login);
         Button importBakDataBtn = (Button)this.findViewById(R.id.importBakData);
+        Button exportBakDataBtn = (Button)this.findViewById(R.id.exportBakData);
         Button clearAppDataBtn = (Button)this.findViewById(R.id.clearAppData);
         Button apiSettingBtn = (Button)this.findViewById(R.id.apiSetting);
+        Button del_upload_fileBtn = (Button)this.findViewById(R.id.del_upload_file);
         openAssitBtn.setOnClickListener(this);
         autoLoginBtn.setOnClickListener(this);
         importBakDataBtn.setOnClickListener(this);
+        exportBakDataBtn.setOnClickListener(this);
         clearAppDataBtn.setOnClickListener(this);
         apiSettingBtn.setOnClickListener(this);
+        del_upload_fileBtn.setOnClickListener(this);
 
     }
 
@@ -199,7 +211,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Toast.makeText(this, "已删除：" + DaoUtil.deleteAll() + "条", Toast.LENGTH_LONG).show();
                 Toast.makeText(this, "已导入数据：" + PhoneConf.importData() + "条", Toast.LENGTH_LONG).show();
                 break;
+            case R.id.exportBakData:
+                List<Wx008Data> datas = DataSupport.findAll(Wx008Data.class);
+                //setPhoneInfo1置为空，解决导出后，导入失败
+                for(Wx008Data data:datas){
+                    data.setPhoneInfo1(null);
+                }
+                if (datas != null && datas.size() > 0) {
+                    LogUtil.export("/sdcard/A_hyj_008data/", JSON.toJSONString(datas));
+                    Toast.makeText(this, "已导出数据：" + datas.size() + "条", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "没有可导出数据", Toast.LENGTH_LONG).show();
+                }
+                break;
             case R.id.auto_login:
+                GetPhoneInfoUtil.getHideInfo();
                 String wx = FileUtil.readAll1("/sdcard/wx.txt");
                 String[] strs = wx.split("\n");
                 int ct = 1;
@@ -230,8 +256,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE,loginSucessPauseCheckBox.isChecked()?"1":"0");
                 break;
             case R.id.apiSetting:
-                DaoUtil.updatePwd("QlTS2790","www23790");
+                DaoUtil.updatePwd("ynj654","www23654");
+              /*  DaoUtil.updatePwd("afz496","www23969");
+
+                DaoUtil.updatePwd("nxu489","www23565");
+                DaoUtil.updatePwd("bwi483","www23565");
+                DaoUtil.updatePwd("aev224","www23483");
+                DaoUtil.updatePwd("mpz862","www23975");
+                DaoUtil.updatePwd("evb657","www23862");*/
+                //DaoUtil.updatePwd("hvy975","www23");
+                //DaoUtil.updatePwd("zcr392","www23");
+                //DaoUtil.updatePwd("fzv762","www23");
+                //new IpNetThread().start();
+                System.out.println("--net:"+AutoUtil.isNetworkConnected());
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
+                break;
+            case R.id.del_upload_file:
+                AutoUtil.execShell("am force-stop hyj.xw");
+                AutoUtil.execShell("am force-stop hyj.weixin_008");
+                AutoUtil.execShell("am force-stop hyj.weixin_008");
                 break;
         }
     }

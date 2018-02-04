@@ -49,6 +49,8 @@ public class AutoFeedThread extends BaseThread {
     public Object call() {
         while (true){
             try {
+            //记录数据，悬浮框显示
+            recordFlowInfo(wx008Datas,loginIndex);
             AutoUtil.sleep(500);
             LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
             if(currentWx008Data!=null){
@@ -106,6 +108,8 @@ public class AutoFeedThread extends BaseThread {
                     AutoUtil.sleep(5000);
                     AutoUtil.startWx();
                     AutoUtil.recordAndLog(record,"wx飞行模式&清除数据后启动微信");
+                    //记录ip
+                    recordIp();
                 }
 
                 //自动登陆
@@ -114,6 +118,10 @@ public class AutoFeedThread extends BaseThread {
                     exceptionConfig(root,record);
                     maihao(root,record);
                 }
+                //抓取昵称保存数据库
+              /*  if(AutoUtil.checkAction(record,"SetPwdThread点击设置")) {
+                    getNickName(root, currentWx008Data);
+                }*/
                 //设置密码
                 if(AutoUtil.actionContains(record,"SetPwdThread")){
                     LogUtil.d(TAG,"SetPwdThread-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
@@ -122,6 +130,7 @@ public class AutoFeedThread extends BaseThread {
 
 
             }catch (Exception e){
+              AutoUtil.recordAndLog(record,"抛出异常");
               LogUtil.logError(e);
             }
 
@@ -181,7 +190,7 @@ public class AutoFeedThread extends BaseThread {
                  * 登录成功判断是否有其他动作
                  */
                 AutoUtil.recordAndLog(record,getLoginSeccessThenDoAction(extValue));
-                LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd());
+                LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             }
 
             //登录成功&开启登录成功暂停 修改暂停标识为1
@@ -197,7 +206,7 @@ public class AutoFeedThread extends BaseThread {
             if(NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误")||NodeActionUtil.isWindowContainStr(root,"长期没有使用，已被回收")){
                 AutoUtil.recordAndLog(record,"wx登陆异常");
                 String excpMsg = NodeActionUtil.getTextByNodePath(root,"00");
-                LogUtil.login(loginIndex+" fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" -"+excpMsg);
+                LogUtil.login(loginIndex+" fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" -"+excpMsg+" ip:"+record.remove("ipMsg"));
                 //登陆成功或失败序号加1
                 doNextIndexAndRecord2DB();
             }
@@ -227,6 +236,7 @@ public class AutoFeedThread extends BaseThread {
     //maihao
     public void maihao(AccessibilityNodeInfo root,Map<String,String> record){
         NodeActionUtil.doClickByNodePathAndText(root,"为了你的帐号安全|取消","02","确定",record,"exception确定尊敬的用户",500);
+        NodeActionUtil.doClickByNodePathAndText(root,"你在新手机登录微信|取消","02","确定",record,"exception确定尊敬的用户",500);
         NodeActionUtil.doClickByNodePathAndText(root,"请选出你的微信曾经绑定过的手机号|验证身份","06",null,record,"exception确定尊敬的用户",500);
         NodeActionUtil.doClickByNodePathAndText(root,"请关闭页面重新登录|验证通过","000003",null,record,"exception确定尊敬的用户",500);
         AccessibilityNodeInfo node = ParseRootUtil.getNodePath(root,"000006");
@@ -334,11 +344,43 @@ public class AutoFeedThread extends BaseThread {
         if("601".equals(extValue)){
             action="601SetWxidThread设置微信号";
             new Thread(new SetWxidThread(context,record,currentWx008Data)).start();
-        }else if("602".equals(extValue)){
+        }else if("602".equals(extValue)){//设置密码
             action="602SetPwdThread设置微信号";
             System.out.println("SetPwdThread--->loginIndex:"+loginIndex+" currentWx008Data:"+JSON.toJSONString(currentWx008Data));
         }
         return action;
+    }
+
+    //记录悬浮框信息
+    public void recordFlowInfo(List<Wx008Data> wx008Datas,int loginIndex){
+        record.put("total",wx008Datas==null?"0":wx008Datas.size()+"");//记录总数，悬浮框显示
+        record.put("loginIndex",loginIndex+"");
+    }
+
+    //记录外网ip
+    public void recordIp(){
+        if(record.get("ipMsg")==null){
+            System.out.println("recordIp--->开始记录ip");
+            record.put("ipMsg","开启ip记录线程");
+            new IpNetThread(record).start();
+        }
+    }
+
+    private static void  getNickName(AccessibilityNodeInfo root,Wx008Data currentWx008Data){
+        if(TextUtils.isEmpty(currentWx008Data.getNickName())){
+            List<AccessibilityNodeInfo> nodes = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/c1v");
+            AccessibilityNodeInfo node = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/c1v");
+            System.out.println("update nickName-->node:"+node);
+            System.out.println("update nickName-->nodes:"+nodes);
+            if(node!=null){
+                String nickName = node.getText()+"";
+                if(!TextUtils.isEmpty(nickName)){
+                    int cn = DaoUtil.updateNickName(currentWx008Data,nickName);
+                    System.out.println("update nickName-->cn:"+cn);
+                    DaoUtil.findByDataByColumn("guid",currentWx008Data.getGuid());
+                }
+            }
+        }
     }
 
 }

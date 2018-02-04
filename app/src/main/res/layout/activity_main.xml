@@ -80,10 +80,16 @@
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/importBakData"
+    android:id="@+id/importBakData"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="导入数据"
+    android:textSize="18sp" />
+    <Button
+        android:id="@+id/exportBakData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="导入数据"
+        android:text="导出数据"
         android:textSize="18sp" />
     <Button
         android:id="@+id/clearAppData"

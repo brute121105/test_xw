@@ -45,7 +45,11 @@ public class Fetch008DataThread extends BaseThread {
 
             NodeActionUtil.doClickByNodePathAndText(root,"快捷历史|历史记录","07","随机生成",record,"008随机生成",1000);
             AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
-            if(list!=null&&list.getChildCount()>90){
+            System.out.println("list-->"+list);
+            if(list!=null){
+                System.out.println("list size-->"+list.getChildCount());
+            }
+            if(list!=null&&list.getChildCount()>89){
                 String[] str = new String[list.getChildCount()+2];
                 for(int i=0;i<list.getChildCount();i++){
                     str[i]=list.getChild(i).getText()+"";

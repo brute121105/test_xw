@@ -28,17 +28,17 @@ public class GetPhoneInfoUtil {
        PackageManager pm = GlobalApplication.getContext().getPackageManager();
        List<ApplicationInfo> installs = pm.getInstalledApplications(0);
        for(ApplicationInfo install :installs){
-           System.out.println(tag+" getInstalledApplications--->"+ install.packageName);
+           //System.out.println(tag+" getInstalledApplications--->"+ install.packageName);
        }
 
        try {
            String packageName = "com.tencent.mm";
            PackageInfo pInfo =  pm.getPackageInfo(packageName,PackageManager.GET_PERMISSIONS);//没有此包名会报错 hook钱替换传入参数
-           ApplicationInfo apInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-           List<PackageInfo> installedPackages = pm.getInstalledPackages(0);
            System.out.println(tag+" getPackageInfo--->"+ JSON.toJSONString(pInfo));
-           System.out.println(tag+" getApplicationInfo--->"+ JSON.toJSONString(apInfo));
-           System.out.println(tag+" getInstalledPackages--->"+ JSON.toJSONString(installedPackages));
+           //ApplicationInfo apInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+           //List<PackageInfo> installedPackages = pm.getInstalledPackages(0);
+           //System.out.println(tag+" getApplicationInfo--->"+ JSON.toJSONString(apInfo));
+           //System.out.println(tag+" getInstalledPackages--->"+ JSON.toJSONString(installedPackages));
        } catch (PackageManager.NameNotFoundException e) {
            LogUtil.logError(e);
        }

@@ -25,10 +25,11 @@ public class PhoneConf {
     static {
         File file = new File("/sdcard/A_hyj_008data");
         File[] files = file.listFiles();
-        String imporFileName = files[files.length - 1].getPath();//获取最新文件名
-        System.out.println("--->导入文件：" + imporFileName);
-
-         str = FileUtil.readAll(imporFileName);
+        if(files!=null&&files.length>0){
+            String imporFileName = files[files.length - 1].getPath();//获取最新文件名
+            System.out.println("--->导入文件：" + imporFileName);
+            str = FileUtil.readAll(imporFileName);
+        }
     }
    public static PhoneInfo createPhoneInfo(int index){
        System.out.println("str-->" + str);
@@ -49,8 +50,15 @@ public class PhoneConf {
         List<Wx008Data> datas = JSON.parseArray(str, Wx008Data.class);
         int successCount = 0;
         for (Wx008Data data : datas) {
-            //data.setPhoneInfo(data.getDatas());
-            List<Wx008Data> getData = DataSupport.where("phone=?", data.getPhone()).find(Wx008Data.class);
+
+            List<Wx008Data> getData=null;
+            if(!TextUtils.isEmpty(data.getWxId())){
+                getData = DataSupport.where("wxId=?", data.getWxId()).find(Wx008Data.class);
+            }else if(!TextUtils.isEmpty(data.getPhone())) {
+                getData = DataSupport.where("phone=?", data.getPhone()).find(Wx008Data.class);
+            }else {//解决无法导入008空数据
+                getData = DataSupport.where("datas=?", data.getDatas()).find(Wx008Data.class);
+            }
             if (getData == null || getData.size() == 0) {
                 if (data.save()) {
                     successCount = successCount + 1;
@@ -75,9 +83,18 @@ public class PhoneConf {
             if(wxid==null){
                 wxid = wx008Datas.get(i).getPhone();
             }
-            datas.add(i + "-" + wxid + " " + time + " " + (cn == null ? "86" : cn) + " \n" + lastLoginTime);
-        }
+            String showMsg = i + "-" + wxid + " " + time + " " + (cn == null ? "86" : cn) + " \n" + lastLoginTime;
+            datas.add(showMsg);
 
+            //删除测试
+            /*Wx008Data wd = wx008Datas.get(i);
+            String wxid1 = wd.getWxId(),phone1 = wd.getPhone();
+             if("0084945755941".equals(wxid1)){
+                 int cn1 = wd.delete();
+                 System.out.println("cn1--->"+cn1);
+             }
+            System.out.println("wxid-->"+wxid1+" phone1-->"+phone1);*/
+        }
         return datas.toArray(new String[datas.size()]);
     }
 }

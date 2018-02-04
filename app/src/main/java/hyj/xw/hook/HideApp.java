@@ -28,14 +28,18 @@ public class HideApp {
 
     public HideApp(XC_LoadPackage.LoadPackageParam sharePkgParam){
         this.sharePkgParam = sharePkgParam;
+
+        //待验证是否生效
+        hidePackageInfo(sharePkgParam);
+
         hideInstalledApplications(sharePkgParam);
         hideInstalledPackages(sharePkgParam);
-        hidePackageInfo(sharePkgParam);
         hideApplicationInfo(sharePkgParam);
         hideRecentTasks(sharePkgParam);
         hideRunningTasks(sharePkgParam);
         hideRunningAppProcesses(sharePkgParam);
         hideRunningServices(sharePkgParam);
+
     }
 
 
@@ -97,13 +101,16 @@ public class HideApp {
     }
 
     public static void hidePackageInfo(XC_LoadPackage.LoadPackageParam sharePkgParam){
-        System.out.println("hidePackageInfo--xposde-->hideApp");
+        System.out.println("ApplicationPackageManager hidePackageInfo--xposde-->hideApp");
         try {
             XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager",sharePkgParam.classLoader,"getPackageInfo",String.class,int.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     super.beforeHookedMethod(param);
-                    param.args[0] = "com.android.calendar";
+                    System.out.println("aram.args[0]--->"+param.args[0].toString());
+                    if(param.args[0]!=null&&isContainPackage(param.args[0].toString())){
+                        param.args[0] = "com.android.calendar";
+                    }
                 }
             });
         } catch (Exception ex) {

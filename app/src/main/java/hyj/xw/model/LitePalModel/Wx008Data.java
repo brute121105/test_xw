@@ -28,6 +28,7 @@ public class Wx008Data  extends DataSupport{
     private Date createTime;
     private Date lastLoginTime;
     private String dataFlag;//008  抓取008数据
+    private String nickName;
 
     public Wx008Data(){
     }
@@ -93,6 +94,13 @@ public class Wx008Data  extends DataSupport{
 
     }
 
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
 
     private  String createTags() {
         String str = "";
@@ -112,6 +120,9 @@ public class Wx008Data  extends DataSupport{
         return phoneInfo;
     }
 
+    public void setPhoneInfo1(PhoneInfo phoneInfo) {
+        this.phoneInfo = phoneInfo;
+    }
 
     public Date getLastLoginTime() {
         return lastLoginTime;

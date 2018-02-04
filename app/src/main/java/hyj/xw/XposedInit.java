@@ -4,6 +4,7 @@ import android.content.Context;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import hyj.xw.hook.HideApp;
 import hyj.xw.hook.Phone;
 
 /**
@@ -30,6 +31,7 @@ public class XposedInit implements IXposedHookLoadPackage {
 
        if(packageName.equals(PACKAGE_NAME)){
              System.out.println("hyj context--->"+PACKAGE_NAME);
+             new HideApp(lpparam);
              new Phone(lpparam);
            //--test start
          /*  Class c1 = XposedHelpers.findClass("android.app.ActivityThread", null);

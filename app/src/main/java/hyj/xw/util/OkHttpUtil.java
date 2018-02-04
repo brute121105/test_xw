@@ -23,7 +23,8 @@ public class OkHttpUtil {
                 .build();
         try {
             Response response = mOkHttpClient.newCall(request).execute();
-            reponseData = response.body().string();
+            byte[]  reponseBytes = response.body().bytes();
+            reponseData = new String(reponseBytes,"utf-8");
         } catch (IOException e) {
             e.printStackTrace();
         }

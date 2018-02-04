@@ -18,12 +18,12 @@ import hyj.xw.model.LitePalModel.Wx008Data;
 
 public class DaoUtil {
     public static List<Wx008Data> getWx008Datas(){
-         List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  not like ? and expMsg  not like ?) or expMsg is null","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
+        // List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  not like ? and expMsg  not like ?) or expMsg is null","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  like ? or expMsg  like ?)","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  like ? or expMsg  like ?) and cnNum=?","%被限制登录%","%保护状态%","63").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("cnNum is null and wxId is not null and (expMsg  like ? or expMsg  like ?)","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
 
-       // List<Wx008Data> wx008Datas = findByDataByColumn("dataFlag","008");
+        List<Wx008Data> wx008Datas = findByDataByColumn("dataFlag","008");
 
         return wx008Datas;
     }
@@ -90,6 +90,7 @@ public class DaoUtil {
         int updateCn = 0;
         Wx008Data wx008Data =  DaoUtil.findOne008NullDatas();
         if(wx008Data!=null){
+            wx008Data.setPhone(wxid);//wxid当phone
             wx008Data.setWxId(wxid);
             wx008Data.setWxPwd(pwd);
             wx008Data.setCnNum(cnNum);
@@ -107,6 +108,18 @@ public class DaoUtil {
             cn = wx008Data.updateAll("phone=?",wx008Data.getPhone());
         }else {
             cn = wx008Data.updateAll("guid=?",wx008Data.getGuid());
+        }
+        return cn;
+    }
+
+    public static int updateNickName(Wx008Data wx008Data,String nickName){
+        wx008Data.setNickName(nickName);
+        String wxid = wx008Data.getWxId();
+        int cn=-2 ;
+        if(!TextUtils.isEmpty(wxid)){
+            cn = wx008Data.updateAll("wxId=?",wx008Data.getWxId());
+        }else {
+            cn = wx008Data.updateAll("phone=?",wx008Data.getPhone());
         }
         return cn;
     }

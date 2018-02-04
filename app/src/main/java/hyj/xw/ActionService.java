@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.factory.ThreadFactory;
+import hyj.xw.flowWindow.MyWindowManager;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.LogUtil;
@@ -59,7 +60,15 @@ public class ActionService  extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
         LogUtil.d("AccessibilityService","accessibilityEvent:"+accessibilityEvent.getEventType());
+        MyWindowManager.updateFlowMsg(getFlowMsg(record));
 
+    }
+    private String getFlowMsg(Map<String,String> record){
+        String total = record.get("total");
+        String loginIndex = record.get("loginIndex");
+        String msg1 = loginIndex+"/"+total;
+        String msg = msg1+"\n"+record.get("recordAction");
+        return msg;
     }
 
     @Override
