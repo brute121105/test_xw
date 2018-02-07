@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.auto_login:
-                //importGoumai();
+                importGoumai();
                 //testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
@@ -273,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int ct = 1;
         for(String str :strs){
             if(!TextUtils.isEmpty(str)&&str.length()>15){
+                if(str.contains("封号")) continue;
                 String[] s = str.split("----");
                 int i = DaoUtil.setLoginWxidDataTo008NullData(s[0],s[1],"84");
                 System.out.println("setLoginDataTo008NullData--->"+i+" ct:"+ct);
