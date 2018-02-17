@@ -124,6 +124,20 @@ public class DaoUtil {
         return cn;
     }
 
+    public static int updateRepPhone(Wx008Data wx008Data,String phone){
+        wx008Data.setReplacePhone(phone);
+        String wxid = wx008Data.getWxId();
+        int cn=-2 ;
+        if(!TextUtils.isEmpty(wxid)){
+            cn = wx008Data.updateAll("wxId=?",wx008Data.getWxId());
+        }else {
+            cn = wx008Data.updateAll("phone=?",wx008Data.getPhone());
+        }
+        return cn;
+    }
+
+
+
 
     public static Integer getLoginFailNum(){
         List<Wx008Data> wx008Datas = DataSupport.where("loginState='0'").find(Wx008Data.class);

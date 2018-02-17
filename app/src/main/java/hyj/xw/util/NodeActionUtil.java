@@ -53,6 +53,23 @@ public class NodeActionUtil {
          LogUtil.d("NodeActionUtil","doClickByNodePathAndText isclick -->"+isClick+" "+action);
         return isClick;
     }
+
+    public static boolean doClickByNodePathAndDesc(AccessibilityNodeInfo root,String str2,String nodePath,String desc,Map<String,String> record,String action,long ms){
+        boolean isClick = false;
+        boolean isContainsStrs = isContainsStrs(root,str2);
+        AccessibilityNodeInfo nodeInfo = ParseRootUtil.getNodePath(root,nodePath);
+        if(nodeInfo==null||!desc.equals(nodeInfo.getContentDescription()+"")){
+           return false;
+        }
+        if(isContainsStrs){
+            isClick = AutoUtil.performClick(nodeInfo,record,action,ms);
+        }
+        LogUtil.d("NodeActionUtil","doClickByNodePathAndDesc -->"+str2);
+        LogUtil.d("NodeActionUtil","doClickByNodePathAndDesc isContainsStrs -->"+isContainsStrs);
+        LogUtil.d("NodeActionUtil","doClickByNodePathAndDesc nodeInfo -->"+nodeInfo);
+        LogUtil.d("NodeActionUtil","doClickByNodePathAndDesc isclick -->"+isClick+" "+action);
+        return isClick;
+    }
     public static boolean doBack(AccessibilityService context,AccessibilityNodeInfo root, String str2, Map<String,String> record, String action, long ms){
         boolean isClick = false;
         boolean isContainsStrs = isContainsStrs(root,str2);

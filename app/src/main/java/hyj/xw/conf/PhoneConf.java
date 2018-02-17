@@ -84,9 +84,10 @@ public class PhoneConf {
             if(wxid==null){
                 wxid = wx008Datas.get(i).getPhone();
             }
-            String showMsg = i + "-" + wxid + " " + time + " " + (cn == null ? "86" : cn) + " \n" + lastLoginTime;
+            String showMsg = i + "-" + wxid + " " + time + " " + (cn == null ? "86" : cn);
             datas.add(showMsg);
 
+            System.out.println(showMsg+" --nickName:"+wx008Datas.get(i).getNickName()+" repPhone:"+wx008Datas.get(i).getReplacePhone()+" pwd:"+wx008Datas.get(i).getWxPwd());
             //删除测试
             /*Wx008Data wd = wx008Datas.get(i);
             String wxid1 = wd.getWxId(),phone1 = wd.getPhone();

@@ -23,12 +23,14 @@ import java.util.List;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
+import hyj.xw.api.GetPhoneAndValidCodeThread;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
+import hyj.xw.model.PhoneApi;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.test.GetPhoneInfoUtil;
 import hyj.xw.thread.IpNetThread;
@@ -230,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
             case R.id.open_assist:
+                //new Thread(new GetPhoneAndValidCodeThread(new PhoneApi())).start();
                 startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                 break;
             case R.id.clearAppData:

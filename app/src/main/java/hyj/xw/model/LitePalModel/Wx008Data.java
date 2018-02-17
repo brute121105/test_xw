@@ -29,6 +29,7 @@ public class Wx008Data  extends DataSupport{
     private Date lastLoginTime;
     private String dataFlag;//008  抓取008数据
     private String nickName;
+    private String replacePhone;
 
     public Wx008Data(){
     }
@@ -115,6 +116,7 @@ public class Wx008Data  extends DataSupport{
         String str = chars.charAt((int)(Math.random() * 20))+"";
         return str;
     }
+
 
     public PhoneInfo getPhoneInfo() {
         return phoneInfo;
@@ -227,5 +229,13 @@ public class Wx008Data  extends DataSupport{
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+    public String getReplacePhone() {
+        return replacePhone;
+    }
+
+    public void setReplacePhone(String replacePhone) {
+        this.replacePhone = replacePhone;
     }
 }

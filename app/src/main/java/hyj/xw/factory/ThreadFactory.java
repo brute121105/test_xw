@@ -5,7 +5,7 @@ import android.accessibilityservice.AccessibilityService;
 import java.util.Map;
 
 import hyj.xw.BaseThread;
-import hyj.xw.jm.ALZGetPhoneAndValidCodeThread;
+import hyj.xw.api.ALZGetPhoneAndValidCodeThread;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.thread.AutoFeedThread;
 import hyj.xw.thread.AutoLoginThread;

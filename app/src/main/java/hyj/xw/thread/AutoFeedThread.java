@@ -6,15 +6,18 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import hyj.xw.AccessibilityConfig.LoginSuccessActionConfig;
 import hyj.xw.BaseThread;
+import hyj.xw.api.GetPhoneAndValidCodeThread;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.model.LitePalModel.Wx008Data;
+import hyj.xw.model.PhoneApi;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.FileUtil;
@@ -38,12 +41,16 @@ public class AutoFeedThread extends BaseThread {
     List<Wx008Data> wx008Datas;
     Wx008Data currentWx008Data;
     String extValue;
+    PhoneApi pa = new PhoneApi();
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
         wx008Datas = DaoUtil.getWx008Datas();
         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
         extValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
+        if("605".equals(extValue)){//605换绑手机，需接吗
+            new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
+        }
     }
     @Override
     public Object call() {
@@ -118,14 +125,27 @@ public class AutoFeedThread extends BaseThread {
                     exceptionConfig(root,record);
                     maihao(root,record);
                 }
-                //抓取昵称保存数据库
-              /*  if(AutoUtil.checkAction(record,"SetPwdThread点击设置")) {
-                    getNickName(root, currentWx008Data);
-                }*/
+
                 //设置密码
                 if(AutoUtil.actionContains(record,"SetPwdThread")){
                     LogUtil.d(TAG,"SetPwdThread-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
                     LoginSuccessActionConfig.doSetPwdAction(root,record,currentWx008Data);
+                }
+
+                //扫码登录pc
+                if(AutoUtil.actionContains(record,"loginPc")){
+                    LogUtil.d(TAG,"loginPc-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.doLoginPc(root,record,currentWx008Data);
+                }
+                //登录成功搜索微信号
+                if(AutoUtil.actionContains(record,"loginSNName")){
+                    LogUtil.d(TAG,"loginSNName-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.doLoginAndSearchNickName(root,record,currentWx008Data,wx008Datas,context);
+                }
+                //登录成功换绑手机号
+                if(AutoUtil.actionContains(record,"ReplacePhoneThread")){
+                    LogUtil.d(TAG,"ReplacePhoneThread-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.doReplacePhone(root,record,currentWx008Data,pa,context);
                 }
 
 
@@ -360,11 +380,24 @@ public class AutoFeedThread extends BaseThread {
         if("601".equals(extValue)){
             action="601SetWxidThread设置微信号";
             new Thread(new SetWxidThread(context,record,currentWx008Data)).start();
-        }else if("602".equals(extValue)){//设置密码
-            action="602SetPwdThread设置微信号";
-            System.out.println("SetPwdThread--->loginIndex:"+loginIndex+" currentWx008Data:"+JSON.toJSONString(currentWx008Data));
+        }else {
+            action = getActionByCodeNum(extValue);
         }
         return action;
+    }
+
+    public String getActionByCodeNum(String extValue){
+        Map<String,String> actions = new HashMap<String,String>();
+        actions.put("602","SetPwdThread设置密码");
+        actions.put("603","loginPc扫码登录");
+        actions.put("604","loginSNName搜索微信号");
+        actions.put("605","ReplacePhoneThread换绑手机");
+        if(actions.containsKey(extValue)){
+            return actions.get(extValue);
+        }else {
+            return "wx登陆成功";
+        }
+
     }
 
     //记录悬浮框信息
@@ -379,23 +412,6 @@ public class AutoFeedThread extends BaseThread {
             System.out.println("recordIp--->开始记录ip");
             record.put("ipMsg","开启ip记录线程");
             new IpNetThread(record).start();
-        }
-    }
-
-    private static void  getNickName(AccessibilityNodeInfo root,Wx008Data currentWx008Data){
-        if(TextUtils.isEmpty(currentWx008Data.getNickName())){
-            List<AccessibilityNodeInfo> nodes = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/c1v");
-            AccessibilityNodeInfo node = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/c1v");
-            System.out.println("update nickName-->node:"+node);
-            System.out.println("update nickName-->nodes:"+nodes);
-            if(node!=null){
-                String nickName = node.getText()+"";
-                if(!TextUtils.isEmpty(nickName)){
-                    int cn = DaoUtil.updateNickName(currentWx008Data,nickName);
-                    System.out.println("update nickName-->cn:"+cn);
-                    DaoUtil.findByDataByColumn("guid",currentWx008Data.getGuid());
-                }
-            }
         }
     }
 
