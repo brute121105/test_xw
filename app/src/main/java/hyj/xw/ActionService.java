@@ -39,6 +39,9 @@ public class ActionService  extends AccessibilityService {
             AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         }else if("001".equals(extValue)){
             executorService.submit(ThreadFactory.getThread("login",this,record,parameters));
+        }else if("test".equals(extValue)){
+            executorService.submit(ThreadFactory.getThread("test",this,record,parameters));
+            AutoUtil.startWx();
         }
         else {
             /**

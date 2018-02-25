@@ -12,9 +12,11 @@ import hyj.xw.util.StringUtilHyj;
 /**
  * Created by asus on 2018/2/3.
  */
-
+//http://pv.sohu.com/cityjson?ie=utf-8
+//    http://www.ip.cn/
 public class IpNetThread extends Thread {
     Map<String,String> record;
+    String ipUrl = "http://pv.sohu.com/cityjson?ie=utf-8";
     public  IpNetThread(Map<String,String> record){
         this.record = record;
     }
@@ -31,9 +33,14 @@ public class IpNetThread extends Thread {
             }
 
             try {
-                String ipBody= OkHttpUtil.okHttpGet("http://www.ip.cn/");
+                /*String ipBody= OkHttpUtil.okHttpGet(ipUrl);
+                ipMsg = StringUtilHyj.getIp(ipBody).trim();*/
+                String ipBody= OkHttpUtil.okHttpGet(ipUrl);
                 System.out.println("IpNetThread ipBody-->"+ipBody);
-                ipMsg = StringUtilHyj.getIp(ipBody).trim();
+                if(ipBody.contains("{")){
+                    ipMsg = ipBody.substring(ipBody.indexOf("{"));
+                }
+                System.out.println("IpNetThread ipMsg-->"+ipMsg);
                 if(TextUtils.isEmpty(ipMsg)){
                     cn = cn+1;
                 }else {

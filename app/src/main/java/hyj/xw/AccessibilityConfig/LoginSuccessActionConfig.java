@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import hyj.xw.common.CommonConstant;
+import hyj.xw.common.WxNickNameConstant;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneApi;
@@ -71,9 +72,9 @@ public class LoginSuccessActionConfig {
     //扫码登录pc端
     public static void doLoginPc(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data){
         String status = getServerStatus();
-        System.out.println("doLoginPc status--->"+status);
+        System.out.println("doLoginPc GetOrUpdateServerStatusThread status--->"+status);
         if(!"3".equals(status)&&!"1".equals(status)&&AutoUtil.checkAction(record,"loginPc扫码登录")){
-            startThreadByFuture("3");//告诉对方可以生成二维码
+            startThreadByFuture("3");//标志可以生成二维码
         }
         if(!"1".equals(status)){//如果二维码没没出现，返回
             return;
@@ -81,7 +82,7 @@ public class LoginSuccessActionConfig {
         if(NodeActionUtil.isWindowContainStr(root,"Windows 微信已登录")||NodeActionUtil.isWindowContainStr(root,"iPad 微信已登录")){
             waitLoginSuccessCn = 0;
             AutoUtil.recordAndLog(record,"wx登陆成功");
-            startThreadByFuture("2");
+            startThreadByFuture("2");//标志登录成功
             return;
         }else if(AutoUtil.checkAction(record,"loginPc点击登录确认")){//超过一定时间没登录成功重新扫
             System.out.println("waitLoginSuccessCn-->"+waitLoginSuccessCn);
@@ -234,6 +235,7 @@ public class LoginSuccessActionConfig {
         }
 
         if(NodeActionUtil.isContainsStrs(root,"填写验证码|请输入验证码")){
+            System.out.println("GetPhoneAndValidCodeThread ReplacePhoneThread -->countWaitValiCodeCn:"+countWaitValiCodeCn);
             if(AutoUtil.checkAction(record,"ReplacePhoneThread验证码不正确确定"))  AutoUtil.sleep(2000);
             if(!pa.isValidCodeIsAvailavle()){
                 countWaitValiCodeCn = countWaitValiCodeCn+1;
@@ -245,7 +247,6 @@ public class LoginSuccessActionConfig {
                 }
                 return;
             }
-            System.out.println("GetPhoneAndValidCodeThread ReplacePhoneThread -->countWaitValiCodeCn:"+countWaitValiCodeCn);
             countWaitValiCodeCn = 0;
             AccessibilityNodeInfo node7 = ParseRootUtil.getNodePath(root,"0021");
             AutoUtil.performSetText(node7,AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_API_PHONE_CODE),record,"ReplacePhoneThread输入验证码");
@@ -281,6 +282,41 @@ public class LoginSuccessActionConfig {
             AccessibilityNodeInfo node10 = AutoUtil.findNodeInfosByText(root,"确定");
             AutoUtil.performClick(node10,record,"ReplacePhoneThread验证码不正确确定",1000);
             AutoUtil.performBack(context,record,"ReplacePhoneThread验证码不正确确定返回上一步");
+        }
+    }
+
+    //扫码加群
+    public static void doScan(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data){
+        NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","030","发现",record,"saoma点击发现");
+        NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","00330","扫一扫",record,"saoma点击扫一扫");
+        NodeActionUtil.doClickByNodePathAndDesc(root,"我的二维码|封面|街景","04","更多",record,"saoma点击更多04",100);
+        NodeActionUtil.doClickByNodePathAndDesc(root,"我的二维码|封面|街景","05","更多",record,"saoma点击更多05",100);
+        NodeActionUtil.doClickByNodePathAndText(root,"将扫一扫添加到桌面|从相册选取二维码","01010","从相册选取二维码",record,"saoma点击从相册选取二维码");
+        NodeActionUtil.doClickByNodePathAndText(root,"所有图片|图片|拍摄照片","0210",null,record,"saoma选择第一张图片");
+        NodeActionUtil.doClickByNodePathAndDesc(root,"确认加入群聊|加入该群聊","000004","加入该群聊",record,"saoma加入该群聊",2000);
+        if(NodeActionUtil.isWindowContainStr(root,"切换到键盘")||NodeActionUtil.isWindowContainStr(root,"切换到按住说话")){
+            AutoUtil.recordAndLog(record,"wx登陆成功");
+        }
+    }
+
+    //发圈
+    public static void sendFr(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data){
+        NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","030","发现",record,"sendFr点击发现",500);
+        NodeActionUtil.doClickByNodePathAndText(root,"扫一扫|摇一摇","00310","朋友圈",record,"sendFr点击朋友圈",500);
+        NodeActionUtil.doClickByNodePathAndText(root,"轻触更换主题照片|朋友圈封面，再点一次可以改封面","00310","朋友圈",record,"sendFr点击朋友圈",500);
+        if(AutoUtil.checkAction(record,"sendFr点击朋友圈")&&NodeActionUtil.isWindowContainStr(root,"朋友圈封面")){
+            AccessibilityNodeInfo node6 = ParseRootUtil.getNodePath(root,"002");
+            System.out.println("node6-->"+node6);
+            node6.performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
+        }
+        NodeActionUtil.doClickByNodePathAndText(root,"长按拍照按钮发文字，为内部体验功能。后续版本可能取消，也有可能保留，请勿过于依赖此方法。|我知道了","001","我知道了",record,"sendFr点击我知道了",500);
+        NodeActionUtil.doInputByNodePathAndText(root,"这一刻的想法...|谁可以看","0000", WxNickNameConstant.getName1(),record,"sendFr输入发送内容",1000);
+        if(AutoUtil.checkAction(record,"sendFr输入发送内容")){
+            NodeActionUtil.doClickByNodePathAndText(root,"这一刻的想法...|谁可以看","03","发送",record,"sendFr点击发送",500);
+        }
+        if(AutoUtil.checkAction(record,"sendFr点击发送")){
+            AutoUtil.sleep(4000);
+            AutoUtil.recordAndLog(record,"wx登陆成功");
         }
     }
 }

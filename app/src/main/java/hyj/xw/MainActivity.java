@@ -2,6 +2,7 @@ package hyj.xw;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -56,10 +57,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        MyWindowManager.createSmallWindow(getApplicationContext());
-        MyWindowManager.createSmallWindow2(getApplicationContext());
+        AutoUtil.clickXY(0,0);
         GetPermissionUtil.getReadAndWriteContactPermision(this,MainActivity.this);
+        /*if (Build.VERSION.SDK_INT >= 23) {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivityForResult(intent, 1);
+            } else {
+                //return;
+                //TODO do something you need
+            }
+        }*/
+        if (Build.VERSION.SDK_INT < 23) {
+            MyWindowManager.createSmallWindow(getApplicationContext());
+            MyWindowManager.createSmallWindow2(getApplicationContext());
+        }
 
 
         //养号
@@ -271,6 +284,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void importGoumai(){
+
+        /*int i = DaoUtil.setLoginWxidDataTo008NullData("972076396","BTJGGTTJ","1");
+        System.out.println("setLoginDataTo008NullData--->"+i);*/
+
         String wx = FileUtil.readAll1("/sdcard/wx.txt");
         String[] strs = wx.split("\n");
         int ct = 1;
@@ -278,9 +295,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(!TextUtils.isEmpty(str)&&str.length()>15){
                 if(str.contains("封号")) continue;
                 String[] s = str.split("----");
-                int i = DaoUtil.setLoginWxidDataTo008NullData(s[0],s[1],"84");
+                int i = DaoUtil.setLoginWxidDataTo008NullData(s[0],s[1],"66");//84越南 66泰国
                 System.out.println("setLoginDataTo008NullData--->"+i+" ct:"+ct);
-                System.out.println("导入账号密码--->"+s[0]+"-"+s[1]);
+                System.out.println("导入账号密码 setLoginDataTo008NullData--->"+s[0]+"-"+s[1]);
                 ct = ct+1;
             }
         }

@@ -147,6 +147,16 @@ public class AutoFeedThread extends BaseThread {
                     LogUtil.d(TAG,"ReplacePhoneThread-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
                     LoginSuccessActionConfig.doReplacePhone(root,record,currentWx008Data,pa,context);
                 }
+                //扫码加群
+                if(AutoUtil.actionContains(record,"saoma")){
+                    LogUtil.d(TAG,"loginSNName-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.doScan(root,record,currentWx008Data);
+                }
+                //发圈
+                if(AutoUtil.actionContains(record,"sendFr")){
+                    LogUtil.d(TAG,"loginSNName-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.sendFr(root,record,currentWx008Data);
+                }
 
 
             }catch (Exception e){
@@ -256,6 +266,7 @@ public class AutoFeedThread extends BaseThread {
         NodeActionUtil.doClickByNodePathAndText(root,"SIM卡工具包|尊敬的用户","03","确定",record,"exception确定尊敬的用户",500);
         NodeActionUtil.doClickByNodePathAndText(root,"有人正通过微信密码在|修改密码","01","忽略",record,"wx忽略设备登录你的微信",500);
         NodeActionUtil.doClickByNodePathAndText(root,"玩一个小游戏才是正经事|开始游戏","0020","进入微信",record,"wx进入微信",500);
+        NodeActionUtil.doClickByNodePathAndText(root,"我已了解，暂不验证|马上验证手机","003","我已了解，暂不验证",record,"wx我已了解，暂不验证",500);
     }
 
     //maihao
@@ -392,6 +403,8 @@ public class AutoFeedThread extends BaseThread {
         actions.put("603","loginPc扫码登录");
         actions.put("604","loginSNName搜索微信号");
         actions.put("605","ReplacePhoneThread换绑手机");
+        actions.put("606","saoma扫码加群");
+        actions.put("607","sendFr发圈");
         if(actions.containsKey(extValue)){
             return actions.get(extValue);
         }else {

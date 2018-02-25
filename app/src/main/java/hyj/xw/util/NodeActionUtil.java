@@ -36,11 +36,11 @@ public class NodeActionUtil {
         AccessibilityNodeInfo nodeInfo = null;
         if(nodeText!=null){
             nodeInfo = ParseRootUtil.getNodeByPathAndText(root,nodePath,nodeText);
-        }
-        if(nodeInfo==null){
+        }else {
             nodeInfo = ParseRootUtil.getNodePath(root,nodePath);
         }
-        if(nodeInfo==null){
+
+        if(nodeInfo==null&&nodeText!=null){
              LogUtil.d("NodeActionUtil","doClickByNodePathAndText nodeText获取-->"+nodeText);
             nodeInfo = AutoUtil.findNodeInfosByText(root,nodeText);
         }
