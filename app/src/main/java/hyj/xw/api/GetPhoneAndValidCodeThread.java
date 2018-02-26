@@ -18,11 +18,12 @@ public class GetPhoneAndValidCodeThread implements Runnable{
         this.pa = pa;
         init();
     }
-    String apiId,pwd,pjId;
+    String apiId,pwd,pjId,ext;
     private void init(){
         apiId = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_API_ID);
         pwd = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_API_PWD);
         pjId = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_API_PROJECT_ID);
+        ext = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
         pa.setApiId(apiId);
         pa.setPwd(pwd);
         pa.setPjId(pjId);
@@ -31,7 +32,9 @@ public class GetPhoneAndValidCodeThread implements Runnable{
         pa.setToken(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_API_TOKEN));
         pa.setPhone(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_API_PHONEE));
         pa.setValidCode(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_API_PHONE_CODE));
-        //pa.setToken(null);
+        if("6051".equals(ext)){//6051重新登录 6050取数据库
+            pa.setToken(null);
+        }
         pa.setPhoneIsAvailavle(false);
         pa.setValidCodeIsAvailavle(false);
         LogUtil.d("GetPhoneAndValidCodeThread","apiId:"+apiId+" pwd:"+pwd+" pjId:"+pjId);

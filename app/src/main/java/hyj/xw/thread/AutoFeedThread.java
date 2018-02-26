@@ -48,7 +48,7 @@ public class AutoFeedThread extends BaseThread {
         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
         extValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
-        if("605".equals(extValue)){//605换绑手机，需接吗
+        if(extValue.contains("605")){//605换绑手机，需接吗
             new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
         }
     }
@@ -305,7 +305,7 @@ public class AutoFeedThread extends BaseThread {
                 if(!flag){
                     for(int i=1;i<6;i++){
                         AccessibilityNodeInfo node00 = ParseRootUtil.getNodePath(root,"00000"+i);
-                        if(node00.getContentDescription().toString().contains("iPhone")){
+                        if(node00.getContentDescription().toString().replaceAll("\\n","").equals("iPhone")){
                             AutoUtil.performClick(node00,record,"wxiPhone OS",500);
                             flag = true;
                             break;
@@ -402,7 +402,8 @@ public class AutoFeedThread extends BaseThread {
         actions.put("602","SetPwdThread设置密码");
         actions.put("603","loginPc扫码登录");
         actions.put("604","loginSNName搜索微信号");
-        actions.put("605","ReplacePhoneThread换绑手机");
+        actions.put("6051","ReplacePhoneThread换绑手机");
+        actions.put("6050","ReplacePhoneThread换绑手机");
         actions.put("606","saoma扫码加群");
         actions.put("607","sendFr发圈");
         if(actions.containsKey(extValue)){

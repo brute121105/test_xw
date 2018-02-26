@@ -8,7 +8,7 @@ public class CommonConstant {
     public static String AUTOLOGINTHREAD = "autoLogin";
     public static String APPCONFIG_LOGIN_ACCOUNT = "loginAccount";
     public static String APPCONFIG_EXT = "ext"; //008提取008数据 001自动切换登录  601设置微信号 602修改密码  603扫描登录pc 604微信号搜索昵称
-    //605 换绑手机 606扫码加群 607发朋友圈 test开发模式
+    //6051 换绑手机（重新登录获取接码平台token）6050 换绑手机（本地数据库获取token） 606扫码加群 607发朋友圈 test开发模式
     public static String APPCONFIG_START_LOGINACCOUNT = "startLoginAccount";//开始登陆号码
     public static String APPCONFIG_START_LOGIN_INDEX= "startLoginIndex";//开始登陆序号
     public static String APPCONFIG_IS_FEED = "isfeed";//养号

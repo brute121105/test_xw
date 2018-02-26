@@ -89,9 +89,9 @@ public class PhoneConf {
 
             System.out.println(showMsg+" --nickName:"+wx008Datas.get(i).getNickName()+" repPhone:"+wx008Datas.get(i).getReplacePhone()+" pwd:"+wx008Datas.get(i).getWxPwd());
             //删除测试
-            /*Wx008Data wd = wx008Datas.get(i);
+           /* Wx008Data wd = wx008Datas.get(i);
             String wxid1 = wd.getWxId(),phone1 = wd.getPhone();
-             if("0084945755941".equals(wxid1)){
+             if("4422635145".equals(wxid1)||"4305623539".equals(wxid1)){
                  int cn1 = wd.delete();
                  System.out.println("cn1--->"+cn1);
              }
