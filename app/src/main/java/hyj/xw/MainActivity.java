@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 
 import org.litepal.crud.DataSupport;
 
+import java.util.Date;
 import java.util.List;
 
 import hyj.xw.activity.ApiSettingActivity;
@@ -29,6 +30,7 @@ import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
+import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneApi;
@@ -37,6 +39,7 @@ import hyj.xw.test.GetPhoneInfoUtil;
 import hyj.xw.thread.IpNetThread;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
+import hyj.xw.util.DeviceParamUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
@@ -260,19 +263,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE,loginSucessPauseCheckBox.isChecked()?"1":"0");
                 break;
             case R.id.apiSetting:
-                DaoUtil.updatePwd("ynj654","www23654");
-              /*  DaoUtil.updatePwd("afz496","www23969");
 
-                DaoUtil.updatePwd("nxu489","www23565");
-                DaoUtil.updatePwd("bwi483","www23565");
-                DaoUtil.updatePwd("aev224","www23483");
-                DaoUtil.updatePwd("mpz862","www23975");
-                DaoUtil.updatePwd("evb657","www23862");*/
-                //DaoUtil.updatePwd("hvy975","www23");
-                //DaoUtil.updatePwd("zcr392","www23");
-                //DaoUtil.updatePwd("fzv762","www23");
+                DeviceInfo deviceInfo = DeviceParamUtil.getDeviceInfo();
+                System.out.println("deviceInfo-->"+JSON.toJSONString(deviceInfo));
+                createData();
+
+                /*DaoUtil.updatePwd("bfn347","www23347");
+                DaoUtil.updatePwd("vit894","www23894");
+                DaoUtil.updatePwd("fti468","www23468");
+                DaoUtil.updatePwd("nht277","www23277");
+                DaoUtil.updatePwd("whr848","www23848");
+                DaoUtil.updatePwd("ynq758","www23758");
+                DaoUtil.updatePwd("tfx363","www23363");
+                DaoUtil.updatePwd("rzk466","www23466");
+                DaoUtil.updatePwd("pii986","www23986");
+                DaoUtil.updatePwd("hkx745","www23745");
+                DaoUtil.updatePwd("tfk385","www23385");*/
                 //new IpNetThread().start();
-                System.out.println("--net:"+AutoUtil.isNetworkConnected());
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
                 break;
             case R.id.del_upload_file:
@@ -303,5 +310,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
+    public void createData(){
+        Wx008Data data =  DaoUtil.findByPhone("1133376132");
+       /* data.setDatas("");
+        data.setWxId("");
+        int cn = data.updateAll("phone=?",data.getPhone());
+        System.out.println("cn--->"+cn);*/
+        /*data.setPhone("1133376132");
+        data.setWxPwd("www12345");
+        data.setCnNum("60");
+        data.setCreateTime(new Date());*/
+       /* boolean flag = data.save();
+        System.out.println("flag--->"+flag);*/
+    }
 }

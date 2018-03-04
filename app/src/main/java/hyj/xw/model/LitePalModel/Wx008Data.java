@@ -1,6 +1,7 @@
 package hyj.xw.model.LitePalModel;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import org.litepal.crud.DataSupport;
@@ -15,6 +16,7 @@ import hyj.xw.model.PhoneInfo;
 
 public class Wx008Data  extends DataSupport{
     private PhoneInfo phoneInfo = new PhoneInfo();
+    private String phoneStrs;
     private String guid;
     private String datas;
     private String phone;
@@ -117,6 +119,13 @@ public class Wx008Data  extends DataSupport{
         return str;
     }
 
+    public String getPhoneStrs() {
+        return phoneStrs;
+    }
+
+    public void setPhoneStrs(String phoneStrs) {
+        this.phoneStrs = phoneStrs;
+    }
 
     public PhoneInfo getPhoneInfo() {
         return phoneInfo;
@@ -237,5 +246,11 @@ public class Wx008Data  extends DataSupport{
 
     public void setReplacePhone(String replacePhone) {
         this.replacePhone = replacePhone;
+    }
+
+    //008数据以PhoneInfo格式放到phoneStrs
+    public void setPhoneStrBy008Datas(){
+        this.setPhoneInfo(this.getDatas());
+        this.setPhoneStrs(JSON.toJSONString(this.getPhoneInfo()));
     }
 }

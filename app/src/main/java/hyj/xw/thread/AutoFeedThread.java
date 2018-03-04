@@ -102,11 +102,18 @@ public class AutoFeedThread extends BaseThread {
                     LogUtil.d(TAG,"清除app数据");
                     AutoUtil.recordAndLog(record,"wx清除app数据");
 
+                    String hookPhoneDataStr="";
                     currentWx008Data = wx008Datas.get(loginIndex);
-                    currentWx008Data.setPhoneInfo(currentWx008Data.getDatas());
+                    if(TextUtils.isEmpty(currentWx008Data.getPhoneStrs())){//旧008数据
+                        currentWx008Data.setPhoneInfo(currentWx008Data.getDatas());
+                        hookPhoneDataStr = JSON.toJSONString(currentWx008Data.getPhoneInfo());
+                    }else {//自己注册
+                        hookPhoneDataStr = currentWx008Data.getPhoneStrs();
+                        System.out.println("--phoneStr:"+hookPhoneDataStr);
+                    }
 
                     //覆盖式写入文件
-                    FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(currentWx008Data.getPhoneInfo()));
+                    FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt",hookPhoneDataStr);
                     //读取文件
                     String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
                     System.out.println("phoneInfo---->"+con);
@@ -137,7 +144,7 @@ public class AutoFeedThread extends BaseThread {
                     LogUtil.d(TAG,"loginPc-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
                     LoginSuccessActionConfig.doLoginPc(root,record,currentWx008Data);
                 }
-                //登录成功搜索微信号
+                //微信号搜索昵称
                 if(AutoUtil.actionContains(record,"loginSNName")){
                     LogUtil.d(TAG,"loginSNName-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
                     LoginSuccessActionConfig.doLoginAndSearchNickName(root,record,currentWx008Data,wx008Datas,context);

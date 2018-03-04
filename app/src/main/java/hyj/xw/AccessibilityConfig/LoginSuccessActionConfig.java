@@ -135,12 +135,15 @@ public class LoginSuccessActionConfig {
             while (!TextUtils.isEmpty(sData.getNickName())){
                 searIndex = searIndex+1;
                 sData = wx008Datas.get(searIndex);
+                System.out.println("1 searIndex-->"+searIndex);
             }
 
             wxid = sData.getWxId();
+            System.out.println("searIndex--wxid-->"+wxid);
             while(TextUtils.isEmpty(wxid)||wxid.equals(currentWx008Data.getWxId())){
                 searIndex = searIndex+1;
                 wxid = wx008Datas.get(searIndex).getWxId();
+                System.out.println("2 searIndex2-->"+searIndex);
             }
         }
 
@@ -150,6 +153,8 @@ public class LoginSuccessActionConfig {
         NodeActionUtil.doClickByNodePathAndDesc(root,"通讯录|发现","06","搜索",record,"loginSNName点击搜索",1500);
         NodeActionUtil.doInputByNodePathAndText(root,"搜索指定内容|朋友圈|资讯","02",wxid,record,"loginSNName输入微信号",500);
         NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找微信号:"+wxid,record,"loginSNName点击查找",1500);
+        NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找手机/QQ号:"+wxid,record,"loginSNName点击查找",1500);
+
         //AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"添加到通讯录"),record,"loginSNName点击添加到通讯录");
         //NodeActionUtil.doClickByNodePathAndText(root,"你需要发送验证申请，等对方通过|验证申请","002","发送",record,"loginSNName点击发送",1500);
         if(AutoUtil.checkAction(record,"loginSNName点击查找")&&NodeActionUtil.isWindowContainStr(root,"添加到通讯录")){
