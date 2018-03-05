@@ -2,10 +2,12 @@ package hyj.xw.thread;
 
 import android.accessibilityservice.AccessibilityService;
 import android.provider.Settings;
+import android.view.WindowContentFrameStats;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,7 @@ import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.AccessibilityParameters;
+import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneApi;
 import hyj.xw.model.PhoneInfo;
@@ -42,6 +45,7 @@ public class AutoRegThread extends BaseThread {
     Wx008Data currentWx008Data;
     int loginIndex;
     String cnNum;
+    String hookPhoneStr;
     PhoneApi pa = new PhoneApi();
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
@@ -97,7 +101,8 @@ public class AutoRegThread extends BaseThread {
                 //覆盖式写入文件
                 PhoneInfo phoneInfo = PhoneConf.createPhoneInfo();
                 phoneInfo.setLineNumber(pa.getPhone());//获取到的手机号码
-                FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(phoneInfo));
+                hookPhoneStr = JSON.toJSONString(phoneInfo);
+                FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt",hookPhoneStr);
                 //读取文件
                 String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
                 System.out.println("phoneInfo---->"+con);
@@ -140,7 +145,7 @@ public class AutoRegThread extends BaseThread {
 
             NodeActionUtil.doInputByNodePathAndText(root,"Continuing means you've read and agreed to our  Terms of Service  and  Privacy Policy|Sign Up","00201","nname",record,"wx输入昵称",500);
             NodeActionUtil.doInputByNodePathAndText(root,"Continuing means you've read and agreed to our  Terms of Service  and  Privacy Policy|Sign Up","00231",pa.getPhone(),record,"wx输入手机",500);
-            NodeActionUtil.doInputByNodePathAndText(root,"Continuing means you've read and agreed to our  Terms of Service  and  Privacy Policy|Sign Up","00241","wwww12345",record,"wx输入密码",500);
+            NodeActionUtil.doInputByNodePathAndText(root,"Continuing means you've read and agreed to our  Terms of Service  and  Privacy Policy|Sign Up","00241",createPwd(pa.getPhone()),record,"wx输入密码",500);
             NodeActionUtil.doClickByNodePathAndText(root, "Continuing means you've read and agreed to our  Terms of Service  and  Privacy Policy|Sign Up", "0025", "Sign Up", record, "wx点击注册2", 500);
         }
         /*NodeActionUtil.doClickByNodePathAndText(root, "微信隐私保护指引|不同意", "04", "同意", record, "wx点击同意", 500);
@@ -149,6 +154,10 @@ public class AutoRegThread extends BaseThread {
         NodeActionUtil.doClickByNodePathAndText(root, "INTRODUCTION|Don't Agree", "04", "Accept ", record, "wx点击同意", 500);
         NodeActionUtil.doClickByNodePathAndDesc(root, "Security Verification|Security check", "000003", "Start", record, "wx点击开始安全校验", 500);
         if(pa.isValidCodeIsAvailavle()){
+            createRegData();//创建保存数据
+            if(currentWx008Data.save()){
+                LogUtil.d(TAG,"保存数据-->"+JSON.toJSONString(currentWx008Data));
+            }
             NodeActionUtil.doInputByNodePathAndText(root,"Verification code sent via SMS|Verification Code","00221",pa.getValidCode(),record,"wx输入验证码",500);
             NodeActionUtil.doClickByNodePathAndText(root,"Verification code sent via SMS|Verification Code", "0024", "Next",record,"wx已输入验证码下一步", 500);
         }
@@ -288,4 +297,17 @@ public class AutoRegThread extends BaseThread {
         }
     }
 
+    private String createPwd(String phone){
+        return "www23"+phone.substring(phone.length()-3);
+    }
+
+    private void createRegData(){
+        currentWx008Data = new Wx008Data();
+        currentWx008Data.setGuid(AutoUtil.getUUID());
+        currentWx008Data.setPhone(pa.getPhone());
+        currentWx008Data.setWxPwd(createPwd(pa.getPhone()));
+        currentWx008Data.setCnNum(cnNum);
+        currentWx008Data.setCreateTime(new Date());
+        currentWx008Data.setPhoneStrs(hookPhoneStr);
+    }
 }

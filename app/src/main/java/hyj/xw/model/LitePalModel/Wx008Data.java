@@ -32,6 +32,7 @@ public class Wx008Data  extends DataSupport{
     private String dataFlag;//008  抓取008数据
     private String nickName;
     private String replacePhone;
+    private String wxid19;
 
     public Wx008Data(){
     }
@@ -246,6 +247,14 @@ public class Wx008Data  extends DataSupport{
 
     public void setReplacePhone(String replacePhone) {
         this.replacePhone = replacePhone;
+    }
+
+    public String getWxid19() {
+        return wxid19;
+    }
+
+    public void setWxid19(String wxid19) {
+        this.wxid19 = wxid19;
     }
 
     //008数据以PhoneInfo格式放到phoneStrs

@@ -101,6 +101,7 @@ public class AutoFeedThread extends BaseThread {
                     AutoUtil.clearAppData();
                     LogUtil.d(TAG,"清除app数据");
                     AutoUtil.recordAndLog(record,"wx清除app数据");
+                    FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","wxid.txt","");
 
                     String hookPhoneDataStr="";
                     currentWx008Data = wx008Datas.get(loginIndex);
@@ -131,6 +132,7 @@ public class AutoFeedThread extends BaseThread {
                     autoLoginConfig(root,record);
                     exceptionConfig(root,record);
                     maihao(root,record);
+                    getAndSetWxid2Db();
                 }
 
                 //设置密码
@@ -433,6 +435,20 @@ public class AutoFeedThread extends BaseThread {
             System.out.println("recordIp--->开始记录ip");
             record.put("ipMsg","开启ip记录线程");
             new IpNetThread(record).start();
+        }
+    }
+
+    public void getAndSetWxid2Db(){
+        if(AutoUtil.checkAction(record,"wx点击登录")||AutoUtil.checkAction(record,"wx否通讯录")){
+            if(TextUtils.isEmpty(currentWx008Data.getWxid19())){
+                String wxid = FileUtil.readAll("/sdcard/A_hyj_json/wxid.txt");
+                if(!TextUtils.isEmpty(wxid)){
+                    currentWx008Data.setWxid19(wxid);
+                    int cn = currentWx008Data.updateAll("phone=?",currentWx008Data.getPhone());
+                    System.out.println("getAndSetWxid2Db--->"+cn);
+                    FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","wxid.txt","");
+                }
+            }
         }
     }
 

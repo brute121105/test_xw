@@ -34,6 +34,7 @@ import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneApi;
+import hyj.xw.model.PhoneInfo;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.test.GetPhoneInfoUtil;
 import hyj.xw.thread.IpNetThread;
@@ -213,13 +214,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void testMethod1(){
-           System.out.println("--file dir-->");
-           System.out.println("--file dir-->"+this.getFilesDir().getPath());
-        //FileUtil.copyFolder(srcFile,destFile);
-        //localConnectivityManager.setAirplaneMode(false);
-    }
-
 
     @Override
     public void onClick(View view) {
@@ -243,7 +237,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.auto_login:
-                importGoumai();
+                //createRegData();
+                //importGoumai();
                 //testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
@@ -322,5 +317,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         data.setCreateTime(new Date());*/
        /* boolean flag = data.save();
         System.out.println("flag--->"+flag);*/
+    }
+    private void createRegData(){
+        Wx008Data currentWx008Data = new Wx008Data();
+        currentWx008Data.setGuid(AutoUtil.getUUID());
+        currentWx008Data.setPhone("8973807928");
+        currentWx008Data.setWxPwd("wwww12345");
+        currentWx008Data.setCnNum("62");
+        currentWx008Data.setCreateTime(new Date());
+        PhoneInfo phoneInfo = PhoneConf.createPhoneInfo();
+        phoneInfo.setLineNumber("8973807928");//获取到的手机号码
+        currentWx008Data.setPhoneStrs(JSON.toJSONString(phoneInfo));
+        int cn = currentWx008Data.updateAll("phone=?","8973807928");
+        System.out.println("cu-->"+cn);
+
     }
 }

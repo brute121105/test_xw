@@ -2,10 +2,14 @@ package hyj.xw;
 
 import android.content.Context;
 
+import java.io.IOException;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import hyj.xw.hook.HideApp;
+import hyj.xw.hook.PackageHooker;
 import hyj.xw.hook.Phone;
+import hyj.xw.hook.util.HookWxUtil;
 
 /**
  * XposedInit
@@ -33,6 +37,15 @@ public class XposedInit implements IXposedHookLoadPackage {
              System.out.println("hyj context--->"+PACKAGE_NAME);
              new HideApp(lpparam);
              new Phone(lpparam);
+           HookWxUtil.hoodWxid(lpparam);
+           /*PackageHooker hooker = new PackageHooker(lpparam);
+           try {
+               hooker.hook();
+           } catch (IOException e) {
+               e.printStackTrace();
+           } catch (ClassNotFoundException e) {
+               e.printStackTrace();
+           }*/
            //--test start
          /*  Class c1 = XposedHelpers.findClass("android.app.ActivityThread", null);
            Context localContext1 = (Context) XposedHelpers.callMethod(XposedHelpers.callStaticMethod(c1, "currentActivityThread", new Object[0]), "getSystemContext", new Object[0]);
