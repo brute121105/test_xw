@@ -96,6 +96,10 @@ public class AutoFeedThread extends BaseThread {
 
             ParseRootUtil.debugRoot(root);
 
+                //读取wxid写入数据库
+                if(AutoUtil.actionContains(record,"wx")){
+                    getAndSetWxid2Db();
+                }
                 if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")){
 
                     AutoUtil.clearAppData();
@@ -132,7 +136,6 @@ public class AutoFeedThread extends BaseThread {
                     autoLoginConfig(root,record);
                     exceptionConfig(root,record);
                     maihao(root,record);
-                    getAndSetWxid2Db();
                 }
 
                 //设置密码
@@ -186,7 +189,8 @@ public class AutoFeedThread extends BaseThread {
         //NodeActionUtil.doClickByNodePathAndText(root,"注册|语言","00","登录",record,"wx点击登陆1",500);
 
         boolean flag = false;
-        String wxid = currentWx008Data.getWxId(),pwd = currentWx008Data.getWxPwd();
+        String wxid = currentWx008Data.getWxid19()!=null?currentWx008Data.getWxid19():currentWx008Data.getWxId();
+        String pwd = currentWx008Data.getWxPwd();
         //微信号为空用手机号登陆
         if(TextUtils.isEmpty(wxid)){
             String cnNum = currentWx008Data.getCnNum();
@@ -247,9 +251,12 @@ public class AutoFeedThread extends BaseThread {
         //判断登陆异常
         if(AutoUtil.checkAction(record,"wx点击登录")){
             if(NodeActionUtil.isWindowContainStr(root,"限制登录")||NodeActionUtil.isWindowContainStr(root,"密码错误")
-                    ||NodeActionUtil.isWindowContainStr(root,"长期没有使用，已被回收")||NodeActionUtil.isWindowContainStr(root,"该帐号长期未登录，为保")){
+                    ||NodeActionUtil.isWindowContainStr(root,"长期没有使用，已被回收")||NodeActionUtil.isWindowContainStr(root,"该帐号长期未登录，为保")||NodeActionUtil.isWindowContainStr(root,"超出验证频率限制")){
                 AutoUtil.recordAndLog(record,"wx登陆异常");
                 String excpMsg = NodeActionUtil.getTextByNodePath(root,"00");
+                if(NodeActionUtil.isWindowContainStr(root,"超出验证频率限制")){
+                    excpMsg="超出验证频率限制";
+                }
                 LogUtil.login(loginIndex+" fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" -"+excpMsg+" ip:"+record.remove("ipMsg"));
                 //登陆成功或失败序号加1
                 doNextIndexAndRecord2DB();
@@ -442,6 +449,7 @@ public class AutoFeedThread extends BaseThread {
         if(AutoUtil.checkAction(record,"wx点击登录")||AutoUtil.checkAction(record,"wx否通讯录")){
             if(TextUtils.isEmpty(currentWx008Data.getWxid19())){
                 String wxid = FileUtil.readAll("/sdcard/A_hyj_json/wxid.txt");
+                System.out.println("getAndSetWxid2Db--->"+wxid);
                 if(!TextUtils.isEmpty(wxid)){
                     currentWx008Data.setWxid19(wxid);
                     int cn = currentWx008Data.updateAll("phone=?",currentWx008Data.getPhone());

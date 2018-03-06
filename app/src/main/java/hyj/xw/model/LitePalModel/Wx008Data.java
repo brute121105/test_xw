@@ -33,6 +33,15 @@ public class Wx008Data  extends DataSupport{
     private String nickName;
     private String replacePhone;
     private String wxid19;
+    private String dataType;//0所有 1早期的477个
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
 
     public Wx008Data(){
     }

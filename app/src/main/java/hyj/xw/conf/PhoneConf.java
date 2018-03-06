@@ -14,6 +14,7 @@ import java.util.List;
 
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneInfo;
+import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.FileUtil;
 
@@ -84,6 +85,8 @@ public class PhoneConf {
             String wxid = wx008Datas.get(i).getWxId();
             if(TextUtils.isEmpty(wxid)){
                 wxid = wx008Datas.get(i).getPhone();
+            }else if(!TextUtils.isEmpty(wx008Datas.get(i).getWxid19())){
+                wxid = wx008Datas.get(i).getWxid19().substring(0,10);
             }
             String showMsg = i + "-" + wxid + " " + time + " " + (cn == null ? "86" : cn);
             datas.add(showMsg);
@@ -121,11 +124,11 @@ public class PhoneConf {
     public static PhoneInfo createPhoneInfo(){
         PhoneInfo phoneInfo = new PhoneInfo();
 
-        phoneInfo.setDeviceId("863184025089311");
-        phoneInfo.setAndroidId("0d160be274c5ad11");
+        phoneInfo.setDeviceId("8631840"+createNum(8));
+        phoneInfo.setAndroidId("0d160be2"+createZmAndNum(8));
         phoneInfo.setLineNumber("579783111");
-        phoneInfo.setSimSerialNumber("89860032077034774211");
-        phoneInfo.setSubscriberId("460023207703411");
+        phoneInfo.setSimSerialNumber("898600"+createNum(14));
+        phoneInfo.setSubscriberId("4600232"+createNum(8));
         phoneInfo.setSimCountryIso("cn");
 
         phoneInfo.setSimOperator("46002");
@@ -149,24 +152,40 @@ public class PhoneConf {
 
         phoneInfo.setBrand("lenovo");
         phoneInfo.setModel("lenovo A788t");
-        phoneInfo.setBuildId("6462aa34c01a");
-        phoneInfo.setDisplay("9c86b49441b1");
+        phoneInfo.setBuildId("6462"+createZmAndNum(8));
+        phoneInfo.setDisplay("9c86"+createZmAndNum(8));
 
         phoneInfo.setProductName("A788t");
         phoneInfo.setManufacturer("lenovo");
         phoneInfo.setDevice("lenovo A788t");
         phoneInfo.setHardware("mt6582");
-        phoneInfo.setFingerprint("Lenovo/A360t/A360t:4.4.2/KOT49H/A360t_USR_S224_140911:user/release-keys");
-        phoneInfo.setSerialno("6f4b2411");
-        phoneInfo.setBlueAddress("cb:c3:b0:dd:1a:11");
+        phoneInfo.setFingerprint("Lenovo/A360t/A360t:4.4.2/KOT49H/A360t_USR_S224_"+createNum(6)+":user/release-keys");
+        phoneInfo.setSerialno("6f4b"+createNum(4));
+        phoneInfo.setBlueAddress("cb:c3:b0:"+createZmAndNum(2)+":1a:"+createNum(2));
 
 
         String tags = createTags();
         phoneInfo.setBUILD_TAGS(tags);
         phoneInfo.setBUILD_TYPE(tags);
         phoneInfo.setBUILD_USER(tags);
+        System.out.println("hookPhoneInfo-->"+JSON.toJSONString(phoneInfo));
         return phoneInfo;
     }
+
+    public static Wx008Data create008Data(String phone,String pwd,String cnNum){
+        Wx008Data currentWx008Data = new Wx008Data();
+        currentWx008Data.setGuid(AutoUtil.getUUID());
+        currentWx008Data.setPhone(phone);
+        currentWx008Data.setWxId(phone);
+        currentWx008Data.setWxPwd(pwd);
+        currentWx008Data.setCnNum(cnNum);
+        currentWx008Data.setCreateTime(new Date());
+        currentWx008Data.setDataType(PhoneSetting.getConfigSettingByKey("插入数据编号"));
+        currentWx008Data.setPhoneStrs(JSON.toJSONString(createPhoneInfo()));
+        System.out.println("create008Data-->"+JSON.toJSONString(currentWx008Data));
+        return currentWx008Data;
+    }
+
     private  static String createTags() {
         String str = "";
         for(int i=0;i<12;i++){
@@ -178,6 +197,25 @@ public class PhoneConf {
     private  static String getRandomAbc() {
         String chars = "abcdgijktuxyz12365987";
         String str = chars.charAt((int)(Math.random() * 20))+"";
+        return str;
+    }
+    private  static String createRandom123() {
+        String chars = "0123456789";
+        String str = chars.charAt((int)(Math.random() * 10))+"";
+        return str;
+    }
+    private static String createZmAndNum(int num){
+        String str = "";
+        for(int i=0;i<num;i++){
+            str = str+getRandomAbc();
+        }
+        return str;
+    }
+    private static String createNum(int num){
+        String str = "";
+        for(int i=0;i<num;i++){
+            str = str+createRandom123();
+        }
         return str;
     }
 }

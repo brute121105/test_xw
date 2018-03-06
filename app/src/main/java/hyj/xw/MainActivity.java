@@ -1,5 +1,6 @@
 package hyj.xw;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -28,6 +29,7 @@ import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.api.GetPhoneAndValidCodeThread;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
+import hyj.xw.conf.PhoneSetting;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
 import hyj.xw.model.DeviceInfo;
@@ -237,8 +239,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.auto_login:
+                //PhoneConf.create008Data("1230","www456","60");
                 //createRegData();
-                //importGoumai();
+                importGoumai();
                 //testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
@@ -296,10 +299,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for(String str :strs){
             if(!TextUtils.isEmpty(str)&&str.length()>15){
                 if(str.contains("封号")) continue;
-                String[] s = str.split("----");
-                int i = DaoUtil.setLoginWxidDataTo008NullData(s[0],s[1],"66");//84越南 66泰国
-                System.out.println("setLoginDataTo008NullData--->"+i+" ct:"+ct);
-                System.out.println("导入账号密码 setLoginDataTo008NullData--->"+s[0]+"-"+s[1]);
+                String[] s = str.split("-");
+                //String[] s = str.split("----");
+                Wx008Data wx008Data = PhoneConf.create008Data(s[0],s[1],"1");
+                System.out.println("setLoginDataTo008NullData---> ct:"+ct+" boolean:"+wx008Data.save()+" s[0]:"+s[0]+ "s[1]:"+s[1]);
+                //int i = DaoUtil.setLoginWxidDataTo008NullData(s[0],s[1],"66");//84越南 66泰国
+                //System.out.println("setLoginDataTo008NullData--->"+i+" ct:"+ct);
+                //System.out.println("导入账号密码 setLoginDataTo008NullData--->"+s[0]+"-"+s[1]);
                 ct = ct+1;
             }
         }
@@ -319,7 +325,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.out.println("flag--->"+flag);*/
     }
     private void createRegData(){
-        Wx008Data currentWx008Data = new Wx008Data();
+        ContentValues values = new ContentValues();
+        values.put("dataType","1");
+        int cn = DataSupport.updateAll(Wx008Data.class,values);
+        System.out.println("cn-->"+cn);
+        /*Wx008Data currentWx008Data = new Wx008Data();
         currentWx008Data.setGuid(AutoUtil.getUUID());
         currentWx008Data.setPhone("8973807928");
         currentWx008Data.setWxPwd("wwww12345");
@@ -329,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         phoneInfo.setLineNumber("8973807928");//获取到的手机号码
         currentWx008Data.setPhoneStrs(JSON.toJSONString(phoneInfo));
         int cn = currentWx008Data.updateAll("phone=?","8973807928");
-        System.out.println("cu-->"+cn);
+        System.out.println("cu-->"+cn);*/
 
     }
 }
