@@ -27,6 +27,8 @@ public class NodeActionUtil {
     //窗口只要包含就返回true
     public static boolean isWindowContainStr(AccessibilityNodeInfo root,String str2){
         String str1 = ParseRootUtil.getCurrentViewAllTexts(root);
+        System.out.println("str2-->"+str2);
+        System.out.println("str1 str2-->"+str1);
         return str1.contains(str2);
     }
 

@@ -46,15 +46,17 @@ public class AutoRegThread extends BaseThread {
     int loginIndex;
     String cnNum;
     String hookPhoneStr;
+    boolean isSave=false;//标记生成数据是否已保存数据库.注册收到验证码是保存
     PhoneApi pa = new PhoneApi();
     private void intiParam(){
+        //AutoUtil.recordAndLog(record,"debug");
         AutoUtil.recordAndLog(record,"init");
         /**
          * 测试模式，不连vpn，不开启接码线程，写死手机号和验证码
          */
-        /*AutoUtil.recordAndLog(record,"test");
-        pa.setPhone("12698587856");
-        pa.setValidCodeIsAvailavle(true);
+        AutoUtil.recordAndLog(record,"test");
+        pa.setPhone("9475203545");
+        /*pa.setValidCodeIsAvailavle(true);
         pa.setValidCode("5684");*/
 
         wx008Datas = DaoUtil.getWx008Datas();
@@ -70,8 +72,7 @@ public class AutoRegThread extends BaseThread {
         while (true){
             try {
             AutoUtil.sleep(500);
-            LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" cnNum:"+cnNum);
-
+            LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" cnNum:"+cnNum+" isSave:"+isSave);
             if(AutoUtil.checkAction(record,"wx登陆完成"))  return null;
             if(parameters.getIsStop()==1){
                 LogUtil.d(TAG,"暂停....");
@@ -99,6 +100,7 @@ public class AutoRegThread extends BaseThread {
                 AutoUtil.recordAndLog(record,"wx清除app数据");
 
                 //覆盖式写入文件
+                isSave = false;//标记生成数据是否已保存数据库
                 PhoneInfo phoneInfo = PhoneConf.createPhoneInfo();
                 phoneInfo.setLineNumber(pa.getPhone());//获取到的手机号码
                 hookPhoneStr = JSON.toJSONString(phoneInfo);
@@ -114,7 +116,7 @@ public class AutoRegThread extends BaseThread {
 
             ParseRootUtil.debugRoot(root);
             //注册
-            if(AutoUtil.actionContains(record,"wx")||AutoUtil.checkAction(record,"test")){
+            if(AutoUtil.actionContains(record,"wx")||AutoUtil.checkAction(record,"test")||AutoUtil.checkAction(record,"debug")){
                 autoRegConfig(root,record);
             }
             //设置vpn
@@ -153,15 +155,50 @@ public class AutoRegThread extends BaseThread {
 
         NodeActionUtil.doClickByNodePathAndText(root, "INTRODUCTION|Don't Agree", "04", "Accept ", record, "wx点击同意", 500);
         NodeActionUtil.doClickByNodePathAndDesc(root, "Security Verification|Security check", "000003", "Start", record, "wx点击开始安全校验", 500);
+
         if(pa.isValidCodeIsAvailavle()){
-            createRegData();//创建保存数据
-            if(currentWx008Data.save()){
-                LogUtil.d(TAG,"保存数据-->"+JSON.toJSONString(currentWx008Data));
+            if(!isSave){
+                createRegData();//创建保存数据
+                if(currentWx008Data.save()){
+                    isSave = true;
+                    LogUtil.d(TAG,"保存数据-->"+JSON.toJSONString(currentWx008Data));
+                }
             }
             NodeActionUtil.doInputByNodePathAndText(root,"Verification code sent via SMS|Verification Code","00221",pa.getValidCode(),record,"wx输入验证码",500);
             NodeActionUtil.doClickByNodePathAndText(root,"Verification code sent via SMS|Verification Code", "0024", "Next",record,"wx已输入验证码下一步", 500);
+            if(AutoUtil.checkAction(record,"wx输入验证码")){
+
+            }
+        }
+        NodeActionUtil.doInputByNodePathAndText(root, "Find WeChat Friends|WeChat will upload your address book to its server to help you find out which mobile contacts are using WeChat.", "03", "OK", record, "wx注册成功OK", 500);
+        if(NodeActionUtil.isContainsStrs(root,"Contacts|Contacts|Me") &&!AutoUtil.checkAction(record,"wx飞行模式&清除数据后启动微信")){
+            AutoUtil.recordAndLog(record,"wx注册成功");
+            AutoUtil.recordAndLog(record,"init");
+            pa.setValidCodeIsAvailavle(false);
+            pa.setPhoneIsAvailavle(false);
+        }
+        //出现扫码
+        if(NodeActionUtil.isWindowContainStr(root,"Contact WeChat users who meet below conditions")){
+            AutoUtil.recordAndLog(record,"init");
+        }
+        //处理验证码少于多少秒
+        if(NodeActionUtil.isWindowContainStr(root,"Your SMS should arrive in")){
+            if(getWaitValicodeMs(root)<30){
+                AutoUtil.recordAndLog(record,"init");
+            }
         }
         return false;
+    }
+    private int getWaitValicodeMs(AccessibilityNodeInfo root){
+        AccessibilityNodeInfo node = ParseRootUtil.getNodePath(root,"0023");
+        int ms = 60;
+        if(node!=null&&node.getText().toString().contains("arrive")) {
+            String text = node.getText().toString();
+            System.out.println("text-->" + text);
+            text = text.substring(text.indexOf("in") + 3, text.indexOf(" seconds"));
+            ms = Integer.parseInt(text);
+        }
+        return ms;
     }
 
     boolean clickFlag = false;

@@ -54,8 +54,8 @@ public class ActionService  extends AccessibilityService {
             }else{
                 //注册
                 executorService.submit(ThreadFactory.getThread("reg",this,record,parameters));
-                executorService.submit(ThreadFactory.getThread("alzAPI",this,record,parameters));
-                AutoUtil.startWx();
+                //executorService.submit(ThreadFactory.getThread("alzAPI",this,record,parameters));
+                //AutoUtil.startWx();
             }
         }
 
