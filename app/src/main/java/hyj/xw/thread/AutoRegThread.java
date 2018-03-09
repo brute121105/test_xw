@@ -2,7 +2,6 @@ package hyj.xw.thread;
 
 import android.accessibilityservice.AccessibilityService;
 import android.provider.Settings;
-import android.view.WindowContentFrameStats;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.alibaba.fastjson.JSON;
@@ -12,14 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 import hyj.xw.BaseThread;
-import hyj.xw.GlobalApplication;
-import hyj.xw.api.GetPhoneAndValidCodeThread;
 import hyj.xw.api.ZYGetPhoneAndValidCodeThread;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.AccessibilityParameters;
-import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneApi;
 import hyj.xw.model.PhoneInfo;
@@ -51,11 +47,13 @@ public class AutoRegThread extends BaseThread {
     private void intiParam(){
         //AutoUtil.recordAndLog(record,"debug");
         AutoUtil.recordAndLog(record,"init");
+
+        AutoUtil.recordAndLog(record,"wx连接成功");
         /**
          * 测试模式，不连vpn，不开启接码线程，写死手机号和验证码
          */
-        AutoUtil.recordAndLog(record,"test");
-        pa.setPhone("9475203545");
+       /* AutoUtil.recordAndLog(record,"test");
+        pa.setPhone("9475203545");*/
         /*pa.setValidCodeIsAvailavle(true);
         pa.setValidCode("5684");*/
 

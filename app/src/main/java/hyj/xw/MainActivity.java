@@ -3,6 +3,8 @@ package hyj.xw;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -21,26 +23,23 @@ import com.alibaba.fastjson.JSON;
 
 import org.litepal.crud.DataSupport;
 
-import java.util.Date;
+import java.net.NetworkInterface;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
-import hyj.xw.api.GetPhoneAndValidCodeThread;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
-import hyj.xw.conf.PhoneSetting;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
-import hyj.xw.model.PhoneApi;
-import hyj.xw.model.PhoneInfo;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.test.GetPhoneInfoUtil;
-import hyj.xw.thread.IpNetThread;
-import hyj.xw.thread.SetAirPlaneModeThread;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
@@ -184,6 +183,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppConfigDao.saveOrUpdate(config);
         //国别
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_CN_NUM,cnNumEditText.getText().toString());
+        if(isFeedCheckBox.isChecked()){
+            FileUtil.writeContentToJsonTxt("isFeedStatus.txt","1");
+        }else {
+            FileUtil.writeContentToJsonTxt("isFeedStatus.txt","0");
+        }
 
     }
     @Override
@@ -240,9 +244,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.auto_login:
+                //PhoneConf.createPhoneInfo();
+                /*isVpnConnected();
+                getSysLanguage();
+                FileUtil.readContentToJsonTxt("isFeedStatus.txt");*/
                 //PhoneConf.create008Data("1230","www456","60");
                 //createRegData();
-                //importGoumai();
+                importGoumai();
                 //testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
@@ -300,8 +308,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for(String str :strs){
             if(!TextUtils.isEmpty(str)&&str.length()>15){
                 if(str.contains("封号")) continue;
-                ///String[] s = str.split("-");
-                String[] s = str.split("----");
+                String[] s=null;
+                if(str.indexOf("----")>-1){
+                    s = str.split("----");
+                }else if(str.indexOf("-")>-1){
+                    s = str.split("-");
+                }
+                //String[] s = str.split("----");
                 Wx008Data wx008Data = PhoneConf.create008Data(s[0],s[1],"1");
                 System.out.println("setLoginDataTo008NullData---> ct:"+ct+" boolean:"+wx008Data.save()+" s[0]:"+s[0]+ "s[1]:"+s[1]);
                 //int i = DaoUtil.setLoginWxidDataTo008NullData(s[0],s[1],"66");//84越南 66泰国
@@ -341,6 +354,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         currentWx008Data.setPhoneStrs(JSON.toJSONString(phoneInfo));
         int cn = currentWx008Data.updateAll("phone=?","8973807928");
         System.out.println("cu-->"+cn);*/
+
+    }
+    public boolean isVpnConnected() {
+        try {
+            Enumeration<NetworkInterface> niList = NetworkInterface.getNetworkInterfaces();
+            if(niList != null) {
+                for (NetworkInterface intf : Collections.list(niList)) {
+                    if(!intf.isUp() || intf.getInterfaceAddresses().size() == 0) {
+                        continue;
+                    }
+                    System.out.println("intf-->"+intf.getName());
+                    if ("tun0".equals(intf.getName()) || "ppp0".equals(intf.getName())){
+                        return true;
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    private void getSysLanguage(){
+        Locale l = Locale.getDefault();
+        String locale = l.getLanguage();
+
+        Resources res = getResources();
+        Configuration config = res.getConfiguration();
+        String locale1 = config.locale.getCountry();
+
+        String locale2 = l.toString();
+        System.out.println("locale locale-->"+locale+" l:"+l.getCountry());
+        System.out.println("locale locale1-->"+locale1);
+        System.out.println("locale locale2-->"+locale2);
 
     }
 }

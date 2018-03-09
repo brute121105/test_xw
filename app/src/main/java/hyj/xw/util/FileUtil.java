@@ -64,6 +64,15 @@ public class FileUtil {
         }
     }
 
+    public static void writeContentToJsonTxt(String fileName,String text){
+        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/",fileName,text);
+    }
+    public static String readContentToJsonTxt(String fileName){
+        String con = FileUtil.readAll("/sdcard/A_hyj_json/"+fileName);
+        System.out.println("readContentToJsonTxt--> fileName"+fileName+"content:"+con);
+        return con;
+    }
+
     //内容写入文件
     public static void writeContent2File(String filePathName,String fileName,String strcontent){
         createFile2Path(filePathName,fileName);

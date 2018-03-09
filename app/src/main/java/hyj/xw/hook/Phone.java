@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.NetworkInterface;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -129,6 +130,13 @@ public class Phone {
         HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam, "getIccSerialNumber",phoneInfo.getSimSerialNumber());
         HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam,"getLine1Number",phoneInfo.getLineNumber());
         HookTelephony("com.android.internal.telephony.PhoneSubInfo",loadPkgParam,"getSubscriberId",phoneInfo.getSubscriberId());
+
+        HookTelephony(NetworkInterface.class.getName(),loadPkgParam,"getName","ccmni0");//ccmni0流量卡 ppp0连vpn
+        //HookTelephony(Locale.class.getName(),loadPkgParam, "getCountry","");//修改系统语言
+        //HookTelephony(Locale.class.getName(),loadPkgParam, "getLanguage","");//修改系统语言
+
+
+
         //不兼容redmiNode2 cm系统 ，暂时去掉
         //HookTelephony("android.telephony.MSimTelephonyManager",loadPkgParam, "getDeviceId",phoneInfo.getDeviceId());
         //HookTelephony("android.telephony.MSimTelephonyManager",loadPkgParam, "getSubscriberId",phoneInfo.getSubscriberId());
@@ -254,7 +262,7 @@ public class Phone {
 
 
     private void HookTelephony(String hookClass, XC_LoadPackage.LoadPackageParam loadPkgParam,
-                               String funcName, final String value) {
+                               final String funcName, final String value) {
         try {
             XposedHelpers.findAndHookMethod(hookClass,
                     loadPkgParam.classLoader, funcName, new XC_MethodHook() {
@@ -264,7 +272,27 @@ public class Phone {
                                 throws Throwable {
                             super.afterHookedMethod(param);
                             System.out.println("watch31 method--->HookTelephony methodName:"+param.method.getName()+" clsName:"+param.thisObject.toString());
-                            param.setResult(value);
+                            if("ccmni0".equals(value)){//处理链接vpn情况
+                                String result = param.getResult().toString();
+                                System.out.println("param.getResult-->"+result);
+                                if("ppp0".equals(result)){
+                                    param.setResult("ccmni0");
+                                }
+                            }else if("getLanguage".equals(funcName)){
+                                System.out.println("param.getResult-->"+param.getResult().toString());
+                                //param.setResult("en");
+                                /*if(FileUtil.readContentToJsonTxt("isFeedStatus.txt").equals("0")){//如果是注册，修改为英文
+                                    param.setResult("en");
+                                }*/
+                            }else if("getCountry".equals(funcName)){
+                                if(FileUtil.readContentToJsonTxt("isFeedStatus.txt").equals("0")){//如果是注册，修改为英文
+                                    param.setResult("US");
+                                }
+                            }
+                            else {
+                                param.setResult(value);
+                            }
+
                         }
 
                     });

@@ -101,15 +101,14 @@ public class PhoneConf {
             wd.setPhoneStrBy008Datas();
             System.out.println(i+" phoneStr save-->"+wd.save());*/
 
-           /*
-            String wxid1 = wd.getWxId(),phone1 = wd.getPhone();
-             if("4422635145".equals(wxid1)||"4305623539".equals(wxid1)){
+            ///删除测试
+           /* String wxid1 = wd.getWxId(),phone1 = wd.getPhone();
+             if(i>99){
                  int cn1 = wd.delete();
                  System.out.println("cn1--->"+cn1);
-             }
-            System.out.println("wxid-->"+wxid1+" phone1-->"+phone1);*/
+             }*/
             //修改操作
-            /*if(i>1088&&i<1119){
+            /* if(i>1088&&i<1119){
                 System.out.println(i+ " phone-->"+wd.getPhone());
                 String newPwd = "www23"+wd.getPhone().substring(wd.getPhone().length()-3);
                 wd.setWxPwd(newPwd);
@@ -150,16 +149,19 @@ public class PhoneConf {
 
         phoneInfo.setRadioVersion("MOLY.LR9.W1414A.MD.LWTG.MP.V2.P27, 2014/09/17 14:58");//固定版本
 
-        phoneInfo.setBrand("lenovo");
-        phoneInfo.setModel("lenovo A788t");
+
         phoneInfo.setBuildId("6462"+createZmAndNum(8));
         phoneInfo.setDisplay("9c86"+createZmAndNum(8));
 
-        phoneInfo.setProductName("A788t");
-        phoneInfo.setManufacturer("lenovo");
-        phoneInfo.setDevice("lenovo A788t");
-        phoneInfo.setHardware("mt6582");
-        phoneInfo.setFingerprint("Lenovo/A360t/A360t:4.4.2/KOT49H/A360t_USR_S224_"+createNum(6)+":user/release-keys");
+        String[] device = getRandmoDevice();
+        phoneInfo.setBrand(device[0]);//SAMSUNG
+        phoneInfo.setModel(device[0]+" "+device[1]);//SAMSUNG GT-S6812C
+        phoneInfo.setProductName(device[1]);//GT-S6812C
+        phoneInfo.setManufacturer(device[0]);//SAMSUNG
+        phoneInfo.setDevice(device[0]+" "+device[1]);//SAMSUNG GT-S6812C
+        phoneInfo.setHardware("qcom");//qcom
+        phoneInfo.setFingerprint(device[2]);
+        //smartisan/msm8916_32/msm8916_32:4.4.4/KTU84P:user/dev-keys
         phoneInfo.setSerialno("6f4b"+createNum(4));
         phoneInfo.setBlueAddress("cb:c3:b0:"+createZmAndNum(2)+":1a:"+createNum(2));
 
@@ -168,8 +170,20 @@ public class PhoneConf {
         phoneInfo.setBUILD_TAGS(tags);
         phoneInfo.setBUILD_TYPE(tags);
         phoneInfo.setBUILD_USER(tags);
-        System.out.println("hookPhoneInfo-->"+JSON.toJSONString(phoneInfo));
+        System.out.println("createPhoneInfo-->"+JSON.toJSONString(phoneInfo));
         return phoneInfo;
+    }
+
+    private static String[] getRandmoDevice(){
+        List<String[]> devices = new ArrayList<String[]>();
+        devices.add(new String[]{"SAMSUNG","GT-S6812C","smartisan/msm"+createNum(4)+"_32/msm"+createNum(4)+"_32:4.4.4/KTU84P:user/dev-keys"});
+        devices.add(new String[]{"HTC","X720d","GiONEE/W900S/GiONEE_BFL7506A:5.1/LMY47D/"+createNum(10)+":user/release-keys"});
+        devices.add(new String[]{"Coolpad","8730","nubia/NX"+createNum(3)+"J/NX"+createNum(3)+"J:5.0.2/LRX22G/eng.nubia.20151117.160521:user/release-keys"});
+        devices.add(new String[]{"SONY","ST26i","Letv/Le1Pro_CN/x1:5.0.2/BBXCNOP"+createNum(10)+"S/128:user/release-keys"});
+        devices.add(new String[]{"ZTE","N980","ZTE/N918St/N918St:4.4.4/KTU84P/eng."+createZmAndNum(5)+".20141120.203922:user/release-keys"});
+
+
+        return devices.get((int)(Math.random() * devices.size()));
     }
 
     public static Wx008Data create008Data(String phone,String pwd,String cnNum){
@@ -195,8 +209,8 @@ public class PhoneConf {
 
     }
     private  static String getRandomAbc() {
-        String chars = "abcdgijktuxyz12365987";
-        String str = chars.charAt((int)(Math.random() * 20))+"";
+        String chars = "abcdef012365987";
+        String str = chars.charAt((int)(Math.random() * 15))+"";
         return str;
     }
     private  static String createRandom123() {
