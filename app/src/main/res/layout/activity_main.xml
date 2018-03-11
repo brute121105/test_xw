@@ -42,7 +42,7 @@
         android:id="@+id/auto_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="自动登录配置"
+        android:text="综合参数"
         android:textSize="18sp" />
     <Button
         android:id="@+id/open_assist"
@@ -54,7 +54,7 @@
         android:id="@+id/del_upload_file"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="上传错误日志"
+        android:text="其他配置"
         android:textSize="18sp" />
     <TextView
         android:text="综合参数"

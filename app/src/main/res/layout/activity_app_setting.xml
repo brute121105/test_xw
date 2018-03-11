@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@android:style/Theme"
+    tools:context="hyj.xw.activity.AppSettingActivity">
+
+    <Button
+        android:id="@+id/btn_export_config"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="导出配置"
+        android:textSize="18sp" />
+    <Button
+        android:id="@+id/btn_import_config"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="导入配置"
+        android:textSize="18sp" />
+    <Button
+        android:id="@+id/btn_kill_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="杀死进程"
+        android:textSize="18sp" />
+    <Button
+        android:id="@+id/btn_import_62"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="导入62"
+        android:textSize="18sp" />
+    <EditText
+        android:id="@+id/edt_delte_index"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btn_delete_data_index"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="删除序号范围"
+        android:textSize="18sp" />
+    <EditText
+        android:id="@+id/edt_new_pwd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btn_update_pwd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="修改密码"
+        android:textSize="18sp" />
+
+
+</LinearLayout>

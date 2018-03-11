@@ -44,6 +44,7 @@ public class AutoFeedThread extends BaseThread {
     PhoneApi pa = new PhoneApi();
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
+        //AutoUtil.recordAndLog(record,"debug");
         wx008Datas = DaoUtil.getWx008Datas();
         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
@@ -100,12 +101,15 @@ public class AutoFeedThread extends BaseThread {
                 if(AutoUtil.actionContains(record,"wx")){
                     getAndSetWxid2Db();
                 }
-                if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")){
+                if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")){
 
-                    AutoUtil.clearAppData();
-                    LogUtil.d(TAG,"清除app数据");
-                    AutoUtil.recordAndLog(record,"wx清除app数据");
-                    FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","wxid.txt","");
+                    if(!AutoUtil.checkAction(record,"debug")){
+                        AutoUtil.clearAppData();
+                        isSelectFail = false;
+                        LogUtil.d(TAG,"清除app数据");
+                        AutoUtil.recordAndLog(record,"wx清除app数据");
+                        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","wxid.txt","");
+                    }
 
                     String hookPhoneDataStr="";
                     currentWx008Data = wx008Datas.get(loginIndex);
@@ -117,22 +121,24 @@ public class AutoFeedThread extends BaseThread {
                         System.out.println("--phoneStr:"+hookPhoneDataStr);
                     }
 
-                    //覆盖式写入文件
-                    FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt",hookPhoneDataStr);
-                    //读取文件
-                    String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
-                    System.out.println("phoneInfo---->"+con);
-                    //飞行模式
-                    new SetAirPlaneModeThread(4000).start();
-                    AutoUtil.sleep(5000);
-                    AutoUtil.startWx();
-                    AutoUtil.recordAndLog(record,"wx飞行模式&清除数据后启动微信");
-                    //记录ip
-                    recordIp();
+                    if(!AutoUtil.checkAction(record,"debug")){
+                        //覆盖式写入文件
+                        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt",hookPhoneDataStr);
+                        //读取文件
+                        String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
+                        System.out.println("phoneInfo---->"+con);
+                        //飞行模式
+                        new SetAirPlaneModeThread(4000).start();
+                        AutoUtil.sleep(5000);
+                        AutoUtil.startWx();
+                        AutoUtil.recordAndLog(record,"wx飞行模式&清除数据后启动微信");
+                        //记录ip
+                        recordIp();
+                    }
                 }
 
                 //自动登陆
-                if(AutoUtil.actionContains(record,"wx")||AutoUtil.checkAction(record,"init")){
+                if(AutoUtil.actionContains(record,"wx")||AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"debug")){
                     autoLoginConfig(root,record);
                     exceptionConfig(root,record);
                     maihao(root,record);
@@ -286,22 +292,28 @@ public class AutoFeedThread extends BaseThread {
     }
 
     //maihao
+    boolean isSelectFail=false;
     public void maihao(AccessibilityNodeInfo root,Map<String,String> record){
-        NodeActionUtil.doClickByNodePathAndText(root,"为了你的帐号安全|取消","02","确定",record,"exception确定尊敬的用户",500);
-        NodeActionUtil.doClickByNodePathAndText(root,"你在新手机登录微信|取消","02","确定",record,"exception确定尊敬的用户",500);
-        NodeActionUtil.doClickByNodePathAndText(root,"请选出你的微信曾经绑定过的手机号|验证身份","06",null,record,"exception确定尊敬的用户",500);
-        NodeActionUtil.doClickByNodePathAndText(root,"请关闭页面重新登录|验证通过","000003",null,record,"exception确定尊敬的用户",500);
+        NodeActionUtil.doClickByNodePathAndText(root,"为了你的帐号安全|取消","02","确定",record,"wx为了你的帐号安全确定");
+        NodeActionUtil.doClickByNodePathAndText(root,"你在新手机登录微信|取消","02","确定",record,"wx为了你的帐号安全确定");
+        NodeActionUtil.doClickByNodePathAndText(root,"请选出你的微信曾经绑定过的手机号|验证身份","06",null,record,"wx请选出你的微信曾经绑定过的手机号");
+        NodeActionUtil.doClickByNodePathAndText(root,"请关闭页面重新登录|验证通过","000003",null,record,"wx为了你的帐号安全确定");
         AccessibilityNodeInfo node = ParseRootUtil.getNodePath(root,"000006");
         System.out.println("node6-->"+node);
         if(node!=null&&node.getContentDescription().toString().contains("以上都不是")){
             System.out.println("node61-->"+node);
             boolean flag = false;
             if(NodeActionUtil.isWindowContainStr(root,"请选择你最近一次登录设备的名称")){
+                //如果已经失败过一次，返回上一步
+                if(isSelectFail){
+                    AutoUtil.performBack(context,record,"wx避开返回上一步");
+                    return;
+                }
                 //情况1--iPhone OS
                 for(int i=1;i<6;i++){
                     AccessibilityNodeInfo node00 = ParseRootUtil.getNodePath(root,"00000"+i);
                     if(node00.getContentDescription().toString().contains("iPhone OS")){
-                        AutoUtil.performClick(node00,record,"wxiPhone OS",500);
+                        AutoUtil.performClick(node00,record,"wxiPhone OS");
                         flag = true;
                         break;
                     }
@@ -311,7 +323,7 @@ public class AutoFeedThread extends BaseThread {
                     for(int i=1;i<6;i++){
                         AccessibilityNodeInfo node00 = ParseRootUtil.getNodePath(root,"00000"+i);
                         if(node00.getContentDescription().toString().contains("iOS")){
-                            AutoUtil.performClick(node00,record,"wxiPhone OS",500);
+                            AutoUtil.performClick(node00,record,"wxiPhone OS");
                             flag = true;
                             break;
                         }
@@ -322,20 +334,20 @@ public class AutoFeedThread extends BaseThread {
                     for(int i=1;i<6;i++){
                         AccessibilityNodeInfo node00 = ParseRootUtil.getNodePath(root,"00000"+i);
                         if(node00.getContentDescription().toString().replaceAll("\\n","").equals("iPhone")){
-                            AutoUtil.performClick(node00,record,"wxiPhone OS",500);
+                            AutoUtil.performClick(node00,record,"wxiPhone OS");
                             flag = true;
                             break;
                         }
                     }
                 }
                 if(!flag){
-                    AutoUtil.performClick(node,record,"wx以上都不是",500);
+                    AutoUtil.performClick(node,record,"wx以上都不是");
                 }
 
             }else {
                 System.out.println("node62-->"+node);
-                AutoUtil.performClick(node,record,"wx以上都不是",500);
-                if(AutoUtil.checkAction(record,"wx以上都不是")){
+                AutoUtil.performClick(node,record,"wx以上都不是");
+               if(AutoUtil.checkAction(record,"wx以上都不是")){
                     AccessibilityNodeInfo node1 = ParseRootUtil.getNodePath(root,"000008");
                     AutoUtil.performClick(node1,record,"wx以上都不是下一步");
                 }
@@ -346,10 +358,12 @@ public class AutoFeedThread extends BaseThread {
 
         if(AutoUtil.checkAction(record,"wx以上都不是")||AutoUtil.checkAction(record,"wxiPhone OS")||AutoUtil.checkAction(record,"wx以上都不是下一步")){
             AccessibilityNodeInfo node1 = ParseRootUtil.getNodePath(root,"000008");
-            boolean cb = AutoUtil.performClick(node1,record,"wx以上都不是下一步",500);
+            boolean cb = AutoUtil.performClick(node1,record,"wx以上都不是下一步");
             System.out.println("cb-->"+cb+" node1:"+node1);
         }
-
+        if(NodeActionUtil.doClickByNodePathAndDesc(root,"验证身份|验证失败","000003","关闭页面",record,"wx验证失败关闭页面",500)){
+            isSelectFail = true;
+        }
     }
 
 
@@ -446,7 +460,7 @@ public class AutoFeedThread extends BaseThread {
     }
 
     public void getAndSetWxid2Db(){
-        if(AutoUtil.checkAction(record,"wx点击登录")||AutoUtil.checkAction(record,"wx否通讯录")){
+        if(AutoUtil.checkAction(record,"wx点击登录")||AutoUtil.checkAction(record,"wx否通讯录")||AutoUtil.checkAction(record,"wx登陆成功")){
             if(TextUtils.isEmpty(currentWx008Data.getWxid19())){
                 String wxid = FileUtil.readAll("/sdcard/A_hyj_json/wxid.txt");
                 System.out.println("getAndSetWxid2Db--->"+wxid);

@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 
 import hyj.xw.activity.ApiSettingActivity;
+import hyj.xw.activity.AppSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
@@ -250,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 FileUtil.readContentToJsonTxt("isFeedStatus.txt");*/
                 //PhoneConf.create008Data("1230","www456","60");
                 //createRegData();
-                importGoumai();
+                //importGoumai();
                 //testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
@@ -290,40 +291,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
                 break;
             case R.id.del_upload_file:
-                AutoUtil.execShell("am force-stop hyj.xw");
-                AutoUtil.execShell("am force-stop hyj.weixin_008");
-                AutoUtil.execShell("am force-stop com.soft.apk008v");
+                startActivity(new Intent(MainActivity.this, AppSettingActivity.class));
                 break;
         }
     }
 
-    public void importGoumai(){
-
-        /*int i = DaoUtil.setLoginWxidDataTo008NullData("972076396","BTJGGTTJ","1");
-        System.out.println("setLoginDataTo008NullData--->"+i);*/
-
-        String wx = FileUtil.readAll1("/sdcard/wx.txt");
-        String[] strs = wx.split("\n");
-        int ct = 1;
-        for(String str :strs){
-            if(!TextUtils.isEmpty(str)&&str.length()>15){
-                if(str.contains("封号")) continue;
-                String[] s=null;
-                if(str.indexOf("----")>-1){
-                    s = str.split("----");
-                }else if(str.indexOf("-")>-1){
-                    s = str.split("-");
-                }
-                //String[] s = str.split("----");
-                Wx008Data wx008Data = PhoneConf.create008Data(s[0],s[1],"1");
-                System.out.println("setLoginDataTo008NullData---> ct:"+ct+" boolean:"+wx008Data.save()+" s[0]:"+s[0]+ "s[1]:"+s[1]);
-                //int i = DaoUtil.setLoginWxidDataTo008NullData(s[0],s[1],"66");//84越南 66泰国
-                //System.out.println("setLoginDataTo008NullData--->"+i+" ct:"+ct);
-                //System.out.println("导入账号密码 setLoginDataTo008NullData--->"+s[0]+"-"+s[1]);
-                ct = ct+1;
-            }
-        }
-    }
 
     public void createData(){
         Wx008Data data =  DaoUtil.findByPhone("1133376132");

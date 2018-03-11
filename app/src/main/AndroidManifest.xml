@@ -76,7 +76,8 @@
         </receiver>
 
         <activity android:name=".activity.AutoLoginSettingActivity" />
-        <activity android:name=".activity.ApiSettingActivity"></activity>
+        <activity android:name=".activity.ApiSettingActivity" />
+        <activity android:name=".activity.AppSettingActivity"></activity>
     </application>
 
 </manifest>

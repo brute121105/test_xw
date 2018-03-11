@@ -53,6 +53,13 @@ public class LogUtil {
         String fileName = "bakData_"+dateTime+".txt";
         FileUtil.writeContent2File(path,fileName,msg);
     }
+    //记录008数据到sd卡
+    public static void exportConfig(String path,String msg){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String dateTime = sdf.format(new Date());
+        String fileName = "appconfig"+dateTime+".txt";
+        FileUtil.writeContent2File(path,fileName,msg);
+    }
 
     public static void logError(Exception e) {
         Writer writer = new StringWriter();

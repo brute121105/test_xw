@@ -126,13 +126,14 @@ public class LoginSuccessActionConfig {
     }
 
     //登录搜索昵称
-    static int searIndex=0;
+    static int searIndex=400;
     static String wxid = "";
     static int searNum=0;
     public static void doLoginAndSearchNickName(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data,List<Wx008Data> wx008Datas,AccessibilityService context){
         if("".equals(wxid)){//nickName为空和不是当期wxid
             Wx008Data sData = wx008Datas.get(searIndex);
-            while (!TextUtils.isEmpty(sData.getNickName())){
+            //while (!TextUtils.isEmpty(sData.getNickName())){
+            while ("微信号搜索异常".equals(sData.getNickName())){
                 searIndex = searIndex+1;
                 sData = wx008Datas.get(searIndex);
                 System.out.println("1 searIndex-->"+searIndex);
@@ -147,7 +148,8 @@ public class LoginSuccessActionConfig {
             }
         }
 
-        if(AutoUtil.checkAction(record,"loginSNName完成一个返回")||AutoUtil.checkAction(record,"loginSNName点击确认被搜帐号状态异常")){
+        if(AutoUtil.checkAction(record,"loginSNName完成一个返回")||AutoUtil.checkAction(record,"loginSNName点击确认被搜帐号状态异常")
+                ||AutoUtil.checkAction(record,"loginSNName用户不存在确定")){
             NodeActionUtil.doInputByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","02",wxid,record,"loginSNName输入微信号",1000);
         }
         NodeActionUtil.doClickByNodePathAndDesc(root,"通讯录|发现","06","搜索",record,"loginSNName点击搜索",1500);
@@ -175,8 +177,9 @@ public class LoginSuccessActionConfig {
             }
         }
 
-        if(NodeActionUtil.isWindowContainStr(root,"被搜帐号状态异常")){
+        if(NodeActionUtil.isWindowContainStr(root,"被搜帐号状态异常")||NodeActionUtil.isWindowContainStr(root,"用户不存在")){
             NodeActionUtil.doClickByNodePathAndText(root,"被搜帐号状态异常|确定","01","确定",record,"loginSNName点击确认被搜帐号状态异常",500);
+            NodeActionUtil.doClickByNodePathAndText(root,"用户不存在|确定","01","确定",record,"loginSNName用户不存在确定",500);
             if(searNum<9){
                 int cn = DaoUtil.updateNickName(wx008Datas.get(searIndex),"微信号搜索异常");
                 System.out.println("nickName update--> wxid:"+wx008Datas.get(searIndex).getWxId()+" cn:"+cn+" searIndex:"+searIndex+" searchNum:"+searNum);
