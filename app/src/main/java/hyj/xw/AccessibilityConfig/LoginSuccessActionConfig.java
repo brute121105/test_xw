@@ -411,8 +411,10 @@ public class LoginSuccessActionConfig {
     }
     public static List<String> getAddFrWx(){
         List<String> wxids = new ArrayList<>();
-        wxids.add("cve468");
-        wxids.add("mjb8586");
+        wxids.add("eak248");
+        wxids.add("eak254");
+        wxids.add("eak259");
+        wxids.add("eak263");
         return wxids;
     }
 }

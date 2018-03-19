@@ -41,6 +41,12 @@ public class GetPermissionUtil {
         if (ContextCompat.checkSelfPermission(context,Manifest.permission.READ_PHONE_STATE)!=PackageManager.PERMISSION_GRANTED) {
             permissionList.add(Manifest.permission.READ_PHONE_STATE);
         }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS)!= PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.WRITE_CONTACTS);
+        }
+        if (ContextCompat.checkSelfPermission(context,Manifest.permission.READ_CONTACTS)!=PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.READ_CONTACTS);
+        }
         if(!permissionList.isEmpty()){
             String[] permisions = permissionList.toArray(new String[permissionList.size()]);
             ActivityCompat.requestPermissions(activity,permisions,1);

@@ -5,16 +5,20 @@ import android.app.KeyguardManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
@@ -419,28 +423,6 @@ public class AutoUtil {
                 (ip >> 24 & 0xFF);
     }
 
-    public static List<String> getSomeMsgs(){
-        List<String> list = new ArrayList<String>();
-        list.add("你好.");
-        list.add("在。。");
-        list.add("可以的。。");
-        list.add("我不介意。。");
-        list.add("没有讲过。。");
-        list.add("是不是");
-        list.add("应该不是");
-        list.add("什么时候");
-        list.add("大概今晚9点左右");
-        list.add("我会按时");
-        list.add("嗯，好");
-        list.add("今晚去不去");
-        list.add("同学过来");
-        list.add("好久没去");
-        list.add("是这个时候");
-        list.add("早点回来");
-        list.add("出发了");
-        list.add("可以没有");
-        return list;
-    }
 
     public static void  stopApp(String packageName){
         execShell("am force-stop "+packageName);
@@ -486,4 +468,32 @@ public class AutoUtil {
          }
          return false;
      }
+
+    public static void addPhoneContacts(String name, String phone){
+
+        //首先插入空值，再得到rawContactsId ，用于下面插值
+        ContentValues values = new ContentValues();
+        //insert a null value
+        Uri rawContactUri = GlobalApplication.getResolver().insert(ContactsContract.RawContacts.CONTENT_URI, values);
+        long rawContactsId = ContentUris.parseId(rawContactUri);
+
+        //往刚才的空记录中插入姓名
+        values.clear();
+        //A reference to the _ID that this data belongs to
+        values.put(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, rawContactsId);
+        //"CONTENT_ITEM_TYPE" MIME type used when storing this in data table
+        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+        //The name that should be used to display the contact.
+        values.put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name);
+        //insert the real values
+        GlobalApplication.getResolver().insert(ContactsContract.Data.CONTENT_URI, values);
+        //插入电话
+        values.clear();
+        values.put(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID, rawContactsId);
+        //String "Data.MIMETYPE":The MIME type of the item represented by this row
+        //String "CONTENT_ITEM_TYPE": MIME type used when storing this in data table.
+        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+        values.put(ContactsContract.CommonDataKinds.Phone.NUMBER, phone);
+        GlobalApplication.getResolver().insert(ContactsContract.Data.CONTENT_URI, values);
+    }
 }

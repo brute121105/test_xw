@@ -147,6 +147,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         apiSettingBtn.setOnClickListener(this);
         del_upload_fileBtn.setOnClickListener(this);
 
+        AutoUtil.addPhoneContacts("zz","12365489658");
+        AutoUtil.addPhoneContacts("zz1","12365489658");
+
     }
 
     @Override

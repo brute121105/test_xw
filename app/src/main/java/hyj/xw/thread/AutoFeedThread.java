@@ -93,12 +93,12 @@ public class AutoFeedThread extends BaseThread {
             }*/
             NodeActionUtil.doClickByNodePathAndText(root,"微信无响应。要将其关闭吗？|确定","01","等待",record,"exception",500);
 
-            ParseRootUtil.debugRoot(root);
+            //ParseRootUtil.debugRoot(root);
 
                 //读取wxid写入数据库
-                if(AutoUtil.actionContains(record,"wx")){
+               /* if(AutoUtil.actionContains(record,"wx")){
                     getAndSetWxid2Db();
-                }
+                }*/
                 //登录完成所有号退出
                 if(AutoUtil.checkAction(record,"wx登陆完成"))  return null;
                 if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")){
@@ -128,8 +128,8 @@ public class AutoFeedThread extends BaseThread {
                         String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
                         System.out.println("phoneInfo---->"+con);
                         //飞行模式
-                        new SetAirPlaneModeThread(4000).start();
-                        AutoUtil.sleep(5000);
+                        new SetAirPlaneModeThread(2500).start();
+                        AutoUtil.sleep(2500);
                         AutoUtil.startWx();
                         AutoUtil.recordAndLog(record,"wx飞行模式&清除数据后启动微信");
                         //记录ip
