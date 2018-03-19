@@ -54,13 +54,13 @@ public class PackageHooker {
     public List<ClazzAttribute> hook() throws IOException, ClassNotFoundException {
         System.out.println("--hyj--hook--");
         DexFile dexFile = new DexFile(loadPackageParam.appInfo.sourceDir);
-        System.out.println("hyj-->"+JSON.toJSONString(dexFile));
+        System.out.println("hyjdexFile -->"+JSON.toJSONString(dexFile));
         Enumeration<String> classNames = dexFile.entries();
-        while (classNames.hasMoreElements()) {
+        //获取全部类名
+        getClassName(classNames);
+        /*while (classNames.hasMoreElements()) {
             String className = classNames.nextElement();
             if(className.equals("com.tencent.mm.a.f")){
-           //if(className.indexOf("com.tencent.mm.sdk.platformtools")>-1){
-           //if(className.indexOf("com.tencent.mm.storage")>-1){
                 if (isClassNameValid(className)) {
                     ClazzAttribute clsAttr = new ClazzAttribute();
                     clsAtts.add(clsAttr);
@@ -68,16 +68,26 @@ public class PackageHooker {
                     final Class clazz = Class.forName(className, false, loadPackageParam.classLoader);
                     dumpClass(clazz,clsAttr);
                 }
-
             }
-
-        }
-        //XposedBridge.log("hyj--clsAtts:"+JSON.toJSONString(clsAtts));
-        /*for(ClazzAttribute attr:clsAtts){
-            XposedBridge.log("hyj--clsAtts:"+JSON.toJSONString(attr));
         }*/
+
         //dumpMethod();
         return clsAtts;
+    }
+
+    private void getClassName( Enumeration<String> classNames) throws ClassNotFoundException {
+        List<String> strs = new ArrayList<String>();
+        while (classNames.hasMoreElements()) {
+            String className = classNames.nextElement();
+            if (isClassNameValid(className)) {
+                strs.add(className);
+            }
+        }
+        System.out.println("getClassName-->开始");
+        for(String str:strs){
+            System.out.println("getClassName-->"+str);
+        }
+        System.out.println("getClassName-->结束");
     }
 
 

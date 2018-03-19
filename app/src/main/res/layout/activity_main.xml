@@ -32,18 +32,29 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/apiSetting"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="api配置"
-        android:textSize="18sp" />
-    <Button
-        android:id="@+id/auto_login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="综合参数"
-        android:textSize="18sp" />
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/apiSetting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="api配置"
+            android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/auto_login"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="综合参数"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+
     <Button
         android:id="@+id/open_assist"
         android:layout_width="match_parent"
@@ -73,11 +84,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-
-    <Spinner android:id="@+id/Spinner01"
-        android:textSize="20sp"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="开始:"
+            android:textSize="20sp"
+            android:textColor="#2E2E2E"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Spinner android:id="@+id/Spinner01"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="结束:"
+            android:textSize="20sp"
+            android:textColor="#2E2E2E"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Spinner android:id="@+id/Spinner02"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
 
     <Button
     android:id="@+id/importBakData"

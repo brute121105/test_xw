@@ -1,15 +1,19 @@
 package hyj.xw;
 
 import android.content.Context;
+import android.content.Intent;
+
+import com.alibaba.fastjson.JSON;
 
 import java.io.IOException;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import hyj.xw.hook.HideApp;
 import hyj.xw.hook.PackageHooker;
 import hyj.xw.hook.Phone;
-import hyj.xw.hook.util.HookWxUtil;
 
 /**
  * XposedInit
@@ -37,15 +41,15 @@ public class XposedInit implements IXposedHookLoadPackage {
              System.out.println("hyj context--->"+PACKAGE_NAME);
              new HideApp(lpparam);
              new Phone(lpparam);
-           HookWxUtil.hoodWxid(lpparam);
-           /*PackageHooker hooker = new PackageHooker(lpparam);
+            // HookWxUtil.hoodWxid(lpparam);
+           PackageHooker hooker = new PackageHooker(lpparam);
            try {
                hooker.hook();
            } catch (IOException e) {
                e.printStackTrace();
            } catch (ClassNotFoundException e) {
                e.printStackTrace();
-           }*/
+           }
            //--test start
          /*  Class c1 = XposedHelpers.findClass("android.app.ActivityThread", null);
            Context localContext1 = (Context) XposedHelpers.callMethod(XposedHelpers.callStaticMethod(c1, "currentActivityThread", new Object[0]), "getSystemContext", new Object[0]);
@@ -72,20 +76,6 @@ public class XposedInit implements IXposedHookLoadPackage {
            }
 
 
-           //追踪activiy
-           XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "startActivity", Intent.class, new XC_MethodHook() {
-
-               @Override
-               protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                   super.beforeHookedMethod(param);
-                   Intent intent = (Intent)param.args[0];
-                   String intentExtrStr ="";
-                   if(intent!=null){
-                       intentExtrStr = JSON.toJSONString(intent.getExtras());
-                   }
-                   System.out.println("Activity.startActivit =>" + param.thisObject.getClass()+"  intentExtrStr=>"+intentExtrStr);
-               }
-           });
 
            XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
                @Override
@@ -142,5 +132,19 @@ public class XposedInit implements IXposedHookLoadPackage {
                         System.out.println("hyj-->"+textView.getText());
                     }
                 });*/
+
+        //追踪activiy
+        XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "startActivity", Intent.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                Intent intent = (Intent)param.args[0];
+                String intentExtrStr ="";
+                if(intent!=null){
+                    intentExtrStr = JSON.toJSONString(intent.getExtras());
+                }
+                System.out.println("Activity.startActivit =>" + param.thisObject.getClass()+"  intentExtrStr=>"+intentExtrStr);
+            }
+        });
     }
 }

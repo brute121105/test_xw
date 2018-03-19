@@ -59,14 +59,12 @@ public class AutoFeedThread extends BaseThread {
             try {
             //记录数据，悬浮框显示
             recordFlowInfo(wx008Datas,loginIndex);
-            AutoUtil.sleep(500);
+            AutoUtil.sleep(0);
             LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
             if(currentWx008Data!=null){
                 LogUtil.d(TAG,"wxid:"+currentWx008Data.getWxId()+" pwd:"+currentWx008Data.getWxPwd());
             }
 
-            //登录完成所有号退出
-            if(AutoUtil.checkAction(record,"wx登陆完成"))  return null;
 
             if(parameters.getIsStop()==1){
                 LogUtil.d(TAG,"暂停....");
@@ -101,6 +99,8 @@ public class AutoFeedThread extends BaseThread {
                 if(AutoUtil.actionContains(record,"wx")){
                     getAndSetWxid2Db();
                 }
+                //登录完成所有号退出
+                if(AutoUtil.checkAction(record,"wx登陆完成"))  return null;
                 if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")){
 
                     if(!AutoUtil.checkAction(record,"debug")){
@@ -172,8 +172,18 @@ public class AutoFeedThread extends BaseThread {
                 }
                 //发圈
                 if(AutoUtil.actionContains(record,"sendFr")){
-                    LogUtil.d(TAG,"loginSNName-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LogUtil.d(TAG,"sendFr-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
                     LoginSuccessActionConfig.sendFr(root,record,currentWx008Data);
+                }
+                //刷阅读
+                if(AutoUtil.actionContains(record,"kzgz")){
+                    LogUtil.d(TAG,"kzgz-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.kzgz(root,record,currentWx008Data,context);
+                }
+                //微信id添加好友
+                if(AutoUtil.actionContains(record,"wxidaf")){
+                    LogUtil.d(TAG,"wxidaf-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.wxidaf(root,record,currentWx008Data,context);
                 }
 
 
@@ -436,6 +446,8 @@ public class AutoFeedThread extends BaseThread {
         actions.put("6050","ReplacePhoneThread换绑手机");
         actions.put("606","saoma扫码加群");
         actions.put("607","sendFr发圈");
+        actions.put("608","kzgz挂机");
+        actions.put("609","wxidaf添加好友");
         if(actions.containsKey(extValue)){
             return actions.get(extValue);
         }else {
@@ -460,7 +472,7 @@ public class AutoFeedThread extends BaseThread {
     }
 
     public void getAndSetWxid2Db(){
-        if(AutoUtil.checkAction(record,"wx点击登录")||AutoUtil.checkAction(record,"wx否通讯录")||AutoUtil.checkAction(record,"wx登陆成功")){
+        if(AutoUtil.checkAction(record,"wx点击登录")||AutoUtil.checkAction(record,"wx否通讯录")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆完成")){
             if(TextUtils.isEmpty(currentWx008Data.getWxid19())){
                 String wxid = FileUtil.readAll("/sdcard/A_hyj_json/wxid.txt");
                 System.out.println("getAndSetWxid2Db--->"+wxid);

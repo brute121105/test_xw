@@ -49,7 +49,7 @@ import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.OkHttpUtil;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,AdapterView.OnItemSelectedListener{
 
     EditText editText;
     EditText cnNumEditText;
@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     CheckBox loginSucessPauseCheckBox;
 
     private String[] phoneStrs;
-    private Spinner spinner;
-    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,20 +101,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         下拉框数据开始
         */
         phoneStrs = PhoneConf.getAllPhoneList();
-        spinner = (Spinner) findViewById(R.id.Spinner01);
-        //将可选内容与ArrayAdapter连接起来
+        Spinner spinner = (Spinner) findViewById(R.id.Spinner01);
+        setSpnnierStyleAndContents(spinner,phoneStrs);
+        //设置默认值
+        String loginIndex = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX);
+        loginIndex = TextUtils.isEmpty(loginIndex)||Integer.parseInt(loginIndex)>phoneStrs.length-1?"0":loginIndex;
+        spinner.setSelection(Integer.parseInt(loginIndex),true);//spinner下拉框默认值*/
+
+        Spinner spinner02 = (Spinner) findViewById(R.id.Spinner02);
+        setSpnnierStyleAndContents(spinner02,phoneStrs);
+        //设置默认值
+        String endLoginIndex = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX);
+        endLoginIndex = TextUtils.isEmpty(endLoginIndex)||Integer.parseInt(endLoginIndex)>phoneStrs.length-1?"0":endLoginIndex;
+        spinner02.setSelection(Integer.parseInt(endLoginIndex),true);//spinner下拉框默认值*/
+
+       /* //将可选内容与ArrayAdapter连接起来
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, phoneStrs);
         //设置下拉列表的风格
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //将adapter 添加到spinner中
         spinner.setAdapter(adapter);
         //添加事件Spinner事件监听
-        spinner.setOnItemSelectedListener(new SpinnerSelectedListener());
+        spinner.setOnItemSelectedListener(this);
         //设置默认值
         spinner.setVisibility(View.VISIBLE);
         String loginIndex = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX);
         loginIndex = TextUtils.isEmpty(loginIndex)||Integer.parseInt(loginIndex)>phoneStrs.length-1?"0":loginIndex;
-        spinner.setSelection(Integer.parseInt(loginIndex),true);//spinner下拉框默认值
+        spinner.setSelection(Integer.parseInt(loginIndex),true);//spinner下拉框默认值*/
          /*
         下拉框数据结束
         */
@@ -138,9 +149,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        String spinnerValue = phoneStrs[i];
+        switch (adapterView.getId()){
+            case R.id.Spinner01:
+                //截取spiiner的手机号保存到数据库
+                AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGINACCOUNT,spinnerValue.substring(spinnerValue.indexOf("-")+1,spinnerValue.indexOf(" ")));
+                AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,spinnerValue.substring(0,spinnerValue.indexOf("-")));
+                break;
+            case R.id.Spinner02:
+                AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_END_LOGINACCOUNT,spinnerValue.substring(spinnerValue.indexOf("-")+1,spinnerValue.indexOf(" ")));
+                AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_END_LOGIN_INDEX,spinnerValue.substring(0,spinnerValue.indexOf("-")));
+                break;
+        }
+    }
 
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+    /**
+     * 设置spinner样式和 下拉内容
+     * @param spinner
+     * @param contents 下拉内容，String[]数组
+     */
+    private void setSpnnierStyleAndContents(Spinner spinner,String[] contents){
+        //将可选内容与ArrayAdapter连接起来
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,contents);
+        //设置下拉列表的风格
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //将adapter 添加到spinner中
+        spinner.setAdapter(adapter);
+        //添加事件Spinner事件监听
+        spinner.setOnItemSelectedListener(this);
+        //设置默认值
+        spinner.setVisibility(View.VISIBLE);
+    }
+
+/*
     //使用数组形式操作
-    class SpinnerSelectedListener implements AdapterView.OnItemSelectedListener {
+    class SpinnerSelectedListener  {
         public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
             String spinnerValue = phoneStrs[arg2];
             //截取spiiner的手机号保存到数据库
@@ -149,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         public void onNothingSelected(AdapterView<?> arg0) {
         }
-    }
+    }*/
 
 
     @Override
