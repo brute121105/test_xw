@@ -32,6 +32,7 @@ import java.util.Locale;
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
+import hyj.xw.activity.YhSettingActivity;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button clearAppDataBtn = (Button)this.findViewById(R.id.clearAppData);
         Button apiSettingBtn = (Button)this.findViewById(R.id.apiSetting);
         Button del_upload_fileBtn = (Button)this.findViewById(R.id.del_upload_file);
+        Button yhBtn = (Button)this.findViewById(R.id.btn_yh_setting);
         openAssitBtn.setOnClickListener(this);
         autoLoginBtn.setOnClickListener(this);
         importBakDataBtn.setOnClickListener(this);
@@ -146,9 +148,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         clearAppDataBtn.setOnClickListener(this);
         apiSettingBtn.setOnClickListener(this);
         del_upload_fileBtn.setOnClickListener(this);
+        yhBtn.setOnClickListener(this);
 
-        AutoUtil.addPhoneContacts("zz","12365489658");
-        AutoUtil.addPhoneContacts("zz1","12365489658");
+        //AutoUtil.addPhoneContacts("zz","12365489658");
+       // AutoUtil.addPhoneContacts("zz1","12365489658");
 
     }
 
@@ -344,6 +347,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.del_upload_file:
                 startActivity(new Intent(MainActivity.this, AppSettingActivity.class));
+                break;
+            case R.id.btn_yh_setting:
+                startActivity(new Intent(MainActivity.this, YhSettingActivity.class));
                 break;
         }
     }

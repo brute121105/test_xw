@@ -79,7 +79,9 @@
 
         <activity android:name=".activity.AutoLoginSettingActivity" />
         <activity android:name=".activity.ApiSettingActivity" />
-        <activity android:name=".activity.AppSettingActivity"></activity>
+        <activity android:name=".activity.AppSettingActivity" />
+        <activity android:name=".activity.YhSettingActivity" />
+        <activity android:name=".activity.AfSettingActivity"></activity>
     </application>
 
 </manifest>

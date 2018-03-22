@@ -93,7 +93,7 @@ public class AutoFeedThread extends BaseThread {
             }*/
             NodeActionUtil.doClickByNodePathAndText(root,"微信无响应。要将其关闭吗？|确定","01","等待",record,"exception",500);
 
-            //ParseRootUtil.debugRoot(root);
+            ParseRootUtil.debugRoot(root);
 
                 //读取wxid写入数据库
                /* if(AutoUtil.actionContains(record,"wx")){
@@ -181,8 +181,8 @@ public class AutoFeedThread extends BaseThread {
                     LoginSuccessActionConfig.kzgz(root,record,currentWx008Data,context);
                 }
                 //微信id添加好友
-                if(AutoUtil.actionContains(record,"wxidaf")){
-                    LogUtil.d(TAG,"wxidaf-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                if(AutoUtil.actionContains(record,"af")){
+                    LogUtil.d(TAG,"af-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
                     LoginSuccessActionConfig.wxidaf(root,record,currentWx008Data,context);
                 }
 
@@ -287,6 +287,8 @@ public class AutoFeedThread extends BaseThread {
             AutoUtil.recordAndLog(record,"wx登陆完成");
             return;
         }
+        System.out.println("errRecord-->"+record);
+        System.out.println("errRecord loginIndex-->"+loginIndex);
         loginIndex = loginIndex+1;
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
     }
@@ -447,7 +449,7 @@ public class AutoFeedThread extends BaseThread {
         actions.put("606","saoma扫码加群");
         actions.put("607","sendFr发圈");
         actions.put("608","kzgz挂机");
-        actions.put("609","wxidaf添加好友");
+        actions.put("609","af添加好友");
         if(actions.containsKey(extValue)){
             return actions.get(extValue);
         }else {

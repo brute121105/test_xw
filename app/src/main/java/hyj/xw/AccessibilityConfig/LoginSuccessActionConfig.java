@@ -372,49 +372,66 @@ public class LoginSuccessActionConfig {
     public static void wxidaf(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data,AccessibilityService context){
         String addFrWxid = addFrWxids.get(addFrWxidNum);
 
-        if((AutoUtil.checkAction(record,"wxidaf发送好友请求")&&NodeActionUtil.isWindowContainStr(root,"添加到通讯录"))
-                ||AutoUtil.checkAction(record,"wxidaf用户不存在确定")||AutoUtil.checkAction(record,"wxidaf点击确认被搜帐号状态异常")
-                ||AutoUtil.checkAction(record,"wxidaf发送聊天内容")){
+        if((AutoUtil.checkAction(record,"af发送好友请求")&&NodeActionUtil.isWindowContainStr(root,"添加到通讯录"))
+                ||AutoUtil.checkAction(record,"af用户不存在确定")||AutoUtil.checkAction(record,"af点击确认被搜帐号状态异常")
+                ||AutoUtil.checkAction(record,"af发送聊天内容")){
             addFrWxidNum = addFrWxidNum+1;
             Log.i("addFrWxidNum-->",addFrWxidNum+"");
             if(addFrWxidNum==addFrWxids.size()){
                 addFrWxidNum = 0;
                 AutoUtil.recordAndLog(record,"wx登陆成功");
             }else {
-                AutoUtil.performBack(context,record,"wxidaf完成一个返回");
+                AutoUtil.performBack(context,record,"af完成一个返回");
             }
             return;
         }
 
-        if(AutoUtil.checkAction(record,"wxidaf完成一个返回")){
-            NodeActionUtil.doInputByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","02",addFrWxid,record,"wxidaf输入微信号",0);
+        if(AutoUtil.checkAction(record,"af完成一个返回")){
+            NodeActionUtil.doInputByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","02",addFrWxid,record,"af输入微信号",0);
         }
-        NodeActionUtil.doClickByNodePathAndDesc(root,"通讯录|发现","06","搜索",record,"wxidaf点击搜索",0);
-        NodeActionUtil.doInputByNodePathAndText(root,"搜索指定内容|朋友圈|资讯","02",addFrWxid,record,"wxidaf输入微信号",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找微信号:"+addFrWxid,record,"wxidaf点击查找",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找手机/QQ号:"+addFrWxid,record,"wxidaf点击查找",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"小程序、公众号、资讯、朋友圈和表情等|清除","05000","查找微信号:"+addFrWxid,record,"wxidaf点击查找",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"小程序、公众号、资讯、朋友圈和表情等|清除","05000","查找手机/QQ号:"+addFrWxid,record,"wxidaf点击查找",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"设置备注和标签|添加到通讯录","00330","添加到通讯录",record,"wxidaf添加到通讯录",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"设置朋友圈权限|为朋友设置备注","002","发送",record,"wxidaf发送好友请求",0);
+        NodeActionUtil.doClickByNodePathAndDesc(root,"通讯录|发现","06","搜索",record,"af点击搜索",0);
+        NodeActionUtil.doInputByNodePathAndText(root,"搜索指定内容|朋友圈|公众号","02",addFrWxid,record,"af输入微信号",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找微信号:"+addFrWxid,record,"af点击查找",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找手机/QQ号:"+addFrWxid,record,"af点击查找",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"小程序、公众号、文章、朋友圈和表情等|清除","05000","查找微信号:"+addFrWxid,record,"af点击查找",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"小程序、公众号、文章、朋友圈和表情等|清除","05000","查找手机/QQ号:"+addFrWxid,record,"af点击查找",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"设置备注和标签|添加到通讯录","00330","添加到通讯录",record,"af添加到通讯录",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"设置朋友圈权限|为朋友设置备注","002","发送",record,"af发送好友请求",0);
 
         //情形二，对方无需好友验证
-        NodeActionUtil.doClickByNodePathAndText(root,"设置备注和标签|视频聊天","00350","发消息",record,"wxidaf已添加发消息",0);
-        NodeActionUtil.doInputByNodePathAndText(root,"切换到按住说话|表情","000101","45696",record,"wxidaf输入聊天内容",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"切换到按住说话|表情","000103","发送",record,"wxidaf发送聊天内容",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"设置备注和标签|视频聊天","00350","发消息",record,"af已添加发消息",0);
+        NodeActionUtil.doInputByNodePathAndText(root,"切换到按住说话|表情","000101",currentWx008Data.getPhone(),record,"af输入聊天内容",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"切换到按住说话|表情","000103","发送",record,"af发送聊天内容",0);
 
         if(NodeActionUtil.isWindowContainStr(root,"被搜帐号状态异常")||NodeActionUtil.isWindowContainStr(root,"用户不存在")){
-            NodeActionUtil.doClickByNodePathAndText(root,"被搜帐号状态异常|确定","01","确定",record,"wxidaf点击确认被搜帐号状态异常",0);
-            NodeActionUtil.doClickByNodePathAndText(root,"用户不存在|确定","01","确定",record,"wxidaf用户不存在确定",0);
+            NodeActionUtil.doClickByNodePathAndText(root,"被搜帐号状态异常|确定","01","确定",record,"af点击确认被搜帐号状态异常",0);
+            NodeActionUtil.doClickByNodePathAndText(root,"用户不存在|确定","01","确定",record,"af用户不存在确定",0);
         }
 
     }
     public static List<String> getAddFrWx(){
         List<String> wxids = new ArrayList<>();
-        wxids.add("eak248");
-        wxids.add("eak254");
-        wxids.add("eak259");
-        wxids.add("eak263");
+       /* wxids.add("ehg333");
+        wxids.add("ehg999");*/
+        /*wxids.add("w222qu");
+        wxids.add("w234wr");*/
+        /*wxids.add("w456mb");
+        wxids.add("w444mb");*/
+       /* wxids.add("w555mb");
+        wxids.add("w666mb");*/
+       /*wxids.add("w777mb");
+        wxids.add("w888mb");*/
+       /* wxids.add("w333mb");
+        wxids.add("w222mb");*/
+
+        /*wxids.add("w333wc");
+        wxids.add("w444wc");*/
+       /* wxids.add("w666wc");
+        wxids.add("w777wc");*/
+        /*wxids.add("w222wt");
+        wxids.add("w333wt");*/
+        wxids.add("w444wt");
+        wxids.add("w555hb");
         return wxids;
     }
 }

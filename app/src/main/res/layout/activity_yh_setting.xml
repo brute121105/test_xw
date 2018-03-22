@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@android:style/Theme.Black.NoTitleBar"
+    tools:context="hyj.xw.activity.YhSettingActivity">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/isFeed"
+            android:textColor="#2E2E2E"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="添加指定好友"
+            android:textSize="18sp"
+            />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_af_setting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="设置要添加的好友"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/isSendFr"
+            android:textColor="#2E2E2E"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="发朋友圈"
+            android:textSize="18sp"
+            />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_sendFr_setting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="设置发圈内容"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:layout_weight="1"
+            android:id="@+id/isChanePwd"
+            android:textColor="#2E2E2E"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="修改密码"
+            android:textSize="18sp"
+            />
+        <EditText
+            android:layout_weight="1"
+            android:id="@+id/et_new_pwd"
+            android:layout_width="0dp"
+            android:hint="请输入要修改密码"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:layout_weight="1"
+            android:id="@+id/isSetWxis"
+            android:textColor="#2E2E2E"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="设置微信号（随机3位字母+3位数字）"
+            android:textSize="18sp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:layout_weight="1"
+            android:id="@+id/isSmjq"
+            android:textColor="#2E2E2E"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="扫码加群，二维码扫相册第一张图片"
+            android:textSize="18sp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:layout_weight="1"
+            android:id="@+id/isReplacePhone"
+            android:textColor="#2E2E2E"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="解绑手机号"
+            android:textSize="18sp"
+            />
+    </LinearLayout>
+
+</LinearLayout>

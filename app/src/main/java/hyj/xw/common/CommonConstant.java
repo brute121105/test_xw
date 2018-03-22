@@ -25,5 +25,7 @@ public class CommonConstant {
     public static String APPCONFIG_API_TOKEN = "apiToken";//api项目id
     public static String APPCONFIG_DELETE_DATA_INDEX = "deleteByIndex";//删除所有数据 格式 5-20
 
+    public static String APPCONFIG_AFS = "addFriendWxids";//删除所有数据 格式 5-20
+
     public static int index=0;
 }
