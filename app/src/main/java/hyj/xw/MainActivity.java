@@ -3,6 +3,8 @@ package hyj.xw;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -152,7 +154,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //AutoUtil.addPhoneContacts("zz","12365489658");
        // AutoUtil.addPhoneContacts("zz1","12365489658");
-
+        //getSysLanguage();
+        //DeviceParamUtil.getAwPhoneInfo();
+        PhoneConf.getAddFrWx();
     }
 
     @Override
@@ -274,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //读取文件
         String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
         System.out.println("phoneInfo---->"+con);
+
 
     }
 
@@ -405,18 +410,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return false;
     }
+    String xw = "{\"applicationInfo\":{\"banner\":0,\"baseCodePath\":\"/data/app/hyj.xw-1/base.apk\",\"baseResourcePath\":\"/data/app/hyj.xw-1/base.apk\",\"className\":\"hyj.xw.GlobalApplication\",\"codePath\":\"/data/app/hyj.xw-1\",\"compatibleWidthLimitDp\":0,\"dataDir\":\"/data/data/hyj.xw\",\"descriptionRes\":0,\"enabled\":true,\"enabledSetting\":0,\"flags\":13155910,\"flagsEx\":0,\"icon\":2130903040,\"installLocation\":-1,\"labelRes\":2131165218,\"largestWidthLimitDp\":0,\"logo\":0,\"nativeLibraryDir\":\"/data/app/hyj.xw-1/lib/arm64\",\"nativeLibraryRootDir\":\"/data/app/hyj.xw-1/lib\",\"nativeLibraryRootRequiresIsa\":true,\"packageName\":\"hyj.xw\",\"processName\":\"hyj.xw\",\"publicSourceDir\":\"/data/app/hyj.xw-1/base.apk\",\"requiresSmallestWidthDp\":0,\"resourcePath\":\"/data/app/hyj.xw-1\",\"scanPublicSourceDir\":\"/data/app/hyj.xw-1\",\"scanSourceDir\":\"/data/app/hyj.xw-1\",\"seinfo\":\"default\",\"showUserIcon\":-10000,\"sourceDir\":\"/data/app/hyj.xw-1/base.apk\",\"targetSdkVersion\":25,\"taskAffinity\":\"hyj.xw\",\"theme\":2131296420,\"uiOptions\":0,\"uid\":10134,\"versionCode\":1},\"coreApp\":false,\"firstInstallTime\":1521727262902,\"installLocation\":-1,\"lastUpdateTime\":1521729450721,\"packageName\":\"hyj.xw\",\"requiredForAllUsers\":false,\"sharedUserLabel\":0,\"versionCode\":1,\"versionName\":\"1.0\"}";
     private void getSysLanguage(){
-        Locale l = Locale.getDefault();
-        String locale = l.getLanguage();
+        System.out.println("versionCode-->22");
+        int versionCode = 0;
+        try {
+            //获取软件版本号，对应AndroidManifest.xml下android:versionCode
+            PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+            System.out.println("versionCode-->"+JSON.toJSONString(pi));
+            versionCode = pi.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println("versionCode-->"+versionCode);
+        PackageInfo newPi =JSON.parseObject(xw,PackageInfo.class);
+        System.out.println("new versionCode-->"+newPi.versionName);
+        System.out.println("new versionCode-->"+JSON.toJSONString(newPi));
 
-        Resources res = getResources();
-        Configuration config = res.getConfiguration();
-        String locale1 = config.locale.getCountry();
-
-        String locale2 = l.toString();
-        System.out.println("locale locale-->"+locale+" l:"+l.getCountry());
-        System.out.println("locale locale1-->"+locale1);
-        System.out.println("locale locale2-->"+locale2);
 
     }
 }

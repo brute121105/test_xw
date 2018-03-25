@@ -44,7 +44,8 @@ public class AutoFeedThread extends BaseThread {
     PhoneApi pa = new PhoneApi();
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
-        //AutoUtil.recordAndLog(record,"debug");
+        //AutoUtil.recordAndLog(record,"recfnd");
+        //AutoUtil.startWx();
         wx008Datas = DaoUtil.getWx008Datas();
         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
@@ -59,7 +60,7 @@ public class AutoFeedThread extends BaseThread {
             try {
             //记录数据，悬浮框显示
             recordFlowInfo(wx008Datas,loginIndex);
-            AutoUtil.sleep(0);
+            AutoUtil.sleep(300);
             LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
             if(currentWx008Data!=null){
                 LogUtil.d(TAG,"wxid:"+currentWx008Data.getWxId()+" pwd:"+currentWx008Data.getWxPwd());
@@ -185,6 +186,16 @@ public class AutoFeedThread extends BaseThread {
                     LogUtil.d(TAG,"af-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
                     LoginSuccessActionConfig.wxidaf(root,record,currentWx008Data,context);
                 }
+                //取关公众号
+                if(AutoUtil.actionContains(record,"qggzh")){
+                    LogUtil.d(TAG,"qggzh-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.qggzh(root,record,currentWx008Data,context);
+                }
+                //recfnd通过好友
+                if(AutoUtil.actionContains(record,"recfnd")){
+                    LogUtil.d(TAG,"recfnd-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.recfnd(root,record,currentWx008Data,context);
+                }
 
 
             }catch (Exception e){
@@ -205,7 +216,7 @@ public class AutoFeedThread extends BaseThread {
         //NodeActionUtil.doClickByNodePathAndText(root,"注册|语言","00","登录",record,"wx点击登陆1",500);
 
         boolean flag = false;
-        String wxid = currentWx008Data.getWxid19()!=null?currentWx008Data.getWxid19():currentWx008Data.getWxId();
+        String wxid = (currentWx008Data.getWxId()!=null&&currentWx008Data.getWxId().length()==6)?currentWx008Data.getWxId():currentWx008Data.getWxid19();
         String pwd = currentWx008Data.getWxPwd();
         //微信号为空用手机号登陆
         if(TextUtils.isEmpty(wxid)){
@@ -450,6 +461,9 @@ public class AutoFeedThread extends BaseThread {
         actions.put("607","sendFr发圈");
         actions.put("608","kzgz挂机");
         actions.put("609","af添加好友");
+        actions.put("610","qggzh取关公总号");
+        actions.put("611","recfnd通过好友");
+        actions.put("609603","af添加好友&扫码登录");
         if(actions.containsKey(extValue)){
             return actions.get(extValue);
         }else {

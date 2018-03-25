@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,7 @@ import java.util.concurrent.FutureTask;
 
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.WxNickNameConstant;
+import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneApi;
@@ -127,7 +130,7 @@ public class LoginSuccessActionConfig {
     }
 
     //登录搜索昵称
-    static int searIndex=187;
+    static int searIndex=27;
     static String wxid = "";
     static int searNum=0;
     public static void doLoginAndSearchNickName(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data,List<Wx008Data> wx008Datas,AccessibilityService context){
@@ -152,11 +155,15 @@ public class LoginSuccessActionConfig {
         if(AutoUtil.checkAction(record,"loginSNName完成一个返回")||AutoUtil.checkAction(record,"loginSNName点击确认被搜帐号状态异常")
                 ||AutoUtil.checkAction(record,"loginSNName用户不存在确定")){
             NodeActionUtil.doInputByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","02",wxid,record,"loginSNName输入微信号",1000);
+            NodeActionUtil.doInputByNodePathAndText(root,"搜索指定内容|朋友圈","02",wxid,record,"loginSNName输入微信号",1000);
+
         }
         NodeActionUtil.doClickByNodePathAndDesc(root,"通讯录|发现","06","搜索",record,"loginSNName点击搜索",1500);
-        NodeActionUtil.doInputByNodePathAndText(root,"搜索指定内容|朋友圈|资讯","02",wxid,record,"loginSNName输入微信号",500);
+        NodeActionUtil.doInputByNodePathAndText(root,"搜索指定内容|朋友圈","02",wxid,record,"loginSNName输入微信号",500);
         NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找微信号:"+wxid,record,"loginSNName点击查找",1500);
         NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找手机/QQ号:"+wxid,record,"loginSNName点击查找",1500);
+        NodeActionUtil.doClickByNodePathAndText(root,"小程序、公众号、文章、朋友圈和表情等|清除","05000","查找微信号:"+wxid,record,"loginSNName点击查找",1500);
+        NodeActionUtil.doClickByNodePathAndText(root,"小程序、公众号、文章、朋友圈和表情等|清除","05000","查找手机/QQ号:"+wxid,record,"loginSNName点击查找",1500);
 
         //AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"添加到通讯录"),record,"loginSNName点击添加到通讯录");
         //NodeActionUtil.doClickByNodePathAndText(root,"你需要发送验证申请，等对方通过|验证申请","002","发送",record,"loginSNName点击发送",1500);
@@ -366,9 +373,10 @@ public class LoginSuccessActionConfig {
             }
         }
     }
-    //筷子挂机
-    static List<String> addFrWxids = getAddFrWx();
+    //添加好友
+    static List<String> addFrWxids = PhoneConf.getAddFrWx();
     static int addFrWxidNum=0;
+    static int addDfNum=0;//添加对方个数
     public static void wxidaf(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data,AccessibilityService context){
         String addFrWxid = addFrWxids.get(addFrWxidNum);
 
@@ -379,7 +387,17 @@ public class LoginSuccessActionConfig {
             Log.i("addFrWxidNum-->",addFrWxidNum+"");
             if(addFrWxidNum==addFrWxids.size()){
                 addFrWxidNum = 0;
-                AutoUtil.recordAndLog(record,"wx登陆成功");
+                addDfNum = addDfNum+1;
+                saveAfsToDb(currentWx008Data);
+                String extValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
+                if("609603".equals(extValue)){
+                    AutoUtil.performBack(context,record,"返回1");
+                    AutoUtil.sleep(1000);
+                    AutoUtil.performBack(context,record,"返回2");
+                    AutoUtil.recordAndLog(record,"loginPc扫码登录");
+                }else {
+                    AutoUtil.recordAndLog(record,"wx登陆成功");
+                }
             }else {
                 AutoUtil.performBack(context,record,"af完成一个返回");
             }
@@ -391,11 +409,11 @@ public class LoginSuccessActionConfig {
         }
         NodeActionUtil.doClickByNodePathAndDesc(root,"通讯录|发现","06","搜索",record,"af点击搜索",0);
         NodeActionUtil.doInputByNodePathAndText(root,"搜索指定内容|朋友圈|公众号","02",addFrWxid,record,"af输入微信号",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找微信号:"+addFrWxid,record,"af点击查找",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找手机/QQ号:"+addFrWxid,record,"af点击查找",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"小程序、公众号、文章、朋友圈和表情等|清除","05000","查找微信号:"+addFrWxid,record,"af点击查找",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"小程序、公众号、文章、朋友圈和表情等|清除","05000","查找手机/QQ号:"+addFrWxid,record,"af点击查找",0);
-        NodeActionUtil.doClickByNodePathAndText(root,"设置备注和标签|添加到通讯录","00330","添加到通讯录",record,"af添加到通讯录",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找微信号:"+addFrWxid,record,"af点击查找"+addDfNum,0);
+        NodeActionUtil.doClickByNodePathAndText(root,"文章、朋友圈、小说、音乐和表情等|清除","05000","查找手机/QQ号:"+addFrWxid,record,"af点击查找"+addDfNum,0);
+        NodeActionUtil.doClickByNodePathAndText(root,"小程序、公众号、文章、朋友圈和表情等|清除","05000","查找微信号:"+addFrWxid,record,"af点击查找"+addDfNum,0);
+        NodeActionUtil.doClickByNodePathAndText(root,"小程序、公众号、文章、朋友圈和表情等|清除","05000","查找手机/QQ号:"+addFrWxid,record,"af点击查找"+addDfNum,0);
+        NodeActionUtil.doClickByNodePathAndText(root,"设置备注和标签|添加到通讯录","00330","添加到通讯录",record,"af添加到通讯录"+addDfNum,0);
         NodeActionUtil.doClickByNodePathAndText(root,"设置朋友圈权限|为朋友设置备注","002","发送",record,"af发送好友请求",0);
 
         //情形二，对方无需好友验证
@@ -409,29 +427,94 @@ public class LoginSuccessActionConfig {
         }
 
     }
-    public static List<String> getAddFrWx(){
-        List<String> wxids = new ArrayList<>();
-       /* wxids.add("ehg333");
-        wxids.add("ehg999");*/
-        /*wxids.add("w222qu");
-        wxids.add("w234wr");*/
-        /*wxids.add("w456mb");
-        wxids.add("w444mb");*/
-       /* wxids.add("w555mb");
-        wxids.add("w666mb");*/
-       /*wxids.add("w777mb");
-        wxids.add("w888mb");*/
-       /* wxids.add("w333mb");
-        wxids.add("w222mb");*/
+    public static void saveAfsToDb(Wx008Data currentWx008Data){
+        String friends = JSON.toJSONString(PhoneConf.getAddFrWx());
+        currentWx008Data.setFriends(friends);
+      if(!TextUtils.isEmpty(currentWx008Data.getWxId())){
+          int cn = currentWx008Data.updateAll("wxId=?",currentWx008Data.getWxId());
+          System.out.println("saveAfsToDb wxId--->"+cn+" friends:"+friends);
+      }else if(!TextUtils.isEmpty(currentWx008Data.getWxid19())){
+          int cn = currentWx008Data.updateAll("wxid19=?",currentWx008Data.getWxid19());
+          System.out.println("saveAfsToDb wxid19--->"+cn+" friends:"+friends);
+      }
+    }
 
-        /*wxids.add("w333wc");
-        wxids.add("w444wc");*/
-       /* wxids.add("w666wc");
-        wxids.add("w777wc");*/
-        /*wxids.add("w222wt");
-        wxids.add("w333wt");*/
-        wxids.add("w444wt");
-        wxids.add("w555hb");
-        return wxids;
+    //取关公众号
+    static int clickGzhIndex=0;
+    static int countGzgNum=0;
+    public static void qggzh(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data,AccessibilityService context){
+        NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","020","通讯录",record,"qggzh点击通讯录",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","0010300","公众号",record,"qggzh点击公众号",0);
+        List<AccessibilityNodeInfo> nodes = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/v9");
+        Log.i("qggzh-->nodes:",nodes+"");
+        if(NodeActionUtil.isContainsStrs(root,"公众号|搜索|添加")){
+            if(nodes!=null&&nodes.size()>0&&clickGzhIndex<nodes.size()){
+                AccessibilityNodeInfo node =  nodes.get(clickGzhIndex);
+                Log.i("qggzh-->node:",node+"");
+                AutoUtil.performClick(node,record,"qggzh点击",0);
+                clickGzhIndex = clickGzhIndex+1;
+            }
+        }
+        NodeActionUtil.doClickByNodePathAndDesc(root,"聊天信息|返回","003","聊天信息",record,"qggzh右上1",0);
+        NodeActionUtil.doClickByNodePathAndDesc(root,"头像|功能介绍","002","更多",record,"qggzh右上更多",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"推荐给朋友|清空内容","01030","不再关注",record,"qggzh点击不再关注1",0);
+        NodeActionUtil.doClickByNodePathAndText(root,"不再关注|取消","02","不再关注",record,"qggzh点击不再关注2",0);
+        if(AutoUtil.checkAction(record,"qggzh点击公众号")){
+            clickGzhIndex = 0;
+        }
+        if(NodeActionUtil.isWindowContainStr(root,"要求使用你的地理位置")){
+            NodeActionUtil.doClickByNodePathAndText(root,"确定|提示","02","取消",record,"qggzh点击取消地理位置",0);
+        }
+        if(AutoUtil.checkAction(record,"qggzh点击不再关注2")){
+            countGzgNum = countGzgNum+1;
+            Log.i("qggzh-->countGzgNum:",countGzgNum+"");
+        }
+        if(NodeActionUtil.isWindowContainStr(root,"0个公众号")||countGzgNum>14){
+            clickGzhIndex = 0;
+            countGzgNum = 0;
+            AutoUtil.recordAndLog(record,"wx登陆成功");
+        }
+    }
+
+    //自动通过好友
+    static boolean isScrollForward =true;
+    static int rcFrNum=0;
+    public static void recfnd(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data,AccessibilityService context){
+        AccessibilityNodeInfo node2 = AutoUtil.findNodeInfosByText(root,"接受");
+        AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"已添加");
+        NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","020","通讯录",record,"recfnd点击通讯录",0);
+        AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/b1a");
+        if(AutoUtil.performClick(node1,record,"recfnd点击通讯录2")) return;
+        if(AutoUtil.performClick(node2,record,"recfnd接受")) return;
+        if(NodeActionUtil.doClickByNodePathAndText(root,"去验证|取消","02","去验证",record,"recfnd点击去验证",0)) return;
+        NodeActionUtil.doClickByNodePathAndText(root,"通过验证|加入黑名单","00350","通过验证",record,"recfnd点击通过验证",0);
+        if(NodeActionUtil.doClickByNodePathAndText(root,"通过验证|加入黑名单","00360","通过验证",record,"recfnd点击通过验证",0)) return;
+        //NodeActionUtil.doClickByNodePathAndText(root,"为朋友设置备注|设置朋友圈权限","0031",null,record,"recfnd填入备注",0);
+        if(NodeActionUtil.doClickByNodePathAndText(root,"为朋友设置备注|设置朋友圈权限","002","完成",record,"recfnd点击完成"+rcFrNum,0)) return;
+        if(NodeActionUtil.isContainsStrs(root,"视频聊天|头像")){
+            AutoUtil.performBack(context,record,"recfnd back1");
+            rcFrNum = rcFrNum+1;
+            return;
+         }
+        if(NodeActionUtil.isWindowContainStr(root,"还没有推荐的朋友")){
+            AutoUtil.recordAndLog(record,"wx登陆成功");
+            return;
+        }
+        if(node2==null&&node3!=null){//符合滚动条件
+            AccessibilityNodeInfo listNode = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/b1s");
+            if(!isScrollForward){
+               if(!AutoUtil.performScrollBack(listNode,record,"recfnd上滚")){
+                   AutoUtil.recordAndLog(record,"wx登陆成功");
+                   rcFrNum = 0;
+                   isScrollForward = true;
+                   return;
+               }
+            }
+            if(isScrollForward){//符合下滚条件
+                isScrollForward = AutoUtil.performScroll(listNode,record,"recfnd下滚");
+                AutoUtil.sleep(500);
+                return;
+            }
+        }
     }
 }

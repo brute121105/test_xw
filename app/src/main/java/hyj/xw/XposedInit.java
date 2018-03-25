@@ -2,6 +2,8 @@ package hyj.xw;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 import com.alibaba.fastjson.JSON;
 
@@ -14,6 +16,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import hyj.xw.hook.HideApp;
 import hyj.xw.hook.PackageHooker;
 import hyj.xw.hook.Phone;
+import hyj.xw.util.AutoUtil;
 
 /**
  * XposedInit
@@ -32,6 +35,8 @@ public class XposedInit implements IXposedHookLoadPackage {
 
         if("hyj.xw".equals(packageName)){
             new Phone(lpparam);
+            System.out.println("versionCode-->hook hook");
+            new HideApp(lpparam);
         }
         if("hyj.weixin_008".equals(packageName)){
             new Phone(lpparam);
@@ -51,7 +56,7 @@ public class XposedInit implements IXposedHookLoadPackage {
                e.printStackTrace();
            }
            //--test start
-         /*  Class c1 = XposedHelpers.findClass("android.app.ActivityThread", null);
+         Class c1 = XposedHelpers.findClass("android.app.ActivityThread", null);
            Context localContext1 = (Context) XposedHelpers.callMethod(XposedHelpers.callStaticMethod(c1, "currentActivityThread", new Object[0]), "getSystemContext", new Object[0]);
            try {
                Context wxContext = localContext1.createPackageContext(PACKAGE_NAME,Context.CONTEXT_IGNORE_SECURITY);
@@ -61,7 +66,7 @@ public class XposedInit implements IXposedHookLoadPackage {
            } catch (PackageManager.NameNotFoundException e) {
                e.printStackTrace();
            }
-           */
+
            //获取context方法2
           /* XposedHelpers.findAndHookMethod("android.app.Application", lpparam.classLoader, "attach", Context.class, new XC_MethodHook() {
                @Override

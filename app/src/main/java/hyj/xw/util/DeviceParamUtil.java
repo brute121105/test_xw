@@ -1,7 +1,9 @@
 package hyj.xw.util;
 
 import android.content.Context;
+import android.os.Build;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 
@@ -33,5 +35,11 @@ public class DeviceParamUtil {
         info.setSimState(String.valueOf(tm.getSimState()));
         System.out.println("deviceInfo--->"+ JSON.toJSONString(info));
         return info;
+    }
+
+    public static void getAwPhoneInfo(){
+       String b = Build.BRAND;
+        Log.i("buile b-->",b);
+        Build bb = new Build();
     }
 }

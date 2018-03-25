@@ -100,8 +100,48 @@ public class HideApp {
             XposedBridge.log(" hideApp  错误: " + ex.getMessage());
         }
     }
+    static String xw = "{\"applicationInfo\":{\"banner\":0,\"baseCodePath\":\"/data/app/hyj.xw-1/base.apk\",\"baseResourcePath\":\"/data/app/hyj.xw-1/base.apk\",\"className\":\"hyj.xw.GlobalApplication\",\"codePath\":\"/data/app/hyj.xw-1\",\"compatibleWidthLimitDp\":0,\"dataDir\":\"/data/data/hyj.xw\",\"descriptionRes\":0,\"enabled\":true,\"enabledSetting\":0,\"flags\":13155910,\"flagsEx\":0,\"icon\":2130903040,\"installLocation\":-1,\"labelRes\":2131165218,\"largestWidthLimitDp\":0,\"logo\":0,\"nativeLibraryDir\":\"/data/app/hyj.xw-1/lib/arm64\",\"nativeLibraryRootDir\":\"/data/app/hyj.xw-1/lib\",\"nativeLibraryRootRequiresIsa\":true,\"packageName\":\"hyj.xw\",\"processName\":\"hyj.xw\",\"publicSourceDir\":\"/data/app/hyj.xw-1/base.apk\",\"requiresSmallestWidthDp\":0,\"resourcePath\":\"/data/app/hyj.xw-1\",\"scanPublicSourceDir\":\"/data/app/hyj.xw-1\",\"scanSourceDir\":\"/data/app/hyj.xw-1\",\"seinfo\":\"default\",\"showUserIcon\":-10000,\"sourceDir\":\"/data/app/hyj.xw-1/base.apk\",\"targetSdkVersion\":25,\"taskAffinity\":\"hyj.xw\",\"theme\":2131296420,\"uiOptions\":0,\"uid\":10134,\"versionCode\":1},\"coreApp\":false,\"firstInstallTime\":1521727262902,\"installLocation\":-1,\"lastUpdateTime\":1521729450721,\"packageName\":\"hyj.xw\",\"requiredForAllUsers\":false,\"sharedUserLabel\":0,\"versionCode\":666,\"versionName\":\"1.0\"}";
+    static String mm = "{\"applicationInfo\":{\"banner\":0,\"baseCodePath\":\"/data/app/com.tencent.mm-2/base.apk\",\"baseResourcePath\":\"/data/app/com.tencent.mm-2/base.apk\",\"className\":\"com.tencent.mm.app.Application\",\"codePath\":\"/data/app/com.tencent.mm-2\",\"compatibleWidthLimitDp\":0,\"dataDir\":\"/data/data/com.tencent.mm\",\"descriptionRes\":0,\"enabled\":true,\"enabledSetting\":0,\"flags\":9977412,\"flagsEx\":0,\"icon\":2130838423,\"installLocation\":0,\"labelRes\":2131237746,\"largestWidthLimitDp\":0,\"logo\":0,\"nativeLibraryDir\":\"/data/app/com.tencent.mm-2/lib/arm\",\"nativeLibraryRootDir\":\"/data/app/com.tencent.mm-2/lib\",\"nativeLibraryRootRequiresIsa\":true,\"packageName\":\"com.tencent.mm\",\"primaryCpuAbi\":\"armeabi\",\"processName\":\"com.tencent.mm\",\"publicSourceDir\":\"/data/app/com.tencent.mm-2/base.apk\",\"requiresSmallestWidthDp\":0,\"resourcePath\":\"/data/app/com.tencent.mm-2\",\"scanPublicSourceDir\":\"/data/app/com.tencent.mm-2\",\"scanSourceDir\":\"/data/app/com.tencent.mm-2\",\"seinfo\":\"default\",\"showUserIcon\":-10000,\"sourceDir\":\"/data/app/com.tencent.mm-2/base.apk\",\"targetSdkVersion\":23,\"taskAffinity\":\"com.tencent.mm\",\"theme\":2131492924,\"uiOptions\":0,\"uid\":10133,\"versionCode\":1220},\"coreApp\":false,\"firstInstallTime\":1521725802395,\"installLocation\":0,\"lastUpdateTime\":1521726050989,\"packageName\":\"com.tencent.mm\",\"requiredForAllUsers\":false,\"sharedUserLabel\":0,\"versionCode\":1220,\"versionName\":\"6.6.1\"}";
+    //static String mm = "{\"applicationInfo\":{\"banner\":0,\"baseCodePath\":\"/data/app/com.tencent.mm-2/base.apk\",\"baseResourcePath\":\"/data/app/com.tencent.mm-2/base.apk\",\"className\":\"com.tencent.mm.app.Application\",\"codePath\":\"/data/app/com.tencent.mm-2\",\"compatibleWidthLimitDp\":0,\"dataDir\":\"/data/data/com.tencent.mm\",\"descriptionRes\":0,\"enabled\":true,\"enabledSetting\":0,\"flags\":9977412,\"flagsEx\":0,\"icon\":2130838423,\"installLocation\":0,\"labelRes\":2131237746,\"largestWidthLimitDp\":0,\"logo\":0,\"nativeLibraryDir\":\"/data/app/com.tencent.mm-2/lib/arm\",\"nativeLibraryRootDir\":\"/data/app/com.tencent.mm-2/lib\",\"nativeLibraryRootRequiresIsa\":true,\"packageName\":\"com.tencent.mm\",\"primaryCpuAbi\":\"armeabi\",\"processName\":\"com.tencent.mm\",\"publicSourceDir\":\"/data/app/com.tencent.mm-2/base.apk\",\"requiresSmallestWidthDp\":0,\"resourcePath\":\"/data/app/com.tencent.mm-2\",\"scanPublicSourceDir\":\"/data/app/com.tencent.mm-2\",\"scanSourceDir\":\"/data/app/com.tencent.mm-2\",\"seinfo\":\"default\",\"showUserIcon\":-10000,\"sourceDir\":\"/data/app/com.tencent.mm-2/base.apk\",\"targetSdkVersion\":23,\"taskAffinity\":\"com.tencent.mm\",\"theme\":2131492924,\"uiOptions\":0,\"uid\":10133,\"versionCode\":1220},\"coreApp\":false,\"firstInstallTime\":1521725802395,\"installLocation\":0,\"lastUpdateTime\":1521726050989,\"packageName\":\"com.tencent.mm\",\"requiredForAllUsers\":false,\"sharedUserLabel\":0,\"versionCode\":1220,\"versionName\":\"6.6.166\"}";
 
     public static void hidePackageInfo(XC_LoadPackage.LoadPackageParam sharePkgParam){
+        System.out.println("ApplicationPackageManager hidePackageInfo--xposde-->hideApp");
+        try {
+            XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager",sharePkgParam.classLoader,"getPackageInfo",String.class,int.class, new XC_MethodHook() {
+
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    super.afterHookedMethod(param);
+                    if(param.args[0]!=null&&"com.tencent.mm".equals(param.args[0].toString())){
+                        //PackageInfo newPi =JSON.parseObject(mm,PackageInfo.class);
+                        PackageInfo pi = (PackageInfo)param.getResult();
+                        String strPi = JSON.toJSONString(pi).replaceAll("1120","1220").replaceAll("6.5.16","6.6.1");
+                        System.out.println("strPi pipi-->"+strPi);
+                        PackageInfo newPi =JSON.parseObject(strPi,PackageInfo.class);
+                        System.out.println("json pipi-->"+JSON.toJSONString(newPi));
+                        param.setResult(newPi);
+                    }else if(param.args[0]!=null&&"hyj.xw".equals(param.args[0].toString())){
+                        System.out.println("versionCode-->hook metod");
+                        PackageInfo newPi =JSON.parseObject(xw,PackageInfo.class);
+                        param.setResult(newPi);
+                    }
+                }
+
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    super.beforeHookedMethod(param);
+                    System.out.println("aram.args[0]--->"+param.args[0].toString());
+                    if(param.args[0]!=null&&isContainPackage(param.args[0].toString())){
+                        param.args[0] = "com.android.calendar";
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            XposedBridge.log(" hideApp  错误: " + ex.getMessage());
+        }
+    }
+
+    public static void hidePackageInfo1(XC_LoadPackage.LoadPackageParam sharePkgParam){
         System.out.println("ApplicationPackageManager hidePackageInfo--xposde-->hideApp");
         try {
             XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager",sharePkgParam.classLoader,"getPackageInfo",String.class,int.class, new XC_MethodHook() {
@@ -251,7 +291,7 @@ public class HideApp {
     private static boolean isContainPackage(String paramString)
     {
         if(paramString==null)  return true;
-        return paramString==null||paramString.contains("miui")||paramString.contains("xiaomi")||paramString.contains("008")||paramString.contains("hyj")||paramString.contains("root")
+        return paramString==null||paramString.contains("miui")||paramString.contains("xiaomi")||paramString.contains("008")||paramString.contains("root")
                 ||paramString.contains("xposed");
     }
 }

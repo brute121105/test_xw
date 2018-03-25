@@ -90,14 +90,28 @@ public class AutoUtil {
         }
         return isClick;
     }
-    public static void performScroll(AccessibilityNodeInfo nodeInfo,Map<String,String> record, String recordAction) {
-        if(nodeInfo == null)  return;
+    public static boolean performScroll(AccessibilityNodeInfo nodeInfo,Map<String,String> record, String recordAction) {
+        boolean isClick = false;
+        if(nodeInfo == null)  return false;
         if(nodeInfo.isScrollable()) {
-            nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+            isClick = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
             recordAndLog(record,recordAction);
         } else {
-            performScroll(nodeInfo.getParent(),record,recordAction);
+            isClick = performScroll(nodeInfo.getParent(),record,recordAction);
         }
+        return isClick;
+    }
+
+    public static boolean performScrollBack(AccessibilityNodeInfo nodeInfo,Map<String,String> record, String recordAction) {
+        boolean isClick = false;
+        if(nodeInfo == null)  return false;
+        if(nodeInfo.isScrollable()) {
+            isClick = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+            recordAndLog(record,recordAction);
+        } else {
+            isClick = performScroll(nodeInfo.getParent(),record,recordAction);
+        }
+        return isClick;
     }
     //执行点击、记录下次操作、并打印日志
     public static void performClickAndExpect(AccessibilityNodeInfo nodeInfo,Map<String,String> record, String recordAction

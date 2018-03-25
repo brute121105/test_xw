@@ -1,6 +1,7 @@
 package hyj.xw.conf;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import hyj.xw.common.CommonConstant;
+import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneInfo;
 import hyj.xw.util.AutoUtil;
@@ -85,7 +88,8 @@ public class PhoneConf {
             String wxid = wx008Datas.get(i).getWxId();
             if(TextUtils.isEmpty(wxid)){
                 wxid = wx008Datas.get(i).getPhone();
-            }else if(!TextUtils.isEmpty(wx008Datas.get(i).getWxid19())){
+            }
+            if(!TextUtils.isEmpty(wx008Datas.get(i).getWxid19())&&TextUtils.isEmpty(wxid)){
                 wxid = wx008Datas.get(i).getWxid19().substring(0,10);
             }
             String showMsg = i + "-" + wxid + " " + time + " " + (cn == null ? "86" : cn);
@@ -231,5 +235,40 @@ public class PhoneConf {
             str = str+createRandom123();
         }
         return str;
+    }
+    public static List<String> getAddFrWx(){
+        List<String> wxids = new ArrayList<>();
+       /* wxids.add("ehg333");
+        wxids.add("ehg999");*/
+        /*wxids.add("w222qu");
+        wxids.add("w234wr");*/
+        /*wxids.add("w456mb");
+        wxids.add("w444mb");*/
+       /* wxids.add("w555mb");
+        wxids.add("w666mb");*/
+       /*wxids.add("w777mb");
+        wxids.add("w888mb");*/
+       /* wxids.add("w333mb");
+        wxids.add("w222mb");*/
+
+        /*wxids.add("w333wc");
+        wxids.add("w444wc");*/
+       /* wxids.add("w666wc");
+        wxids.add("w777wc");*/
+        /*wxids.add("w222wt");
+        wxids.add("w333wt");*/
+       /* wxids.add("w444wt");
+        wxids.add("w555hb");*/
+        String afs = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_AFS);
+        if(afs.contains("\n")){
+            String[] strs = afs.split("\n");
+            for(String wx:strs){
+                if(!TextUtils.isEmpty(wx.trim())){
+                    wxids.add(wx);
+                }
+            }
+        }
+        Log.i("getAddFrWx-->",JSON.toJSONString(wxids));
+        return wxids;
     }
 }
