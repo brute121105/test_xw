@@ -31,7 +31,7 @@ import hyj.xw.util.ParseRootUtil;
 
 public class AutoFeedThread extends BaseThread {
     private  int countRootNull =0;
-    private int loginIndex;//登录序号
+    private int loginIndex,endLoginIndex;//登录序号
     private String isLoginSucessPause;//登录成功是否暂停
     public  final String TAG = this.getClass().getSimpleName();
     public AutoFeedThread(AccessibilityService context, Map<String, String> record, AccessibilityParameters parameters){
@@ -101,7 +101,7 @@ public class AutoFeedThread extends BaseThread {
                     getAndSetWxid2Db();
                 }*/
                 //登录完成所有号退出
-                if(AutoUtil.checkAction(record,"wx登陆完成"))  return null;
+                if(AutoUtil.actionContains(record,"wx登陆完成"))  return null;
                 if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")){
 
                     if(!AutoUtil.checkAction(record,"debug")){
@@ -294,8 +294,10 @@ public class AutoFeedThread extends BaseThread {
     }
 
     private void doNextIndexAndRecord2DB(){
-        if(loginIndex==wx008Datas.size()-1){
-            AutoUtil.recordAndLog(record,"wx登陆完成");
+        int startLoginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
+        int endLoginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX));
+        if(loginIndex==wx008Datas.size()-1||loginIndex==endLoginIndex){
+            AutoUtil.recordAndLog(record,"wx登陆完成序号【"+startLoginIndex+"-"+endLoginIndex+"】");
             return;
         }
         System.out.println("errRecord-->"+record);

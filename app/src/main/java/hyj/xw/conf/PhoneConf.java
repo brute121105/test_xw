@@ -96,6 +96,7 @@ public class PhoneConf {
             datas.add(showMsg);
 
             System.out.println(showMsg+" --nickName:"+wx008Datas.get(i).getNickName()+" repPhone:"+wx008Datas.get(i).getReplacePhone()+" pwd:"+wx008Datas.get(i).getWxPwd()+" phone:"+wx008Datas.get(i).getPhone()+" wxid:"+wx008Datas.get(i).getWxid19());
+            Log.i(i+" friends-->",JSON.toJSONString(wx008Datas.get(i).getFriends()));
             //删除测试
             Wx008Data wd = wx008Datas.get(i);
 

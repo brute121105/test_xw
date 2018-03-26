@@ -13,12 +13,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <CheckBox
-            android:id="@+id/isFeed"
+            android:id="@+id/isAfByWxid"
             android:textColor="#2E2E2E"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="添加指定好友"
+            android:text="微信号添加好友"
             android:textSize="18sp"
             />
         <Button
@@ -26,7 +26,29 @@
             android:id="@+id/btn_af_setting"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="设置要添加的好友"
+            android:text="设置添加的微信号"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/isAfByPhone"
+            android:textColor="#2E2E2E"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="通讯录添加好友"
+            android:textSize="18sp"
+            />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_afPhone_setting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="设置添加的手机号"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -114,6 +136,21 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="解绑手机号"
+            android:textSize="18sp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:layout_weight="1"
+            android:id="@+id/isRcFriend"
+            android:textColor="#2E2E2E"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="自动通过对方好友添加"
             android:textSize="18sp"
             />
     </LinearLayout>

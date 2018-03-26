@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -29,7 +27,6 @@ import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Locale;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
@@ -104,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         下拉框数据开始
         */
         phoneStrs = PhoneConf.getAllPhoneList();
+        //spinner
         Spinner spinner = (Spinner) findViewById(R.id.Spinner01);
         setSpnnierStyleAndContents(spinner,phoneStrs);
         //设置默认值
@@ -111,26 +109,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loginIndex = TextUtils.isEmpty(loginIndex)||Integer.parseInt(loginIndex)>phoneStrs.length-1?"0":loginIndex;
         spinner.setSelection(Integer.parseInt(loginIndex),true);//spinner下拉框默认值*/
 
+        //spinner02
         Spinner spinner02 = (Spinner) findViewById(R.id.Spinner02);
         setSpnnierStyleAndContents(spinner02,phoneStrs);
         //设置默认值
         String endLoginIndex = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX);
         endLoginIndex = TextUtils.isEmpty(endLoginIndex)||Integer.parseInt(endLoginIndex)>phoneStrs.length-1?"0":endLoginIndex;
         spinner02.setSelection(Integer.parseInt(endLoginIndex),true);//spinner下拉框默认值*/
-
-       /* //将可选内容与ArrayAdapter连接起来
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, phoneStrs);
-        //设置下拉列表的风格
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //将adapter 添加到spinner中
-        spinner.setAdapter(adapter);
-        //添加事件Spinner事件监听
-        spinner.setOnItemSelectedListener(this);
-        //设置默认值
-        spinner.setVisibility(View.VISIBLE);
-        String loginIndex = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX);
-        loginIndex = TextUtils.isEmpty(loginIndex)||Integer.parseInt(loginIndex)>phoneStrs.length-1?"0":loginIndex;
-        spinner.setSelection(Integer.parseInt(loginIndex),true);//spinner下拉框默认值*/
          /*
         下拉框数据结束
         */
@@ -196,20 +181,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //设置默认值
         spinner.setVisibility(View.VISIBLE);
     }
-
-/*
-    //使用数组形式操作
-    class SpinnerSelectedListener  {
-        public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-            String spinnerValue = phoneStrs[arg2];
-            //截取spiiner的手机号保存到数据库
-            AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGINACCOUNT,spinnerValue.substring(spinnerValue.indexOf("-")+1,spinnerValue.indexOf(" ")));
-            AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,spinnerValue.substring(0,spinnerValue.indexOf("-")));
-        }
-        public void onNothingSelected(AdapterView<?> arg0) {
-        }
-    }*/
-
 
     @Override
     public void onStart() {
@@ -305,19 +276,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.auto_login:
-                //PhoneConf.createPhoneInfo();
-                /*isVpnConnected();
-                getSysLanguage();
-                FileUtil.readContentToJsonTxt("isFeedStatus.txt");*/
-                //PhoneConf.create008Data("1230","www456","60");
-                //createRegData();
-                //importGoumai();
-                //testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
             case R.id.open_assist:
-                //new Thread(new GetPhoneAndValidCodeThread(new PhoneApi())).start();
-                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                int start = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
+                int end = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX));
+                if(start>end){
+                    Toast.makeText(this, "已设置的开始序号【"+start+"】不能大于结束序号【"+end+"】", Toast.LENGTH_LONG).show();
+                }else {
+                    Toast.makeText(this, "已设置登录序号【"+start+"-"+end+"】", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                }
                 break;
             case R.id.clearAppData:
                 clearAppData();
@@ -335,7 +304,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 DeviceInfo deviceInfo = DeviceParamUtil.getDeviceInfo();
                 System.out.println("deviceInfo-->"+JSON.toJSONString(deviceInfo));
                 createData();
-
                 /*DaoUtil.updatePwd("bfn347","www23347");
                 DaoUtil.updatePwd("vit894","www23894");
                 DaoUtil.updatePwd("fti468","www23468");
