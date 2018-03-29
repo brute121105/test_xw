@@ -36,6 +36,7 @@ import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
+import hyj.xw.hook.newHook.PhoneInfo;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
@@ -233,6 +234,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod(){
+        String con = FileUtil.readAll("/sdcard/A_hyj_json/a1/aw1.aw");
+        LogUtil.d("testMethod con",con);
+        PhoneInfo pi = JSON.parseObject(con,PhoneInfo.class);
+        LogUtil.d("testMethod json",JSON.toJSONString(pi));
         GetPhoneInfoUtil.getPhoneInfo();
     }
 
@@ -276,6 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.auto_login:
+                testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
             case R.id.open_assist:

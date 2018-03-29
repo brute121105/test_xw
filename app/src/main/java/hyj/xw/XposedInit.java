@@ -1,22 +1,16 @@
 package hyj.xw;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 
 import com.alibaba.fastjson.JSON;
 
-import java.io.IOException;
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import hyj.xw.hook.HideApp;
-import hyj.xw.hook.PackageHooker;
 import hyj.xw.hook.Phone;
-import hyj.xw.util.AutoUtil;
+import hyj.xw.hook.newHook.PhoneInfo;
+import hyj.xw.hook.newHook.nsEo5EnMUO99qwl4QERu;
+import hyj.xw.util.FileUtil;
+import hyj.xw.util.LogUtil;
 
 /**
  * XposedInit
@@ -34,29 +28,42 @@ public class XposedInit implements IXposedHookLoadPackage {
         System.out.println("hyj xw hyj-->"+packageName);
 
         if("hyj.xw".equals(packageName)){
-            new Phone(lpparam);
+          /*  new Phone(lpparam);
             System.out.println("versionCode-->hook hook");
-            new HideApp(lpparam);
+            new HideApp(lpparam);*/
         }
         if("hyj.weixin_008".equals(packageName)){
             new Phone(lpparam);
         }
 
-       if(packageName.equals(PACKAGE_NAME)){
-             System.out.println("hyj context--->"+PACKAGE_NAME);
+       if(packageName.equals(PACKAGE_NAME)||"hyj.xw".equals(packageName)){
+             //aw hook开始
+             String con = FileUtil.readAll("/sdcard/A_hyj_json/a1/aw1.aw");
+             LogUtil.d("hookaw con",con);
+             PhoneInfo pi = JSON.parseObject(con,PhoneInfo.class);
+              nsEo5EnMUO99qwl4QERu.O000000o(lpparam,pi);
+             //aw hook结束
+
+             //-------my hook 开始
+             /*System.out.println("hyj context--->"+PACKAGE_NAME);
              new HideApp(lpparam);
-             new Phone(lpparam);
+             new Phone(lpparam);*/
+            //--------my hook 结束
+
+           //hook debug 开始
             // HookWxUtil.hoodWxid(lpparam);
-           PackageHooker hooker = new PackageHooker(lpparam);
+          /* PackageHooker hooker = new PackageHooker(lpparam);
            try {
                hooker.hook();
            } catch (IOException e) {
                e.printStackTrace();
            } catch (ClassNotFoundException e) {
                e.printStackTrace();
-           }
+           }*/
+          //hook debug 结束
+
            //--test start
-         Class c1 = XposedHelpers.findClass("android.app.ActivityThread", null);
+         /*Class c1 = XposedHelpers.findClass("android.app.ActivityThread", null);
            Context localContext1 = (Context) XposedHelpers.callMethod(XposedHelpers.callStaticMethod(c1, "currentActivityThread", new Object[0]), "getSystemContext", new Object[0]);
            try {
                Context wxContext = localContext1.createPackageContext(PACKAGE_NAME,Context.CONTEXT_IGNORE_SECURITY);
@@ -65,7 +72,7 @@ public class XposedInit implements IXposedHookLoadPackage {
                AutoUtil.showToastByRunnable(localContext1,"pi-->"+pi.versionName);
            } catch (PackageManager.NameNotFoundException e) {
                e.printStackTrace();
-           }
+           }*/
 
            //获取context方法2
           /* XposedHelpers.findAndHookMethod("android.app.Application", lpparam.classLoader, "attach", Context.class, new XC_MethodHook() {
@@ -139,7 +146,7 @@ public class XposedInit implements IXposedHookLoadPackage {
                 });*/
 
         //追踪activiy
-        XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "startActivity", Intent.class, new XC_MethodHook() {
+        /*XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "startActivity", Intent.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
@@ -150,6 +157,6 @@ public class XposedInit implements IXposedHookLoadPackage {
                 }
                 System.out.println("Activity.startActivit =>" + param.thisObject.getClass()+"  intentExtrStr=>"+intentExtrStr);
             }
-        });
+        });*/
     }
 }
