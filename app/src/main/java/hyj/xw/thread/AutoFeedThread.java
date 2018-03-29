@@ -60,7 +60,7 @@ public class AutoFeedThread extends BaseThread {
             try {
             //记录数据，悬浮框显示
             recordFlowInfo(wx008Datas,loginIndex);
-            AutoUtil.sleep(300);
+            AutoUtil.sleep(500);
             LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
             if(currentWx008Data!=null){
                 LogUtil.d(TAG,"wxid:"+currentWx008Data.getWxId()+" pwd:"+currentWx008Data.getWxPwd());
@@ -233,15 +233,15 @@ public class AutoFeedThread extends BaseThread {
                 NodeActionUtil.doClickByNodePathAndText(root,"国家/地区|下一步|请填写手机号","0034","下一步",record,"wx下一步",1000);
 
             }
-            NodeActionUtil.doInputByNodePathAndText(root,"手机号登录|用短信验证码登录","00331",pwd,record,"wx输入密码",500);
+            NodeActionUtil.doInputByNodePathAndText(root,"手机号登录|用短信验证码登录","00331",pwd,record,"wx输入密码",1500);
             NodeActionUtil.doClickByNodePathAndText(root,"手机号登录|用短信验证码登录","0035","登录",record,"wx点击登录",3000);
         }else {
             NodeActionUtil.doClickByNodePathAndText(root,"请填写手机号|手机号登录","0033","用微信号/QQ号/邮箱登录",record,"wx点击微信号/QQ号/邮箱登录");
             /**
              * 6.5.16版本
              */
-            NodeActionUtil.doInputByNodePathAndText(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录","00311",wxid,record,"wx输入微信号",500);
-            NodeActionUtil.doInputByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","00321",pwd,record,"wx输入密码",1000);
+            NodeActionUtil.doInputByNodePathAndText(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录","00311",wxid,record,"wx输入微信号",1000);
+            NodeActionUtil.doInputByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","00321",pwd,record,"wx输入密码",1500);
             NodeActionUtil.doClickByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","0034","登录",record,"wx点击登录",3000);
             /**
              * 6.6.1版本
