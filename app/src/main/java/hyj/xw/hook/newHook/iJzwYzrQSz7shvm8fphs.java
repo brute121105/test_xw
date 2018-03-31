@@ -20,7 +20,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class iJzwYzrQSz7shvm8fphs extends DHHdslt4SqYQ1hSj1a4Y
 {
-    public iJzwYzrQSz7shvm8fphs(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo)
+    public iJzwYzrQSz7shvm8fphs(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo)
     {
         super(paramLoadPackageParam, paramPhoneInfo);
          Log.i("hookaw fphs1", JSON.toJSONString(paramPhoneInfo));

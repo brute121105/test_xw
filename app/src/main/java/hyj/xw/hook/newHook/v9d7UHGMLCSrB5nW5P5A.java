@@ -16,7 +16,7 @@ public class v9d7UHGMLCSrB5nW5P5A extends DHHdslt4SqYQ1hSj1a4Y
     private static final int[] O00000o = { 20, 20, 20, 21, 23 };
     private static final int[] O00000oO = { 12, 10, 10, 10, 11, 13 };
 
-    public v9d7UHGMLCSrB5nW5P5A(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo)
+    public v9d7UHGMLCSrB5nW5P5A(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo)
     {
         super(paramLoadPackageParam, paramPhoneInfo);
         O000000o("android.bluetooth.BluetoothAdapter", "getName");

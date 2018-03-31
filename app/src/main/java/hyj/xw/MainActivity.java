@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,12 +37,11 @@ import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
-import hyj.xw.hook.newHook.PhoneInfo;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
+import hyj.xw.model.PhoneInfo;
 import hyj.xw.service.SmsReciver;
-import hyj.xw.test.GetPhoneInfoUtil;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
@@ -234,11 +234,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod(){
-        String con = FileUtil.readAll("/sdcard/A_hyj_json/a1/aw1.aw");
+        List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
+        Wx008Data  data = wx008Datas.get(101);
+        PhoneInfo pi = data.getAwData();
+        Log.i("testMethod-->",JSON.toJSONString(pi));
+        /*String con = FileUtil.readAll("/sdcard/A_hyj_json/a1/aw1.aw");
         LogUtil.d("testMethod con",con);
-        PhoneInfo pi = JSON.parseObject(con,PhoneInfo.class);
+        NewPhoneInfo pi = JSON.parseObject(con,NewPhoneInfo.class);
         LogUtil.d("testMethod json",JSON.toJSONString(pi));
-        GetPhoneInfoUtil.getPhoneInfo();
+        GetPhoneInfoUtil.getPhoneInfo();*/
+
     }
 
     public void clearAppData(){
@@ -358,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         currentWx008Data.setWxPwd("wwww12345");
         currentWx008Data.setCnNum("62");
         currentWx008Data.setCreateTime(new Date());
-        PhoneInfo phoneInfo = PhoneConf.createPhoneInfo();
+        NewPhoneInfo phoneInfo = PhoneConf.createPhoneInfo();
         phoneInfo.setLineNumber("8973807928");//获取到的手机号码
         currentWx008Data.setPhoneStrs(JSON.toJSONString(phoneInfo));
         int cn = currentWx008Data.updateAll("phone=?","8973807928");

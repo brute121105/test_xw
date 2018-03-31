@@ -1,6 +1,8 @@
 package hyj.xw.model.LitePalModel;
 
 
+import android.text.TextUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -8,6 +10,7 @@ import org.litepal.crud.DataSupport;
 
 import java.util.Date;
 
+import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.PhoneInfo;
 
 /**
@@ -270,5 +273,49 @@ public class Wx008Data  extends DataSupport{
     public void setPhoneStrBy008Datas(){
         this.setPhoneInfo(this.getDatas());
         this.setPhoneStrs(JSON.toJSONString(this.getPhoneInfo()));
+    }
+
+    public NewPhoneInfo getAwData(){
+        PhoneInfo pi=null;
+        if(!TextUtils.isEmpty(phoneStrs)){
+            pi = JSON.parseObject(phoneStrs,PhoneInfo.class);
+        }else{
+            this.setPhoneInfo(this.getDatas());
+            pi = this.phoneInfo;
+        }
+        NewPhoneInfo npi = new NewPhoneInfo();
+        npi.setAndroidId(pi.getAndroidId());
+        npi.setBuildTags(pi.getBUILD_TAGS());
+        npi.setBuildType(pi.getBUILD_TYPE());
+        npi.setBuildUser(pi.getBUILD_USER());
+        npi.setBuildBrand(pi.getBrand());
+        npi.setBuildId(pi.getBuildId());
+        npi.setBuildAbi(pi.getCPU_ABI());
+        npi.setBuildAbi2(pi.getCPU_ABI2());
+        npi.setBuildDevice(pi.getDevice());
+        npi.setDeviceId(pi.getDeviceId());
+        npi.setBuildFingerprint(pi.getFingerprint());
+        npi.setDisplayId(pi.getDisplay());
+        npi.setBuildHardware(pi.getHardware());
+        npi.setLine1Number(pi.getLineNumber());
+        npi.setBuildManufacturer(pi.getManufacturer());
+        npi.setBuildModel(pi.getModel());
+        npi.setNetworkCountryIso(pi.getNetworkCountryIso());
+        npi.setNetworkOperator(pi.getNetworkOperator());
+        npi.setNetworkOperatorName(pi.getNetworkOperatorName());
+        npi.setNetworkType(pi.getNetworkType());
+        npi.setPhoneType(pi.getPhoneType());
+        npi.setBuildName(pi.getProductName());
+        npi.setBuildRadioVersion(pi.getRadioVersion());
+        npi.setBuildRelease(pi.getRelease());
+        npi.setBuildSdk(pi.getSdk());
+        npi.setSerialno(pi.getSerialno());
+        npi.setSimCountryIso(pi.getSimCountryIso());
+        npi.setSimOperator(pi.getSimOperator());
+        npi.setSimOperatorName(pi.getSimOperatorName());
+        npi.setSimSerialNumber(pi.getSimSerialNumber());
+        npi.setSimState(pi.getSimState());
+        npi.setSubscriberId(pi.getSubscriberId());
+        return npi;
     }
 }

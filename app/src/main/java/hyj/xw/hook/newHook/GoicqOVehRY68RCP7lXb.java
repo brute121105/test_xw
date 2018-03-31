@@ -10,7 +10,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 
 public class GoicqOVehRY68RCP7lXb extends DHHdslt4SqYQ1hSj1a4Y {
-    public GoicqOVehRY68RCP7lXb(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo) {
+    public GoicqOVehRY68RCP7lXb(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo) {
         super(paramLoadPackageParam, paramPhoneInfo);
         O000000o("android.os.Build", "getString");
         O000000o("android.os.Build", "getRadioVersion");

@@ -19,7 +19,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class EofATSK3OFqqbRjuc8sf extends DHHdslt4SqYQ1hSj1a4Y
 {
-    public EofATSK3OFqqbRjuc8sf(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo)
+    public EofATSK3OFqqbRjuc8sf(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo)
     {
         super(paramLoadPackageParam, paramPhoneInfo);
         O000000o("android.app.ApplicationPackageManager", "getPackageArchiveInfo");

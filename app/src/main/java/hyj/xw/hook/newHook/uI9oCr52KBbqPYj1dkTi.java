@@ -16,7 +16,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class uI9oCr52KBbqPYj1dkTi extends DHHdslt4SqYQ1hSj1a4Y
 {
-    public uI9oCr52KBbqPYj1dkTi(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo)
+    public uI9oCr52KBbqPYj1dkTi(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo)
     {
         super(paramLoadPackageParam, paramPhoneInfo);
         O000000o("android.hardware.SensorManager", "getSensorList");

@@ -18,9 +18,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public abstract class DHHdslt4SqYQ1hSj1a4Y extends XC_MethodHook {
         protected String O000000o;
         protected ClassLoader O00000Oo;
-        protected PhoneInfo O00000o0;
+        protected NewPhoneInfo O00000o0;
 
-        public DHHdslt4SqYQ1hSj1a4Y(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo)
+        public DHHdslt4SqYQ1hSj1a4Y(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo)
         {
             this.O000000o = paramLoadPackageParam.packageName;
             this.O00000Oo = paramLoadPackageParam.classLoader;

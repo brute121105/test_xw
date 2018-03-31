@@ -9,7 +9,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class qgZSyjGOVNPGbBZt5NUv extends DHHdslt4SqYQ1hSj1a4Y
 {
-    public qgZSyjGOVNPGbBZt5NUv(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo)
+    public qgZSyjGOVNPGbBZt5NUv(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo)
     {
         super(paramLoadPackageParam, paramPhoneInfo);
         O000000o("android.os.BatteryManager", "getIntProperty");

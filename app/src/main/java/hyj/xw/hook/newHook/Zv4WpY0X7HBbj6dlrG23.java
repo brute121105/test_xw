@@ -9,7 +9,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class Zv4WpY0X7HBbj6dlrG23 extends DHHdslt4SqYQ1hSj1a4Y
 {
-    public Zv4WpY0X7HBbj6dlrG23(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo)
+    public Zv4WpY0X7HBbj6dlrG23(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo)
     {
         super(paramLoadPackageParam, paramPhoneInfo);
         O000000o("android.telephony.CellIdentityCdma", "getSystemId");

@@ -12,7 +12,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class sCYDTepZuATpaFuMmbHk extends DHHdslt4SqYQ1hSj1a4Y
 {
-    public sCYDTepZuATpaFuMmbHk(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo)
+    public sCYDTepZuATpaFuMmbHk(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo)
     {
         super(paramLoadPackageParam, paramPhoneInfo);
         O000000o(TelephonyManager.class.getName(), "getDeviceId", new Object[0]);

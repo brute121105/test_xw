@@ -9,7 +9,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class FVKjWjKo1YaG6p5uD2qz extends DHHdslt4SqYQ1hSj1a4Y
 {
-    public FVKjWjKo1YaG6p5uD2qz(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, PhoneInfo paramPhoneInfo)
+    public FVKjWjKo1YaG6p5uD2qz(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo)
     {
         super(paramLoadPackageParam, paramPhoneInfo);
         O000000o("android.telephony.SignalStrength", "getCdmaDbm");

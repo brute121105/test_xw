@@ -7,7 +7,7 @@ import java.util.List;
  * Created by asus on 2018/3/24.
  */
 
-public class PhoneInfo {
+public class NewPhoneInfo {
     private String BSSID;
     private String IpAddress;
     private String P2p0Mac;

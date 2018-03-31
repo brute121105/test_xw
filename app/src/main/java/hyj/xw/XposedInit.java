@@ -2,15 +2,10 @@ package hyj.xw;
 
 import android.content.Context;
 
-import com.alibaba.fastjson.JSON;
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import hyj.xw.hook.HideApp;
 import hyj.xw.hook.Phone;
-import hyj.xw.hook.newHook.PhoneInfo;
-import hyj.xw.hook.newHook.nsEo5EnMUO99qwl4QERu;
-import hyj.xw.util.FileUtil;
-import hyj.xw.util.LogUtil;
 
 /**
  * XposedInit
@@ -38,16 +33,16 @@ public class XposedInit implements IXposedHookLoadPackage {
 
        if(packageName.equals(PACKAGE_NAME)||"hyj.xw".equals(packageName)){
              //aw hook开始
-             String con = FileUtil.readAll("/sdcard/A_hyj_json/a1/aw1.aw");
+             /*String con = FileUtil.readAll("/sdcard/A_hyj_json/a1/aw1.aw");
              LogUtil.d("hookaw con",con);
-             PhoneInfo pi = JSON.parseObject(con,PhoneInfo.class);
-              nsEo5EnMUO99qwl4QERu.O000000o(lpparam,pi);
+             NewPhoneInfo pi = JSON.parseObject(con,NewPhoneInfo.class);
+              nsEo5EnMUO99qwl4QERu.O000000o(lpparam,pi);*/
              //aw hook结束
 
              //-------my hook 开始
-             /*System.out.println("hyj context--->"+PACKAGE_NAME);
+             System.out.println("hyj context--->"+PACKAGE_NAME);
              new HideApp(lpparam);
-             new Phone(lpparam);*/
+             new Phone(lpparam);
             //--------my hook 结束
 
            //hook debug 开始
