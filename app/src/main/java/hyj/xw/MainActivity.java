@@ -236,8 +236,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void testMethod(){
         List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
         Wx008Data  data = wx008Datas.get(101);
-        PhoneInfo pi = data.getAwData();
-        Log.i("testMethod-->",JSON.toJSONString(pi));
+        //PhoneInfo pi = data.getAwData();
+        //Log.i("testMethod-->",JSON.toJSONString(pi));
         /*String con = FileUtil.readAll("/sdcard/A_hyj_json/a1/aw1.aw");
         LogUtil.d("testMethod con",con);
         NewPhoneInfo pi = JSON.parseObject(con,NewPhoneInfo.class);
