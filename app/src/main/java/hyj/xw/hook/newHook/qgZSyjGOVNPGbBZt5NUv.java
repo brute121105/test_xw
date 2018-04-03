@@ -15,20 +15,18 @@ public class qgZSyjGOVNPGbBZt5NUv extends DHHdslt4SqYQ1hSj1a4Y
         O000000o("android.os.BatteryManager", "getIntProperty");
     }
 
-    protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramMethodHookParam)
-    {
-        int i;
-        if ("getIntProperty".equals(paramMethodHookParam.method.getName()))
-        {
-            i = ((Integer)paramMethodHookParam.args[0]).intValue();
-            if (i != 2){
-                if (i == 4)
-                    paramMethodHookParam.setResult(Integer.valueOf(this.O00000o0.getBatteryLevel()));
-            }else {
-                paramMethodHookParam.setResult(Integer.valueOf(-306394));
+    @Override
+    protected void afterHookedMethod(XC_MethodHook.MethodHookParam xc_MethodHook$MethodHookParam) throws Throwable {
+        if ("getIntProperty".equals(xc_MethodHook$MethodHookParam.method.getName())) {
+            final int intValue = (int)xc_MethodHook$MethodHookParam.args[0];
+            if (intValue == 2) {
+                xc_MethodHook$MethodHookParam.setResult((Object)(-306394));
+            }
+            else if (intValue == 4) {
+                xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBatteryLevel());
             }
         }
-
+        super.afterHookedMethod(xc_MethodHook$MethodHookParam);
     }
 
     protected void beforeHookedMethod(XC_MethodHook.MethodHookParam paramMethodHookParam) throws Throwable {

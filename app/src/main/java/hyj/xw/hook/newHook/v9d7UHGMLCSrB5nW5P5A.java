@@ -29,8 +29,7 @@ public class v9d7UHGMLCSrB5nW5P5A extends DHHdslt4SqYQ1hSj1a4Y
         O000000o("android.bluetooth.BluetoothDevice", "getBondedDevices");
     }
 
-    protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramMethodHookParam)
-    {
+    protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramMethodHookParam) throws Throwable {
         String str = paramMethodHookParam.method.getName();
         if (str.equals("getName"))
             if (!TextUtils.isEmpty(this.O00000o0.getBtName()))
@@ -44,6 +43,8 @@ public class v9d7UHGMLCSrB5nW5P5A extends DHHdslt4SqYQ1hSj1a4Y
             paramMethodHookParam.setResult(new HashSet());
         else if ((str.equals("getAddress")) && (!TextUtils.isEmpty(this.O00000o0.getBtAddress())))
             paramMethodHookParam.setResult(this.O00000o0.getBtAddress());
+
+        super.afterHookedMethod(paramMethodHookParam);
     }
 
     protected void beforeHookedMethod(XC_MethodHook.MethodHookParam paramMethodHookParam) throws Throwable {

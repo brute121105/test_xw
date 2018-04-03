@@ -528,7 +528,6 @@ public class uI9oCr52KBbqPYj1dkTi extends DHHdslt4SqYQ1hSj1a4Y
                 localArrayList.add(localSensor19);
                 paramMethodHookParam.setResult(localArrayList);
                 super.afterHookedMethod(paramMethodHookParam);
-                return;
             }
             catch (Exception localException)
             {

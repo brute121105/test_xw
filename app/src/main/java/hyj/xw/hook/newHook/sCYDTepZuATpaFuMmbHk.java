@@ -28,14 +28,8 @@ public class sCYDTepZuATpaFuMmbHk extends DHHdslt4SqYQ1hSj1a4Y
         O000000o(TelephonyManager.class.getName(), "getNetworkType", new Object[0]);
         O000000o(TelephonyManager.class.getName(), "getPhoneType", new Object[0]);
         O000000o(TelephonyManager.class.getName(), "hasIccCard", new Object[0]);
-        String str1 = TelephonyManager.class.getName();
-        Object[] arrayOfObject1 = new Object[1];
-        arrayOfObject1[0] = Integer.TYPE.getName();
-        O000000o(str1, "getNetworkClass", arrayOfObject1);
-        String str2 = TelephonyManager.class.getName();
-        Object[] arrayOfObject2 = new Object[1];
-        arrayOfObject2[0] = Integer.TYPE.getName();
-        O000000o(str2, "getNetworkTypeName", arrayOfObject2);
+        O000000o(TelephonyManager.class.getName(), "getNetworkClass", new Object[] { Integer.TYPE.getName() });
+        O000000o(TelephonyManager.class.getName(), "getNetworkTypeName", new Object[] { Integer.TYPE.getName() });
         O000000o(TelephonyManager.class.getName(), "isSmsCapable", new Object[0]);
         O000000o(TelephonyManager.class.getName(), "getDataState", new Object[0]);
         O000000o(TelephonyManager.class.getName(), "getCallState", new Object[0]);
@@ -63,14 +57,13 @@ public class sCYDTepZuATpaFuMmbHk extends DHHdslt4SqYQ1hSj1a4Y
         O000000o(ServiceState.class.getName(), "getNetworkType", new Object[0]);
     }
 
+    @Override
     protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramMethodHookParam) throws Throwable {
-        super.afterHookedMethod(paramMethodHookParam);
         String str1 = paramMethodHookParam.method.getName();
         String str2 = paramMethodHookParam.method.getDeclaringClass().getName();
-        if ("hasIccCard".equals(str1))
+        if ("hasIccCard".equals(str1)){
             paramMethodHookParam.setResult(Boolean.valueOf(true));
-
-        if ("isSmsCapable".equals(str1))
+        }else if ("isSmsCapable".equals(str1))
         {
             paramMethodHookParam.setResult(Boolean.valueOf(true));
         }
@@ -140,5 +133,6 @@ public class sCYDTepZuATpaFuMmbHk extends DHHdslt4SqYQ1hSj1a4Y
             if (localObject != null)
                 paramMethodHookParam.setResult(localObject);
         }
+        super.afterHookedMethod(paramMethodHookParam);
     }
 }

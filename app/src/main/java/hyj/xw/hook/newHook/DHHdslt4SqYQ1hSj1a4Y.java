@@ -27,6 +27,11 @@ public abstract class DHHdslt4SqYQ1hSj1a4Y extends XC_MethodHook {
             this.O00000o0 = paramPhoneInfo;
         }
 
+    @Override
+    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+        super.afterHookedMethod(param);
+    }
+
     public void O000000o(String paramString1, String paramString2)
     {
         try
@@ -100,10 +105,5 @@ public abstract class DHHdslt4SqYQ1hSj1a4Y extends XC_MethodHook {
         {
             Log.e("Xhook", "addHookConOnly exception", localThrowable);
         }
-    }
-
-    @Override
-    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-        super.afterHookedMethod(param);
     }
 }

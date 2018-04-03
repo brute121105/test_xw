@@ -137,10 +137,6 @@ public class Phone {
 
 
 
-        //不兼容redmiNode2 cm系统 ，暂时去掉
-        //HookTelephony("android.telephony.MSimTelephonyManager",loadPkgParam, "getDeviceId",phoneInfo.getDeviceId());
-        //HookTelephony("android.telephony.MSimTelephonyManager",loadPkgParam, "getSubscriberId",phoneInfo.getSubscriberId());
-
         //HookTelephony(TelePhone,loadPkgParam, "getSimState",11);//mac地址
         //HookTelephony(TelePhone,loadPkgParam, "getSimState",11);//无线路由器名称
         //HookTelephony(TelePhone,loadPkgParam, "getSimState",11);//无线路由器地址
@@ -240,10 +236,12 @@ public class Phone {
 
 
 
-
+        //不兼容redmiNode2 cm系统 ，暂时去掉
+        HookTelephony("android.telephony.MSimTelephonyManager",loadPkgParam, "getDeviceId",phoneInfo.getDeviceId());
+        HookTelephony("android.telephony.MSimTelephonyManager",loadPkgParam, "getSubscriberId",phoneInfo.getSubscriberId());
 
         //不兼容redmiNode2 cm系统 ，暂时去掉
-       /* for (Method localMethod : XposedHelpers.findClass("android.telephony.MSimTelephonyManager", this.classLoader).getDeclaredMethods()){
+       for (Method localMethod : XposedHelpers.findClass("android.telephony.MSimTelephonyManager", this.classLoader).getDeclaredMethods()){
             System.out.println("watch2 MSimTelephonyManager localMethod.getNam-->"+localMethod.getName());
             if (!Modifier.isAbstract(localMethod.getModifiers())){
                 localMethod.setAccessible(true);
@@ -255,7 +253,7 @@ public class Phone {
                     }
                 });
             }
-        }*/
+        }
 
 
     }

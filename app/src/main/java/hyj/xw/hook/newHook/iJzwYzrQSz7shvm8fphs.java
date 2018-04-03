@@ -44,7 +44,7 @@ public class iJzwYzrQSz7shvm8fphs extends DHHdslt4SqYQ1hSj1a4Y
         if (!TextUtils.isEmpty(this.O00000o0.getBuildModel()))
             XposedHelpers.setStaticObjectField(Build.class, "MODEL", this.O00000o0.getBuildModel());
         if (!TextUtils.isEmpty(this.O00000o0.getDisplayId()))
-            XposedHelpers.setStaticObjectField(Build.class, "DISPLAY", this.O00000o0.getDisplayId());
+                XposedHelpers.setStaticObjectField(Build.class, "DISPLAY", this.O00000o0.getDisplayId());
         if (!TextUtils.isEmpty(this.O00000o0.getBuildProduct()))
             XposedHelpers.setStaticObjectField(Build.class, "PRODUCT", this.O00000o0.getBuildProduct());
         if (!TextUtils.isEmpty(this.O00000o0.getBuildManufacturer()))
@@ -82,153 +82,153 @@ public class iJzwYzrQSz7shvm8fphs extends DHHdslt4SqYQ1hSj1a4Y
         if (!TextUtils.isEmpty(this.O00000o0.getBuildAbi2()))
             XposedHelpers.setStaticObjectField(Build.class, "CPU_ABI2", this.O00000o0.getBuildAbi2());
     }
-
-   protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramMethodHookParam) throws Throwable {
-        super.afterHookedMethod(paramMethodHookParam);
-        String str1 = paramMethodHookParam.method.getName();
-       Log.i("hookaw str1", str1);
-        String str2;
-        if ("get".startsWith(str1))
-        {
-            str2 = (String)paramMethodHookParam.args[0];
-            Log.i("hookaw str22", str2);
-            if ("ro.product.model".equals(str2))
-            {
-                if (!TextUtils.isEmpty(this.O00000o0.getBuildModel()))
-                    paramMethodHookParam.setResult(this.O00000o0.getBuildModel());
+    @Override
+    protected void afterHookedMethod(final XC_MethodHook.MethodHookParam xc_MethodHook$MethodHookParam) throws Throwable {
+        final String name = xc_MethodHook$MethodHookParam.method.getName();
+        if ("get".startsWith(name)) {
+            final String s = (String)xc_MethodHook$MethodHookParam.args[0];
+            if ("ro.product.model".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildModel())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildModel());
+                }
             }
-
-       if ("ro.build.id".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildId()))
-             paramMethodHookParam.setResult(this.O00000o0.getBuildId());
+            else if ("ro.build.id".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildId())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildId());
+                }
+            }
+            else if ("ro.build.display.id".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getDisplayId())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getDisplayId());
+                }
+            }
+            else if ("ro.build.type".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildType())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildType());
+                }
+            }
+            else if ("ro.build.user".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildUser())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildUser());
+                }
+            }
+            else if ("ro.build.host".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildHost())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildHost());
+                }
+            }
+            else if ("ro.build.tags".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildTags())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildTags());
+                }
+            }
+            else if ("ro.product.brand".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildTags())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildBrand());
+                }
+            }
+            else if ("ro.product.device".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildDevice())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildDevice());
+                }
+            }
+            else if ("ro.product.board".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildBoard())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildBoard());
+                }
+            }
+            else if ("ro.product.name".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildName())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildName());
+                }
+            }
+            else if ("ro.product.manufacturer".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildManufacturer())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildManufacturer());
+                }
+            }
+            else if ("ro.hardware".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildHardware())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildHardware());
+                }
+            }
+            else if ("ro.serialno".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildSerialno())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildSerialno());
+                }
+            }
+            else if ("ro.build.version.incremental".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildIncremental())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildIncremental());
+                }
+            }
+            else if ("ro.build.version.release".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildRelease())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildRelease());
+                }
+            }
+            else if ("ro.build.version.sdk".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildSdk())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildSdk());
+                }
+            }
+            else if ("ro.build.version.codename".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildCodename())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildCodename());
+                }
+            }
+            else if ("ro.build.fingerprint".equals(s)) {
+                if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildFingerprint())) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildFingerprint());
+                }
+            }
+            else if ("ro.build.date.utc".equals(s)) {
+                if (this.O00000o0.getBuildUtc() > 0L) {
+                    xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getBuildUtc());
+                }
+            }
+            else if ("gsm.operator.numeric".equals(s) && !TextUtils.isEmpty((CharSequence)this.O00000o0.getSimOperator())) {
+                xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getSimOperator());
+            }
+            Log.i("SysPropertyHook", "SystemProperties get : " + xc_MethodHook$MethodHookParam.args[0] + " -> " + xc_MethodHook$MethodHookParam.getResult());
         }
-        if ("ro.build.display.id".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getDisplayId()))
-            paramMethodHookParam.setResult(this.O00000o0.getDisplayId());
+        else if ("getStringForUser".equals(name)) {
+            if ("android_id".equals(xc_MethodHook$MethodHookParam.args[1])) {
+                xc_MethodHook$MethodHookParam.setResult((Object)this.O00000o0.getAndroidId());
+            }
+            else if ("adb_enabled".equals(xc_MethodHook$MethodHookParam.args[1])) {
+                xc_MethodHook$MethodHookParam.setResult((Object)0);
+            }
+            else if ("data_roaming".equals(xc_MethodHook$MethodHookParam.args[1])) {
+                xc_MethodHook$MethodHookParam.setResult((Object)0);
+            }
+            Log.i("SysPropertyHook", "Settings getStringForUser : " + xc_MethodHook$MethodHookParam.args[1] + " , " + xc_MethodHook$MethodHookParam.getResult());
         }
-        if ("ro.build.type".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildType()))
-            paramMethodHookParam.setResult(this.O00000o0.getBuildType());
+        else if ("set".equals(name)) {
+            Log.i("SysPropertyHook", "SystemProperties set : " + xc_MethodHook$MethodHookParam.args[0] + " , " + xc_MethodHook$MethodHookParam.args[1]);
         }
-        if ("ro.build.user".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildUser()))
-            paramMethodHookParam.setResult(this.O00000o0.getBuildUser());
-        }
-        if ("ro.build.host".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildHost()))
-            paramMethodHookParam.setResult(this.O00000o0.getBuildHost());
-        }
-        if ("ro.build.tags".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildTags()))
-            paramMethodHookParam.setResult(this.O00000o0.getBuildTags());
-        }
-        if ("ro.product.brand".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildTags()))
-            paramMethodHookParam.setResult(this.O00000o0.getBuildBrand());
-        }
-        if ("ro.product.device".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildDevice()))
-            paramMethodHookParam.setResult(this.O00000o0.getBuildDevice());
-        }
-      if ("ro.product.board".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildBoard()))
-            paramMethodHookParam.setResult(this.O00000o0.getBuildBoard());
-        }
-        if ("ro.product.name".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildName()))
-            paramMethodHookParam.setResult(this.O00000o0.getBuildName());
-        }
-        if ("ro.product.manufacturer".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildManufacturer()))
-            paramMethodHookParam.setResult(this.O00000o0.getBuildManufacturer());
-        }
-        if ("ro.hardware".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildHardware()))
-             paramMethodHookParam.setResult(this.O00000o0.getBuildHardware());
-        }
-        if ("ro.serialno".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildSerialno()))
-             paramMethodHookParam.setResult(this.O00000o0.getBuildSerialno());
-        }
-         if ("ro.build.version.incremental".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildIncremental()))
-               paramMethodHookParam.setResult(this.O00000o0.getBuildIncremental());
-        }
-        if ("ro.build.version.release".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildRelease()))
-                paramMethodHookParam.setResult(this.O00000o0.getBuildRelease());
-        }
-        if ("ro.build.version.sdk".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildSdk()))
-                paramMethodHookParam.setResult(this.O00000o0.getBuildSdk());
-        }
-      if ("ro.build.version.codename".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildCodename()))
-                paramMethodHookParam.setResult(this.O00000o0.getBuildCodename());
-        }
-        if ("ro.build.fingerprint".equals(str2))
-        {
-            if (!TextUtils.isEmpty(this.O00000o0.getBuildFingerprint()))
-                paramMethodHookParam.setResult(this.O00000o0.getBuildFingerprint());
-        }
-         /*  if ((!"ro.build.date.utc".equals(str2)) || (this.O00000o0.getBuildUtc() <= 0L))
-            paramMethodHookParam.setResult(Long.valueOf(this.O00000o0.getBuildUtc()));*/
-        if ("getStringForUser".equals(str1))
-        {
-            if ("android_id".equals(paramMethodHookParam.args[1]))
-                paramMethodHookParam.setResult(this.O00000o0.getAndroidId());
-
-            if ("adb_enabled".equals(paramMethodHookParam.args[1]))
-                paramMethodHookParam.setResult(Integer.valueOf(0));
-            else if ("data_roaming".equals(paramMethodHookParam.args[1]))
-                paramMethodHookParam.setResult(Integer.valueOf(0));
-        }
-        }
+        super.afterHookedMethod(xc_MethodHook$MethodHookParam);
     }
-
+    @Override
    protected void beforeHookedMethod(XC_MethodHook.MethodHookParam paramMethodHookParam) throws Throwable {
         super.beforeHookedMethod(paramMethodHookParam);
-       Class[] arrayOfClass;
-        Method localMethod;
-        Object[] arrayOfObject;
-        String str2;
-        String str3;
-
-
         String str1 = paramMethodHookParam.method.getName();
         Class localClass = paramMethodHookParam.method.getDeclaringClass();
         if ("putStringForUser".equals(str1)) {
-            arrayOfClass = new Class[3];
+            Class[] arrayOfClass = new Class[3];
             arrayOfClass[0] = ContentResolver.class;
             arrayOfClass[1] = String.class;
             arrayOfClass[2] = Integer.TYPE;
-            localMethod = localClass.getDeclaredMethod("getStringForUser", arrayOfClass);
-            arrayOfObject = new Object[3];
+            Method localMethod = localClass.getDeclaredMethod("getStringForUser", arrayOfClass);
+            Object[] arrayOfObject = new Object[3];
             arrayOfObject[0] = paramMethodHookParam.args[0];
             arrayOfObject[1] = paramMethodHookParam.args[1];
             arrayOfObject[2] = paramMethodHookParam.args[3];
-            str2 = (String) localMethod.invoke(localClass, arrayOfObject);
-            str3 = localClass.getSimpleName() + "," + paramMethodHookParam.args[1] + "," + paramMethodHookParam.args[2] + "," + str2;
+            String str2 = (String) localMethod.invoke(localClass, arrayOfObject);
+            String str3 = localClass.getSimpleName() + "," + paramMethodHookParam.args[1] + "," + paramMethodHookParam.args[2] + "," + str2;
+            Log.i("SysPropertyHook"," Settings putStringForUser : "+str3);
+        }else if("get".equals(str1)){
+            O000000o();
         }
-
-        O000000o();
     }
-
     }

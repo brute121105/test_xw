@@ -27,6 +27,11 @@ public class nsEo5EnMUO99qwl4QERu
         new FVKjWjKo1YaG6p5uD2qz(paramLoadPackageParam, paramPhoneInfo);//android.telephony.SignalStrength
         new Zv4WpY0X7HBbj6dlrG23(paramLoadPackageParam, paramPhoneInfo);//android.telephony.CellIdentityGsm
 
+        new yKttB8l7Lvtb88ABEzqS(paramLoadPackageParam, paramPhoneInfo);//wifi网络
+        new Edbw69C30UgVp2ocKByJ(paramLoadPackageParam, paramPhoneInfo);
+        new md3nHbhfwh4gUdnF0ILY(paramLoadPackageParam, paramPhoneInfo);//gps
+        new igA4LVuh1bDai6C7MDC3(paramLoadPackageParam, paramPhoneInfo);//libcore.io.IoBridge
+
         try {
             XposedHelpers.findAndHookMethod("android.provider.Settings.Secure", paramLoadPackageParam.classLoader, "getString",ContentResolver.class, String.class, new XC_MethodHook() {
 
@@ -48,7 +53,6 @@ public class nsEo5EnMUO99qwl4QERu
         // new pU9KwKC2ppIRCaiFhaek(paramLoadPackageParam, paramPhoneInfo);系统底层配置文件
         //new igA4LVuh1bDai6C7MDC3(paramLoadPackageParam, paramPhoneInfo);
         //new md3nHbhfwh4gUdnF0ILY(paramLoadPackageParam, paramPhoneInfo);
-        // new yKttB8l7Lvtb88ABEzqS(paramLoadPackageParam, paramPhoneInfo);//wifi网络
         //new Edbw69C30UgVp2ocKByJ(paramLoadPackageParam, paramPhoneInfo);//开机时间，网速 点量
         //new p3qsLWuGbzc0VpuSX7fl(paramLoadPackageParam, paramPhoneInfo);安装包空间大小
     }
