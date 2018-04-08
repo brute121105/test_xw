@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         String s = FileUtil.readAllUtf8("/sdcard/.money/PhoneInfo.aw");
         LogUtil.d("testMethod s",s);
-
+       
     }
 
     public void clearAppData(){

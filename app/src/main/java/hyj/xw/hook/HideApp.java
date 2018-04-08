@@ -115,7 +115,9 @@ public class HideApp {
                     if(param.args[0]!=null&&"com.tencent.mm".equals(param.args[0].toString())){
                         //PackageInfo newPi =JSON.parseObject(mm,PackageInfo.class);
                         PackageInfo pi = (PackageInfo)param.getResult();
-                        String strPi = JSON.toJSONString(pi).replaceAll("1120","1220").replaceAll("6.5.16","6.6.1");
+                        System.out.println("old pipi-->"+pi);
+                        //String strPi = JSON.toJSONString(pi).replaceAll("1120","1220").replaceAll("6.5.16","6.6.1");
+                        String strPi = JSON.toJSONString(pi).replaceAll("1060","1220").replaceAll("6.5.8","6.6.1");
                         System.out.println("strPi pipi-->"+strPi);
                         PackageInfo newPi =JSON.parseObject(strPi,PackageInfo.class);
                         System.out.println("json pipi-->"+JSON.toJSONString(newPi));
