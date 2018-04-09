@@ -1,31 +1,26 @@
 package hyj.xw.aw.sysFileRp;
 
-
 import android.content.Context;
-import android.util.Log;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-import hyj.xw.aw.util.ReadAssetsFileUtil;
+import hyj.xw.aw.util.Edbw69C30UgVp2ocKByJ;
 import hyj.xw.hook.newHook.NewPhoneInfo;
-import hyj.xw.hook.newHook.PathFileUtil;
-import hyj.xw.util.FileUtil;
 
 /**
- * Created by asus on 2018/4/8.
+ * Created by Administrator on 2018/4/9.
  */
 
-public class GetpropRp {
-    public static void doRp(final Context context, final NewPhoneInfo phoneInfo) {
-        final List<String> o00000Oo = ReadAssetsFileUtil.readAssetFileList(context, "getprop");
+public class Zv4WpY0X7HBbj6dlrG23
+{
+    public static void O000000o(final Context context, final NewPhoneInfo phoneInfo) {
+        final List<String> o00000Oo = Edbw69C30UgVp2ocKByJ.O00000Oo(context, "getprop");
         final StringBuilder sb = new StringBuilder();
         for (String s : o00000Oo) {
-            Log.i("GetpropRp 1", s);
             if (s.split(":").length >= 2) {
                 final String substring = s.substring(1 + s.indexOf(":"), s.length());
                 final String substring2 = substring.substring(1 + substring.indexOf("["), substring.lastIndexOf("]"));
@@ -155,7 +150,6 @@ public class GetpropRp {
             }
             sb.append(s).append("\n");
         }
-        FileUtil.writeContent2FileForce(PathFileUtil.str10+ File.separator,"getprop",sb.toString());
-        //Edbw69C30UgVp2ocKByJ.O00000o0(sb.toString(), "getprop");
+        Edbw69C30UgVp2ocKByJ.O00000o0(sb.toString(), "getprop");
     }
 }

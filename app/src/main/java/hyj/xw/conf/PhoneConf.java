@@ -15,6 +15,7 @@ import java.util.List;
 
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;
+import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneInfo;
 import hyj.xw.util.AutoUtil;
@@ -271,5 +272,53 @@ public class PhoneConf {
         }
         Log.i("getAddFrWx-->",JSON.toJSONString(wxids));
         return wxids;
+    }
+
+      public static NewPhoneInfo xw2awData(Wx008Data wx008Data){
+        PhoneInfo pi=null;
+        String phoneStrs = wx008Data.getPhoneStrs();
+        if(!TextUtils.isEmpty(phoneStrs)){//新版数据
+            pi = JSON.parseObject(phoneStrs,PhoneInfo.class);
+        }else{//旧008数据
+            wx008Data.setPhoneInfo(wx008Data.getDatas());
+            pi = wx008Data.getPhoneInfo();
+        }
+
+        String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/aw1.aw");
+          NewPhoneInfo npi = JSON.parseObject(con,NewPhoneInfo.class);
+        //NewPhoneInfo npi = new NewPhoneInfo();
+        npi.setAndroidId(pi.getAndroidId());
+        npi.setBuildTags(pi.getBUILD_TAGS());
+        npi.setBuildType(pi.getBUILD_TYPE());
+        npi.setBuildUser(pi.getBUILD_USER());
+        npi.setBuildBrand(pi.getBrand());
+        npi.setBuildId(pi.getBuildId());
+        npi.setBuildAbi(pi.getCPU_ABI());
+        npi.setBuildAbi2(pi.getCPU_ABI2());
+        npi.setBuildDevice(pi.getDevice());
+        npi.setDeviceId(pi.getDeviceId());
+        npi.setBuildFingerprint(pi.getFingerprint());
+        npi.setDisplayId(pi.getDisplay());
+        npi.setBuildHardware(pi.getHardware());
+        npi.setLine1Number(pi.getLineNumber());
+        npi.setBuildManufacturer(pi.getManufacturer());
+        npi.setBuildModel(pi.getModel());
+        npi.setNetworkCountryIso(pi.getNetworkCountryIso());
+        npi.setNetworkOperator(pi.getNetworkOperator());
+        npi.setNetworkOperatorName(pi.getNetworkOperatorName());
+        npi.setNetworkType(pi.getNetworkType());
+        npi.setPhoneType(pi.getPhoneType());
+        npi.setBuildName(pi.getProductName());
+        npi.setBuildRadioVersion(pi.getRadioVersion());
+        npi.setBuildRelease(pi.getRelease());
+        npi.setBuildSdk(pi.getSdk());
+        npi.setSerialno(pi.getSerialno());
+        npi.setSimCountryIso(pi.getSimCountryIso());
+        npi.setSimOperator(pi.getSimOperator());
+        npi.setSimOperatorName(pi.getSimOperatorName());
+        npi.setSimSerialNumber(pi.getSimSerialNumber());
+        npi.setSimState(pi.getSimState());
+        npi.setSubscriberId(pi.getSubscriberId());
+        return npi;
     }
 }

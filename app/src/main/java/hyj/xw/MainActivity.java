@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -32,6 +33,7 @@ import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.activity.YhSettingActivity;
+import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
@@ -41,7 +43,6 @@ import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.service.SmsReciver;
-import hyj.xw.test.GetPhoneInfoUtil;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
@@ -235,21 +236,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     public void testMethod(){
         List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
-        Wx008Data  data = wx008Datas.get(101);
-        //PhoneInfo pi = data.getAwData();
+        Wx008Data  data = wx008Datas.get(102);
+        LogUtil.d("testMethod data",JSON.toJSONString(data));
+        NewPhoneInfo pi = PhoneConf.xw2awData(data);
+        CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
+        FileUtil.writeContent2FileForceUtf8("/sdcard/A_hyj_json/a1/","PhoneInfo.aw", JSON.toJSONString(pi));
         //Log.i("testMethod-->",JSON.toJSONString(pi));
-        String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/aw2.aw");
+        String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/PhoneInfo.aw");
         LogUtil.d("testMethod con",con);
-        NewPhoneInfo pi = JSON.parseObject(con,NewPhoneInfo.class);
-        LogUtil.d("testMethod json",JSON.toJSONString(pi));
-        GetPhoneInfoUtil.getPhoneInfo();
+        //LogUtil.d("testMethod json",JSON.toJSONString(pi));
+        //GetpropRp.doRp(GlobalApplication.getContext(),pi);
+       // String con1 = FileUtil.readAll1(PathFileUtil.str10+ File.separator+"getprop");
+        //LogUtil.d("testMethod con1",con1);
+        //GetPhoneInfoUtil.getPhoneInfo();
 
-        String s = FileUtil.readAllUtf8("/sdcard/.money/PhoneInfo.aw");
-        LogUtil.d("testMethod s",s);
-       
     }
 
     public void clearAppData(){
+      /*  String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/PhoneInfo.aw");
+        LogUtil.d("testMethod con",con);
+        NewPhoneInfo pi = JSON.parseObject(con,NewPhoneInfo.class);
+        CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);*/
+
         AutoUtil.clearAppData();
         Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();
 
@@ -260,8 +268,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //覆盖式写入文件
         FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(wx008Data.getPhoneInfo()));
         //读取文件
-        String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
-        System.out.println("phoneInfo---->"+con);
+      /*  String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
+        System.out.println("phoneInfo---->"+con);*/
 
 
     }
@@ -278,9 +286,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.exportBakData:
                 List<Wx008Data> datas = DataSupport.findAll(Wx008Data.class);
                 //setPhoneInfo1置为空，解决导出后，导入失败
+                Log.i("exportBakData","00");
                 for(Wx008Data data:datas){
                     data.setPhoneInfo1(null);
                 }
+                Log.i("exportBakData","11");
                 if (datas != null && datas.size() > 0) {
                     LogUtil.export("/sdcard/A_hyj_008data/", JSON.toJSONString(datas));
                     Toast.makeText(this, "已导出数据：" + datas.size() + "条", Toast.LENGTH_LONG).show();

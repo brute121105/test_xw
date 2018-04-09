@@ -51,12 +51,25 @@ public class FileUtil {
         }
     }
 
-    //内容写入文件
+    //内容写入文件,覆盖
     public static void writeContent2FileForce(String filePathName,String fileName,String strcontent){
         createFile2Path(filePathName,fileName);
         String strFilePath = filePathName+fileName;
         try {
             BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream (strFilePath,false),"gbk"));//设置成true就是追加 false 覆盖
+            fw.write(strcontent);
+            fw.close();
+        } catch (Exception e) {
+            Log.e("TestFile", "Error on write File:" + e);
+        }
+    }
+
+    //内容写入文件,覆盖
+    public static void writeContent2FileForceUtf8(String filePathName,String fileName,String strcontent){
+        createFile2Path(filePathName,fileName);
+        String strFilePath = filePathName+fileName;
+        try {
+            BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream (strFilePath,false),"utf-8"));//设置成true就是追加 false 覆盖
             fw.write(strcontent);
             fw.close();
         } catch (Exception e) {

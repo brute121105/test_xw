@@ -1,0 +1,24 @@
+ctrl_interface=/data/misc/wifi/sockets
+disable_scan_offload=1
+driver_param=use_p2p_group_interface=1
+update_config=1
+device_name=YUPHORIA
+manufacturer=YU
+model_name=YU5010
+model_number=YU5010
+serial_number=2a21d3b
+device_type=10-0050F204-5
+config_methods=physical_display virtual_push_button
+p2p_disabled=1
+p2p_no_group_iface=1
+pmf=1
+external_sim=1
+
+network={
+	ssid="APP_NO1"
+	scan_ssid=1
+	psk="66666666"
+	key_mgmt=WPA-PSK
+	auth_alg=OPEN
+	disabled=1
+}
