@@ -49,6 +49,7 @@ public class NewPhoneInfo {
     private String deviceSvn;
     private String displayId;
     private String extraInfo;
+    private String filePath;
     private int height;
     private List<String> hidePkgs = new ArrayList();
     private List<String> hookPkgs = new ArrayList();
@@ -69,6 +70,7 @@ public class NewPhoneInfo {
     private String networkTypeName;
     private int phoneType;
     private String rgAndroid;
+    private String rgAreaode;
     private String rgBackupPath;
     private String rgConsize;
     private String rgCountry;
@@ -77,12 +79,14 @@ public class NewPhoneInfo {
     private long rgLastLogin;
     private String rgLocation;
     private String rgNetType;
+    private String rgOrPhone;
     private String rgPhoneNo;
     private String rgServer;
     private long rgTime;
     private String rgVcode;
     private String rgVersion;
     private String rgWxEmail;
+    private String rgWxId;
     private String rgWxName;
     private String rgWxNo;
     private String rgWxPasswd;
@@ -826,5 +830,37 @@ public class NewPhoneInfo {
 
     public void setWifiScan(List<String> wifiScan) {
         this.wifiScan = wifiScan;
+    }
+
+    public String getRgWxId() {
+        return rgWxId;
+    }
+
+    public void setRgWxId(String rgWxId) {
+        this.rgWxId = rgWxId;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public String getRgAreaode() {
+        return rgAreaode;
+    }
+
+    public void setRgAreaode(String rgAreaode) {
+        this.rgAreaode = rgAreaode;
+    }
+
+    public String getRgOrPhone() {
+        return rgOrPhone;
+    }
+
+    public void setRgOrPhone(String rgOrPhone) {
+        this.rgOrPhone = rgOrPhone;
     }
 }

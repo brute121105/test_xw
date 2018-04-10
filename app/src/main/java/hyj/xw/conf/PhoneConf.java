@@ -21,6 +21,7 @@ import hyj.xw.model.PhoneInfo;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.FileUtil;
+import hyj.xw.util.StringUtilHyj;
 
 /**
  * Created by Administrator on 2018/1/4.
@@ -80,10 +81,29 @@ public class PhoneConf {
         List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
         List<String> datas = new ArrayList<String>();
         for (int i = 0, l = wx008Datas.size(); i < l; i++) {
+            Wx008Data wd = wx008Datas.get(i);
+            //修改操作开始
+           /* System.out.println(i+" dataType-->"+wd.getDataType());
+            wd.setDataFlag("007");
+            int cn1 = wd.updateAll("phone=?",wd.getPhone());
+            System.out.println("cn1-->"+cn1);*/
+            //修改操作结束
+
+            ///删除测试开始
+           /* if(wd.getDataFlag().equals("009")){
+                 int cn1 = wd.delete();
+                 System.out.println("cn1--->"+cn1);
+             }*/
+            ///删除测试结束
+
+            //保护开始
             SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss");
             SimpleDateFormat sdf2 = new SimpleDateFormat("dd-HH");
-            String time = sdf.format(wx008Datas.get(i).getCreateTime());
-            String lastLoginTime = sdf.format(wx008Datas.get(i).getCreateTime());
+            String time = "";
+            if(wd.getCreateTime()!=null){
+                time = sdf.format(wx008Datas.get(i).getCreateTime());
+            }
+            //String lastLoginTime = sdf.format(wx008Datas.get(i).getCreateTime());
             String cn = wx008Datas.get(i).getCnNum();
             //序号-账号-ac时间 国家 上次登录时间
             String wxid = wx008Datas.get(i).getWxId();
@@ -97,22 +117,16 @@ public class PhoneConf {
             datas.add(showMsg);
 
             System.out.println(showMsg+" --nickName:"+wx008Datas.get(i).getNickName()+" repPhone:"+wx008Datas.get(i).getReplacePhone()+" pwd:"+wx008Datas.get(i).getWxPwd()+" phone:"+wx008Datas.get(i).getPhone()+" wxid:"+wx008Datas.get(i).getWxid19());
-            Log.i(i+" friends-->",JSON.toJSONString(wx008Datas.get(i).getFriends()));
+            //Log.i(i+" friends-->",JSON.toJSONString(wx008Datas.get(i).getFriends()));
             //删除测试
-            Wx008Data wd = wx008Datas.get(i);
+            //保护结束
 
-            System.out.println(i+" phoneStr wd-->"+JSON.toJSONString(wd));
             //插入008数据到phoneStr字段
             /*System.out.println(i+" phoneStr wd-->"+JSON.toJSONString(wd));
             wd.setPhoneStrBy008Datas();
             System.out.println(i+" phoneStr save-->"+wd.save());*/
 
-            ///删除测试
-           /* String wxid1 = wd.getWxId(),phone1 = wd.getPhone();
-             if(i>99){
-                 int cn1 = wd.delete();
-                 System.out.println("cn1--->"+cn1);
-             }*/
+
             //修改操作
             /* if(i>1088&&i<1119){
                 System.out.println(i+ " phone-->"+wd.getPhone());
@@ -206,6 +220,7 @@ public class PhoneConf {
         return currentWx008Data;
     }
 
+
     private  static String createTags() {
         String str = "";
         for(int i=0;i<12;i++){
@@ -284,18 +299,19 @@ public class PhoneConf {
             pi = wx008Data.getPhoneInfo();
         }
 
-        String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/aw1.aw");
-          NewPhoneInfo npi = JSON.parseObject(con,NewPhoneInfo.class);
-        //NewPhoneInfo npi = new NewPhoneInfo();
+        //String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/aw1.aw");
+          //NewPhoneInfo npi = JSON.parseObject(con,NewPhoneInfo.class);
+        NewPhoneInfo npi = new NewPhoneInfo();
         npi.setAndroidId(pi.getAndroidId());
         npi.setBuildTags(pi.getBUILD_TAGS());
         npi.setBuildType(pi.getBUILD_TYPE());
         npi.setBuildUser(pi.getBUILD_USER());
         npi.setBuildBrand(pi.getBrand());
         npi.setBuildId(pi.getBuildId());
-        npi.setBuildAbi(pi.getCPU_ABI());
-        npi.setBuildAbi2(pi.getCPU_ABI2());
+        npi.setBuildAbi(StringUtilHyj.nullToString(pi.getCPU_ABI()));
+        npi.setBuildAbi2(StringUtilHyj.nullToString(pi.getCPU_ABI2()));
         npi.setBuildDevice(pi.getDevice());
+        npi.setBuildProduct(pi.getDevice());  //---
         npi.setDeviceId(pi.getDeviceId());
         npi.setBuildFingerprint(pi.getFingerprint());
         npi.setDisplayId(pi.getDisplay());
@@ -303,6 +319,7 @@ public class PhoneConf {
         npi.setLine1Number(pi.getLineNumber());
         npi.setBuildManufacturer(pi.getManufacturer());
         npi.setBuildModel(pi.getModel());
+        npi.setBtName(pi.getModel());//--
         npi.setNetworkCountryIso(pi.getNetworkCountryIso());
         npi.setNetworkOperator(pi.getNetworkOperator());
         npi.setNetworkOperatorName(pi.getNetworkOperatorName());
@@ -319,6 +336,17 @@ public class PhoneConf {
         npi.setSimSerialNumber(pi.getSimSerialNumber());
         npi.setSimState(pi.getSimState());
         npi.setSubscriberId(pi.getSubscriberId());
+        npi.setMacAddress(pi.getBlueAddress());//--
+        npi.setP2p0Mac(pi.getBlueAddress());//--
+        npi.setCpuName("");
+        npi.setIpAddress("192.168.1.2");
+        npi.setNetworkTypeName("CDMA - EvDo rev. A");
+          npi.setBuildDescription("");
+          npi.setBuildHost("");
+          npi.setBSSID("");
+          npi.setSSID("");
+          npi.setBuildIncremental("");
+          npi.setBuildBoard("");
         return npi;
     }
 }

@@ -39,6 +39,7 @@ public class XposedInit implements IXposedHookLoadPackage {
        // if(packageName.equals(PACKAGE_NAME)||"hyj.xw".equals(packageName)){
         if(packageName.equals(PACKAGE_NAME)){
              //aw hook开始
+
              String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/PhoneInfo.aw");
              LogUtil.d("hookaw con",con);
              NewPhoneInfo pi = JSON.parseObject(con,NewPhoneInfo.class);
@@ -46,7 +47,8 @@ public class XposedInit implements IXposedHookLoadPackage {
              //aw hook结束
 
              //-------my hook 开始
-            /* System.out.println("hyj context--->"+PACKAGE_NAME);
+
+             /*System.out.println("hyj context--->"+PACKAGE_NAME);
              new HideApp(lpparam);
              new Phone(lpparam);*/
             //--------my hook 结束

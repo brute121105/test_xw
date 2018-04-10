@@ -23,6 +23,23 @@ import java.util.List;
 
 public class FileUtil {
     boolean successFlag = false;
+
+    //创建文件路径
+    public static void createFilePath(String filePathName){
+        /**
+         * 创建路径
+         */
+        File filePath = null;
+        try {
+            filePath = new File(filePathName);
+            if (!filePath.exists()) {
+                filePath.mkdir();
+            }
+        } catch (Exception e) {
+            Log.i("error:", e+"");
+        }
+    }
+
     //创建路径和文件
     public static void createFile2Path(String filePathName,String fileName){
         /**
@@ -76,6 +93,12 @@ public class FileUtil {
             Log.e("TestFile", "Error on write File:" + e);
         }
     }
+    public static void writeContent2FileForceUtf8(String filePathAndFileName,String strcontent){
+        String path = filePathAndFileName.substring(0,filePathAndFileName.lastIndexOf("/")+1);
+        String fileName = filePathAndFileName.substring(filePathAndFileName.lastIndexOf("/")+1);
+        writeContent2FileForceUtf8(path,fileName,strcontent);
+    }
+
 
     public static void writeContentToJsonTxt(String fileName,String text){
         FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/",fileName,text);

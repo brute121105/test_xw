@@ -31,7 +31,9 @@ public class ActionService  extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        AutoUtil.execShell("input keyevent 3");
         parameters.setIsStop(0);
+        parameters.setStartLoginIndex(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         System.out.println("008-->extValue:"+extValue);
         //AutoUtil.startWx();
         if("008".equals(extValue)){

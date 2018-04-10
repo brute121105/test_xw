@@ -17,6 +17,8 @@ import hyj.xw.model.PhoneInfo;
 public class Wx008Data  extends DataSupport{
     private PhoneInfo phoneInfo = new PhoneInfo();
     private String phoneStrs;
+    private String phoneStrsAw;//aw数据
+    private String rgWxStatus;//aw状态
     private String guid;
     private String datas;
     private String phone;
@@ -78,9 +80,13 @@ public class Wx008Data  extends DataSupport{
         String xtjg = strs[41+i];
         if(xtjg.contains("_")){
             String[] xtjgs = xtjg.split("_");
-            if(xtjgs!=null&&xtjgs.length==2){
+            if(xtjgs!=null&&xtjgs.length>0){
                 phoneInfo.setCPU_ABI(xtjgs[0]);
-                phoneInfo.setCPU_ABI2(xtjgs[1]);
+                if(xtjgs.length>1){
+                    phoneInfo.setCPU_ABI2(xtjgs[1]);
+                }else {
+                    phoneInfo.setCPU_ABI2("");
+                }
             }
         }
 
@@ -264,6 +270,22 @@ public class Wx008Data  extends DataSupport{
 
     public void setWxid19(String wxid19) {
         this.wxid19 = wxid19;
+    }
+
+    public String getPhoneStrsAw() {
+        return phoneStrsAw;
+    }
+
+    public void setPhoneStrsAw(String phoneStrsAw) {
+        this.phoneStrsAw = phoneStrsAw;
+    }
+
+    public String getRgWxStatus() {
+        return rgWxStatus;
+    }
+
+    public void setRgWxStatus(String rgWxStatus) {
+        this.rgWxStatus = rgWxStatus;
     }
 
     //008数据以PhoneInfo格式放到phoneStrs

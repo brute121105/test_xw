@@ -32,4 +32,21 @@ public class StringUtilHyj {
         }
         return result;
     }
+
+    public static String nullObjectToString(Object obj){
+        if(obj==null){
+            return "";
+        }else{
+            String str = obj.toString();
+            return nullToString(str);
+        }
+    }
+
+    public static String nullToString(String str){
+        if(str==null || str.equals("null") || str.equals("NULL")){
+            return "";
+        }else{
+            return str;
+        }
+    }
 }

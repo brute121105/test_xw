@@ -12,6 +12,7 @@ import java.util.Random;
 
 import hyj.xw.aw.util.Edbw69C30UgVp2ocKByJ;
 import hyj.xw.hook.newHook.NewPhoneInfo;
+import hyj.xw.util.StringUtilHyj;
 
 /**
  * Created by Administrator on 2018/4/9.
@@ -63,7 +64,7 @@ public class qgZSyjGOVNPGbBZt5NUv
                     s = s.replaceAll(s2, phoneInfo.getSerialno());
                 }
                 else if (s.contains("net.hostname")) {
-                    s = s.replaceAll(s2, "android_" + phoneInfo.getBuildHost());
+                    s = s.replaceAll(s2, "android_" + StringUtilHyj.nullToString(phoneInfo.getBuildHost()));
                 }
                 else if (s.contains("persist.radio.cfu.iccid.1") || s.contains("persist.radio.data.iccid") || s.contains("persist.radio.ia") || s.contains("persist.radio.simswitch.iccid") || s.contains("ril.ia.iccid") || s.contains("ril.iccid.sim2") || s.contains("ril.iccid.sim2")) {
                     s = s.replaceAll(s2, phoneInfo.getSimSerialNumber());
@@ -72,16 +73,16 @@ public class qgZSyjGOVNPGbBZt5NUv
                     s = s.replaceAll(s2, phoneInfo.getDeviceId());
                 }
                 else if (s.contains("persist.service.bdroid.bdaddr")) {
-                    s = s.replaceAll(s2, phoneInfo.getMacAddress());
+                    s = s.replaceAll(s2,phoneInfo.getMacAddress());
                 }
                 else if (s.contains("persist.sys.wifi_mac")) {
-                    s = s.replaceAll(s2, phoneInfo.getBSSID().replace(":", "").toLowerCase());
+                    s = s.replaceAll(s2, StringUtilHyj.nullToString(phoneInfo.getBSSID()).replace(":", "").toLowerCase());
                 }
                 else if (s.contains("ro.build.display.id")) {
                     s = s.replaceAll(s2, phoneInfo.getDisplayId());
                 }
                 else if (s.contains("ro.build.description")) {
-                    s = s.replaceAll(s2, phoneInfo.getBuildDescription());
+                    s = s.replaceAll(s2,  StringUtilHyj.nullToString(phoneInfo.getBuildDescription()));
                 }
                 else if (s.contains("ro.build.fingerprint")) {
                     s = s.replaceAll(s2, phoneInfo.getBuildFingerprint());
@@ -90,7 +91,7 @@ public class qgZSyjGOVNPGbBZt5NUv
                     s = s.replaceAll(s2, phoneInfo.getBuildHardware());
                 }
                 else if (s.contains("ro.build.host")) {
-                    s = s.replaceAll(s2, phoneInfo.getBuildHost());
+                    s = s.replaceAll(s2, StringUtilHyj.nullToString(phoneInfo.getBuildHost()));
                 }
                 else if (s.contains("ro.build.id")) {
                     s = s.replaceAll(s2, phoneInfo.getBuildId());
@@ -99,7 +100,7 @@ public class qgZSyjGOVNPGbBZt5NUv
                     s = s.replaceAll(s2, phoneInfo.getBuildProduct());
                 }
                 else if (s.contains("ro.build.version.incremental")) {
-                    s = s.replaceAll(s2, phoneInfo.getBuildIncremental());
+                    s = s.replaceAll(s2, StringUtilHyj.nullToString(phoneInfo.getBuildIncremental()));
                 }
                 else if (s.contains("ro.build.version.release")) {
                     s = s.replaceAll(s2, phoneInfo.getBuildRelease());
@@ -111,7 +112,7 @@ public class qgZSyjGOVNPGbBZt5NUv
                     s = s.replaceAll(s2, phoneInfo.getBuildHardware());
                 }
                 else if (s.contains("ro.product.board")) {
-                    s = s.replaceAll(s2, phoneInfo.getBuildBoard());
+                    s = s.replaceAll(s2, StringUtilHyj.nullToString(phoneInfo.getBuildBoard()));
                 }
                 else if (s.contains("ro.product.brand")) {
                     s = s.replaceAll(s2, phoneInfo.getBuildBrand());

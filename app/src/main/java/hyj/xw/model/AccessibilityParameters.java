@@ -9,6 +9,8 @@ public class AccessibilityParameters {
 
     private PhoneApi pa = new PhoneApi();
 
+    private String startLoginIndex;
+
     public PhoneApi getPa() {
         return pa;
     }
@@ -23,5 +25,13 @@ public class AccessibilityParameters {
 
     public void setIsStop(int isStop) {
         this.isStop = isStop;
+    }
+
+    public String getStartLoginIndex() {
+        return startLoginIndex;
+    }
+
+    public void setStartLoginIndex(String startLoginIndex) {
+        this.startLoginIndex = startLoginIndex;
     }
 }

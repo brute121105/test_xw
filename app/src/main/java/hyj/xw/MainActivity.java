@@ -28,6 +28,7 @@ import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
@@ -35,6 +36,8 @@ import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.activity.YhSettingActivity;
 import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
 import hyj.xw.common.CommonConstant;
+import hyj.xw.common.FilePathCommon;
+import hyj.xw.conf.ImpExpData;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
@@ -76,6 +79,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //TODO do something you need
             }
         }*/
+        //创建文件路径
+        FileUtil.createFilePath(FilePathCommon.baseAppPath);
+        FileUtil.createFilePath(FilePathCommon.importDataAPath);
         if (Build.VERSION.SDK_INT < 23) {
             MyWindowManager.createSmallWindow(getApplicationContext());
             MyWindowManager.createSmallWindow2(getApplicationContext());
@@ -116,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setSpnnierStyleAndContents(spinner02,phoneStrs);
         //设置默认值
         String endLoginIndex = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX);
-        endLoginIndex = TextUtils.isEmpty(endLoginIndex)||Integer.parseInt(endLoginIndex)>phoneStrs.length-1?"0":endLoginIndex;
+        endLoginIndex = TextUtils.isEmpty(endLoginIndex)||Integer.parseInt(endLoginIndex)>phoneStrs.length-1?String.valueOf(phoneStrs.length-1):endLoginIndex;
         spinner02.setSelection(Integer.parseInt(endLoginIndex),true);//spinner下拉框默认值*/
          /*
         下拉框数据结束
@@ -130,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button apiSettingBtn = (Button)this.findViewById(R.id.apiSetting);
         Button del_upload_fileBtn = (Button)this.findViewById(R.id.del_upload_file);
         Button yhBtn = (Button)this.findViewById(R.id.btn_yh_setting);
+        Button btn_impAData = (Button)this.findViewById(R.id.btn_impAData);
+        Button btn_expAData = (Button)this.findViewById(R.id.btn_expAData);
         openAssitBtn.setOnClickListener(this);
         autoLoginBtn.setOnClickListener(this);
         importBakDataBtn.setOnClickListener(this);
@@ -138,6 +146,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         apiSettingBtn.setOnClickListener(this);
         del_upload_fileBtn.setOnClickListener(this);
         yhBtn.setOnClickListener(this);
+        btn_impAData.setOnClickListener(this);
+        btn_expAData.setOnClickListener(this);
 
         //AutoUtil.addPhoneContacts("zz","12365489658");
        // AutoUtil.addPhoneContacts("zz1","12365489658");
@@ -236,9 +246,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     public void testMethod(){
         List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
-        Wx008Data  data = wx008Datas.get(102);
+        Wx008Data  data = wx008Datas.get(105);
         LogUtil.d("testMethod data",JSON.toJSONString(data));
         NewPhoneInfo pi = PhoneConf.xw2awData(data);
+        LogUtil.d("testMethod NewPhoneInfo",JSON.toJSONString(pi));
         CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
         FileUtil.writeContent2FileForceUtf8("/sdcard/A_hyj_json/a1/","PhoneInfo.aw", JSON.toJSONString(pi));
         //Log.i("testMethod-->",JSON.toJSONString(pi));
@@ -324,20 +335,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE,loginSucessPauseCheckBox.isChecked()?"1":"0");
                 break;
             case R.id.apiSetting:
-
                 DeviceInfo deviceInfo = DeviceParamUtil.getDeviceInfo();
                 System.out.println("deviceInfo-->"+JSON.toJSONString(deviceInfo));
                 createData();
                 /*DaoUtil.updatePwd("bfn347","www23347");
-                DaoUtil.updatePwd("vit894","www23894");
-                DaoUtil.updatePwd("fti468","www23468");
-                DaoUtil.updatePwd("nht277","www23277");
-                DaoUtil.updatePwd("whr848","www23848");
-                DaoUtil.updatePwd("ynq758","www23758");
-                DaoUtil.updatePwd("tfx363","www23363");
-                DaoUtil.updatePwd("rzk466","www23466");
-                DaoUtil.updatePwd("pii986","www23986");
-                DaoUtil.updatePwd("hkx745","www23745");
                 DaoUtil.updatePwd("tfk385","www23385");*/
                 //new IpNetThread().start();
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
@@ -347,6 +348,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_yh_setting:
                 startActivity(new Intent(MainActivity.this, YhSettingActivity.class));
+                break;
+            case R.id.btn_impAData:
+                Map<String,Object> result =  ImpExpData.importAData();
+                Toast.makeText(this,"导入成功："+result.get("countSucc")+"条,失败："+result.get("countExist")+"条", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.btn_expAData:
+                ImpExpData.importAData();
                 break;
         }
     }
