@@ -4,6 +4,8 @@ import android.text.TextUtils;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import hyj.xw.common.FilePathCommon;
+import hyj.xw.util.FileUtil;
 
 /**
  * Created by asus on 2018/3/24.
@@ -27,6 +29,7 @@ public class GoicqOVehRY68RCP7lXb extends DHHdslt4SqYQ1hSj1a4Y {
             final String s = (String)paramMethodHookParam.args[0];
             if ("ro.product.model".equals(s)) {
                 if (!TextUtils.isEmpty((CharSequence)this.O00000o0.getBuildModel())) {
+                    FileUtil.writeContent2FileForceUtf8(FilePathCommon.phoneTagPath,O00000o0.getRgPhoneNo());//标记是否hook成功
                     paramMethodHookParam.setResult((Object)this.O00000o0.getBuildModel());
                 }
             }
