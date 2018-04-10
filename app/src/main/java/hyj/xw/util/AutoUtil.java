@@ -509,4 +509,12 @@ public class AutoUtil {
         values.put(ContactsContract.CommonDataKinds.Phone.NUMBER, phone);
         GlobalApplication.getResolver().insert(ContactsContract.Data.CONTENT_URI, values);
     }
+    //处理不在应在的界面
+    public static void doNotInCurrentView(AccessibilityNodeInfo root,Map<String,String> record){
+        if((record.get("recordAction").contains("wx")||record.get("recordAction").contains("pyq"))&&root.getPackageName().toString().indexOf("tencent")==-1){
+            AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+            System.out.println("-->【不在微信界面，启动】");
+            AutoUtil.sleep(1000);
+        }
+    }
 }

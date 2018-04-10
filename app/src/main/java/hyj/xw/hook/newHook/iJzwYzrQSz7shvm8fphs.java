@@ -23,7 +23,7 @@ public class iJzwYzrQSz7shvm8fphs extends DHHdslt4SqYQ1hSj1a4Y
     public iJzwYzrQSz7shvm8fphs(XC_LoadPackage.LoadPackageParam paramLoadPackageParam, NewPhoneInfo paramPhoneInfo)
     {
         super(paramLoadPackageParam, paramPhoneInfo);
-         Log.i("hookaw fphs1", JSON.toJSONString(paramPhoneInfo));
+         //Log.i("hookaw fphs1", JSON.toJSONString(paramPhoneInfo));
         O000000o("android.os.SystemProperties", "set");
         O000000o("android.os.SystemProperties", "get");
         O000000o(Settings.System.class.getName(), "putStringForUser");

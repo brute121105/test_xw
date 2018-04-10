@@ -5,6 +5,8 @@ import android.telephony.TelephonyManager;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import hyj.xw.common.FilePathCommon;
+import hyj.xw.util.FileUtil;
 
 /**
  * Created by asus on 2018/3/24.
@@ -61,6 +63,7 @@ public class sCYDTepZuATpaFuMmbHk extends DHHdslt4SqYQ1hSj1a4Y
     protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramMethodHookParam) throws Throwable {
         String str1 = paramMethodHookParam.method.getName();
         String str2 = paramMethodHookParam.method.getDeclaringClass().getName();
+        System.out.println("getString-->str0"+str1);
         if ("hasIccCard".equals(str1)){
             paramMethodHookParam.setResult(Boolean.valueOf(true));
         }else if ("isSmsCapable".equals(str1))
@@ -91,6 +94,10 @@ public class sCYDTepZuATpaFuMmbHk extends DHHdslt4SqYQ1hSj1a4Y
         {
             paramMethodHookParam.setResult(this.O00000o0.getLine1Number());
         }
+        /*else if ("getLine1Number".equals(str1))//后面自己加
+        {
+            paramMethodHookParam.setResult(this.O00000o0.getLine1Number());
+        }*/
         else if ("getState".equals(str1))
         {
             paramMethodHookParam.setResult(Integer.valueOf(0));
@@ -123,15 +130,27 @@ public class sCYDTepZuATpaFuMmbHk extends DHHdslt4SqYQ1hSj1a4Y
         {
             paramMethodHookParam.setResult(this.O00000o0.getDeviceId());
         }
+        /*else if ("getDeviceId".equals(str1))//后面自己加
+        {
+            paramMethodHookParam.setResult(this.O00000o0.getDeviceId());
+            FileUtil.writeContent2FileForceUtf8(FilePathCommon.phoneTagPath,O00000o0.getRgPhoneNo());//标记是否hook成功
+            System.out.println("getString-->str1"+str1);
+        }*/
         else if ("getIccSerialNumber".equals(str1))
         {
             paramMethodHookParam.setResult(this.O00000o0.getSimSerialNumber());
         }
+
         else
         {
             Object localObject = this.O00000o0.getClass().getMethod(str1, new Class[0]).invoke(this.O00000o0, new Object[0]);
-            if (localObject != null)
+            if (localObject != null){
                 paramMethodHookParam.setResult(localObject);
+                if ("getDeviceId".equals(str1)){
+                    //System.out.println("getString-->ifstr1"+str1+"  localObject:"+localObject);
+                    FileUtil.writeContent2FileForceUtf8(FilePathCommon.phoneTagPath,O00000o0.getRgPhoneNo());//标记是否hook成功
+                }
+            }
         }
         super.afterHookedMethod(paramMethodHookParam);
     }

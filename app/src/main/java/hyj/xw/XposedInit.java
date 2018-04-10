@@ -41,7 +41,8 @@ public class XposedInit implements IXposedHookLoadPackage {
              //aw hook开始
 
              String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/PhoneInfo.aw");
-             LogUtil.d("hookaw con",con);
+             //LogUtil.d("hookaw con",con);
+             System.out.println("hookaw con-->"+con);
              NewPhoneInfo pi = JSON.parseObject(con,NewPhoneInfo.class);
              nsEo5EnMUO99qwl4QERu.O000000o(lpparam,pi);
              //aw hook结束

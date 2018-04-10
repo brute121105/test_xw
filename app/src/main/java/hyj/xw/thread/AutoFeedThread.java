@@ -94,20 +94,17 @@ public class AutoFeedThread extends BaseThread {
                 continue;
             }
             //不在wx界面，启动wx
-            /*if(root.getPackageName().toString().indexOf("tencent")==-1){
-                LogUtil.d(TAG,"not in the weixin view getPackageName2:"+root.getPackageName());
-                AutoUtil.startWx();
-            }*/
+            AutoUtil.doNotInCurrentView(root,record);
+
             NodeActionUtil.doClickByNodePathAndText(root,"微信无响应。要将其关闭吗？|确定","01","等待",record,"exception",500);
 
             ParseRootUtil.debugRoot(root);
 
-                //读取wxid写入数据库
-               /* if(AutoUtil.actionContains(record,"wx")){
-                    getAndSetWxid2Db();
-                }*/
                 //登录完成所有号退出
-                if(AutoUtil.actionContains(record,"wx登陆完成"))  return null;
+                if(AutoUtil.actionContains(record,"wx登陆完成")) {
+                    NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","030","发现",record,record.get("recordAction"),500);
+                    return null;
+                }
                 if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")){
 
                     if(!AutoUtil.checkAction(record,"debug")){
@@ -160,7 +157,7 @@ public class AutoFeedThread extends BaseThread {
                 if(AutoUtil.actionContains(record,"wx")||AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"debug")){
                     autoLoginConfig(root,record);
                     exceptionConfig(root,record);
-                    maihao(root,record);
+                    //maihao(root,record);
                 }
 
                 //设置密码
@@ -514,19 +511,5 @@ public class AutoFeedThread extends BaseThread {
         }
     }
 
-    public void getAndSetWxid2Db(){
-        if(AutoUtil.checkAction(record,"wx点击登录")||AutoUtil.checkAction(record,"wx否通讯录")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆完成")){
-            if(TextUtils.isEmpty(currentWx008Data.getWxid19())){
-                String wxid = FileUtil.readAll("/sdcard/A_hyj_json/wxid.txt");
-                System.out.println("getAndSetWxid2Db--->"+wxid);
-                if(!TextUtils.isEmpty(wxid)){
-                    currentWx008Data.setWxid19(wxid);
-                    int cn = currentWx008Data.updateAll("phone=?",currentWx008Data.getPhone());
-                    System.out.println("getAndSetWxid2Db--->"+cn);
-                    FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","wxid.txt","");
-                }
-            }
-        }
-    }
 
 }
