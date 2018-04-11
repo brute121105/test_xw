@@ -105,7 +105,8 @@ public class AutoFeedThread extends BaseThread {
                     NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","030","发现",record,record.get("recordAction"),500);
                     return null;
                 }
-                if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")){
+                if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")
+                        ||AutoUtil.checkAction(record,"wx改机失败")){
 
                     if(!AutoUtil.checkAction(record,"debug")){
                         AutoUtil.clearAppData();
@@ -257,6 +258,8 @@ public class AutoFeedThread extends BaseThread {
                 System.out.println("phoneTag-->"+phoneTag);
                 if(!phoneTag.equals(currentWx008Data.getPhone())){
                     System.out.println("phoneTag-->noe eq");
+                    LogUtil.login(loginIndex+" exception change phone fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
+                    AutoUtil.recordAndLog(record,"wx改机失败");
                     return false;
                 }
             }

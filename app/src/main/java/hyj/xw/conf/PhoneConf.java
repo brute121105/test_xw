@@ -302,6 +302,7 @@ public class PhoneConf {
         //String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/aw1.aw");
           //NewPhoneInfo npi = JSON.parseObject(con,NewPhoneInfo.class);
         NewPhoneInfo npi = new NewPhoneInfo();
+        npi.setRgPhoneNo(wx008Data.getPhone());
         npi.setAndroidId(pi.getAndroidId());
         npi.setBuildTags(pi.getBUILD_TAGS());
         npi.setBuildType(pi.getBUILD_TYPE());
