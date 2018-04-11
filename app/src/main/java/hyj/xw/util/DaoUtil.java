@@ -23,14 +23,13 @@ public class DaoUtil {
         //List<Wx008Data> wx008Datas = DataSupport.where("(expMsg  like ? or expMsg  like ?) and cnNum=?","%被限制登录%","%保护状态%","63").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("cnNum is null and wxId is not null and (expMsg  like ? or expMsg  like ?)","%被限制登录%","%保护状态%").order("createTime asc").find(Wx008Data.class);
 
+        //List<Wx008Data> wx008Datas = findByDataByColumn("dataFlag","008");
         List<Wx008Data> wx008Datas = findByDataBydataFlag();
+        //List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
         return wx008Datas;
     }
     public static List<Wx008Data> findByDataBydataFlag(){
         List<Wx008Data> wx008Datas = DataSupport.where("dataFlag=? or dataFlag=? or dataFlag=?","007","008","009").order("createTime asc").find(Wx008Data.class);
-        for(Wx008Data data:wx008Datas){
-            System.out.println("findByDataByColumn--->"+ JSON.toJSONString(data));
-        }
         return wx008Datas;
     }
 

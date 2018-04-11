@@ -82,9 +82,10 @@ public class PhoneConf {
         List<String> datas = new ArrayList<String>();
         for (int i = 0, l = wx008Datas.size(); i < l; i++) {
             Wx008Data wd = wx008Datas.get(i);
+            //Log.i(i+" friends-->",JSON.toJSONString(wx008Datas.get(i).getFriends()));
             //修改操作开始
-           /* System.out.println(i+" dataType-->"+wd.getDataType());
-            wd.setDataFlag("007");
+            /*System.out.println(i+" dataType-->"+wd.getDataType());
+            wd.setDataFlag("008");
             int cn1 = wd.updateAll("phone=?",wd.getPhone());
             System.out.println("cn1-->"+cn1);*/
             //修改操作结束
@@ -117,7 +118,6 @@ public class PhoneConf {
             datas.add(showMsg);
 
             System.out.println(showMsg+" --nickName:"+wx008Datas.get(i).getNickName()+" repPhone:"+wx008Datas.get(i).getReplacePhone()+" pwd:"+wx008Datas.get(i).getWxPwd()+" phone:"+wx008Datas.get(i).getPhone()+" wxid:"+wx008Datas.get(i).getWxid19());
-            //Log.i(i+" friends-->",JSON.toJSONString(wx008Datas.get(i).getFriends()));
             //删除测试
             //保护结束
 
@@ -302,7 +302,7 @@ public class PhoneConf {
         //String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/aw1.aw");
           //NewPhoneInfo npi = JSON.parseObject(con,NewPhoneInfo.class);
         NewPhoneInfo npi = new NewPhoneInfo();
-        npi.setRgPhoneNo(wx008Data.getPhone());
+        npi.setRgPhoneNo(TextUtils.isEmpty(wx008Data.getPhone())?wx008Data.getWxId():wx008Data.getPhone());
         npi.setAndroidId(pi.getAndroidId());
         npi.setBuildTags(pi.getBUILD_TAGS());
         npi.setBuildType(pi.getBUILD_TYPE());

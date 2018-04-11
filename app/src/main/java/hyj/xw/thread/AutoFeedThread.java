@@ -256,7 +256,7 @@ public class AutoFeedThread extends BaseThread {
             if(NodeActionUtil.isContainsStrs(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录")){
                 String phoneTag = FileUtil.readAllUtf8(FilePathCommon.phoneTagPath);
                 System.out.println("phoneTag-->"+phoneTag);
-                if(!phoneTag.equals(currentWx008Data.getPhone())){
+                if(!phoneTag.equals(TextUtils.isEmpty(currentWx008Data.getPhone())?currentWx008Data.getWxId():currentWx008Data.getPhone())){
                     System.out.println("phoneTag-->noe eq");
                     LogUtil.login(loginIndex+" exception change phone fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
                     AutoUtil.recordAndLog(record,"wx改机失败");
