@@ -46,7 +46,7 @@ public class AutoFeedThread extends BaseThread {
     }
     List<Wx008Data> wx008Datas;
     Wx008Data currentWx008Data;
-    String extValue;
+    String extValue,isAirChangeIp;
     PhoneApi pa = new PhoneApi();
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
@@ -56,6 +56,7 @@ public class AutoFeedThread extends BaseThread {
         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
         extValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
+        isAirChangeIp = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_AIR_CHANGE_IP);
         if(extValue.contains("605")){//605换绑手机，需接吗
             new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
         }
@@ -144,8 +145,10 @@ public class AutoFeedThread extends BaseThread {
                         //String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
                         //System.out.println("phoneInfo---->"+con);
                         //飞行模式
-                        AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"开启飞行模式");
-                        new SetAirPlaneModeThread(500).start();
+                        if("1".equals(isAirChangeIp)){
+                            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"开启飞行模式");
+                            new SetAirPlaneModeThread(500).start();
+                        }
                         //AutoUtil.sleep(2500);
                         AutoUtil.startWx();
                         AutoUtil.recordAndLog(record,"wx飞行模式&清除数据后启动微信");
@@ -266,14 +269,14 @@ public class AutoFeedThread extends BaseThread {
             /**
              * 6.5.16版本
              */
-            NodeActionUtil.doInputByNodePathAndText(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录","00311",wxid,record,"wx输入微信号",1500);
-            NodeActionUtil.doInputByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","00321",pwd,record,"wx输入密码",3500);
-            NodeActionUtil.doClickByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","0034","登录",record,"wx点击登录",3000);
+            /*NodeActionUtil.doInputByNodePathAndText(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录","00311",wxid,record,"wx输入微信号",1500);
+            NodeActionUtil.doInputByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","00321",pwd,record,"wx输入密码",1500);
+            NodeActionUtil.doClickByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","0034","登录",record,"wx点击登录",3000);*/
             /**
              * 6.6.1版本
              */
             NodeActionUtil.doInputByNodePathAndText(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录","00211",wxid,record,"wx输入微信号",1500);
-            NodeActionUtil.doInputByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","00221",pwd,record,"wx输入密码",3500);
+            NodeActionUtil.doInputByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","00221",pwd,record,"wx输入密码",1500);
             NodeActionUtil.doClickByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","0024","登录",record,"wx点击登录",3000);
 
         }
@@ -284,7 +287,6 @@ public class AutoFeedThread extends BaseThread {
         }*/
         //判断登陆成功
         if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我") &&!AutoUtil.checkAction(record,"wx飞行模式&清除数据后启动微信")){
-
             if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")){
                 /**
                  * 登录成功判断是否有其他动作
@@ -292,13 +294,14 @@ public class AutoFeedThread extends BaseThread {
                 AutoUtil.recordAndLog(record,getLoginSeccessThenDoAction(extValue));
                 LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             }
-
             //登录成功&开启登录成功暂停 修改暂停标识为1
-            if("1".equals(isLoginSucessPause))   parameters.setIsStop(1);
-            AutoUtil.sleep(3000);
+            if("1".equals(isLoginSucessPause)){
+                parameters.setIsStop(1);
+            }
+            //AutoUtil.sleep(1000);
             //登陆成功或失败序号加1
             doNextIndexAndRecord2DB();
-
+            return flag;
         }
 
         //判断登陆异常
@@ -315,7 +318,6 @@ public class AutoFeedThread extends BaseThread {
                 doNextIndexAndRecord2DB();
             }
         }
-
         return flag;
     }
 
@@ -478,6 +480,23 @@ public class AutoFeedThread extends BaseThread {
     }
 
     public String getActionByCodeNum(String extValue){
+        String isSendFr = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_SEND_FR);
+        if("1".equals(isSendFr)){
+            return "sendFr发圈";
+        }else if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_AF_BY_WXID))){
+            return "af添加好友";
+        }else if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_RC_FRIEND))){
+            return "recfnd通过好友";
+        }else if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_CHANGE_PWD))){
+            return "SetPwdThread设置密码";
+        }else if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_SET_WXID))){
+            return "SetWxidThread设置微信号";
+        }else if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_SMJQ))){
+            return "saoma扫码加群";
+        }else if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_REP_PHONE))){
+            return "ReplacePhoneThread换绑手机";
+        }
+
         Map<String,String> actions = new HashMap<String,String>();
         actions.put("602","SetPwdThread设置密码");
         actions.put("603","loginPc扫码登录");

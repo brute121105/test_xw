@@ -517,4 +517,9 @@ public class AutoUtil {
             AutoUtil.sleep(1000);
         }
     }
+    public static void killApp(){
+        AutoUtil.execShell("am force-stop hyj.xw");
+        AutoUtil.execShell("am force-stop hyj.weixin_008");
+        AutoUtil.execShell("am force-stop com.soft.apk008v");
+    }
 }

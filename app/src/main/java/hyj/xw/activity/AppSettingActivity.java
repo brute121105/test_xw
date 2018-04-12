@@ -1,8 +1,7 @@
 package hyj.xw.activity;
 
-import android.content.ContentValues;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -10,8 +9,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-
-import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.util.List;
@@ -69,7 +66,7 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
                 importAppConfig();
                 break;
             case R.id.btn_kill_app:
-                killApp();
+                AutoUtil.killApp();
                 break;
             case R.id.btn_import_62:
                 import62();
@@ -143,11 +140,7 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
         }
         Toast.makeText(AppSettingActivity.this,"共删除需要"+indexStr+"之间："+delCn+" 条",Toast.LENGTH_LONG).show();
     }
-    private void killApp(){
-        AutoUtil.execShell("am force-stop hyj.xw");
-        AutoUtil.execShell("am force-stop hyj.weixin_008");
-        AutoUtil.execShell("am force-stop com.soft.apk008v");
-    }
+
     public void import62(){
         String wx = FileUtil.readAll1("/sdcard/wx.txt");
         String[] strs = wx.split("\n");

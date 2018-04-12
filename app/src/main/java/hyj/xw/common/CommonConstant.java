@@ -14,7 +14,18 @@ public class CommonConstant {
     public static String APPCONFIG_START_LOGIN_INDEX= "startLoginIndex";//开始登陆序号
     public static String APPCONFIG_END_LOGIN_INDEX= "endLoginIndex";
     public static String APPCONFIG_END_LOGINACCOUNT = "endLoginAccount";//开始登陆号码
+
     public static String APPCONFIG_IS_FEED = "isfeed";//养号
+    public static String APPCONFIG_IS_AF_BY_WXID = "isAfByWxid";//添加好友
+    public static String APPCONFIG_IS_SEND_FR = "isSendFr";//发圈
+    public static String APPCONFIG_IS_RC_FRIEND = "isRcFriend";//自动通过好友
+    public static String APPCONFIG_IS_CHANGE_PWD = "isChanePwd";//修改密码
+    public static String APPCONFIG_IS_SET_WXID = "isSetWxis";//设置微信号
+    public static String APPCONFIG_IS_SMJQ = "isSmjq";//扫码加群
+    public static String APPCONFIG_IS_REP_PHONE = "isReplacePhone";//解绑手机
+    public static String APPCONFIG_NEW_PWD = "newPwd";//修改密码新密码
+
+    public static String APPCONFIG_IS_AIR_CHANGE_IP = "isAirChangeIp";//飞行模式换ip
     public static String APPCONFIG_IS_LOGIN_PAUSE = "isLoginSuccessPause";//登录成功暂停
     public static String APPCONFIG_CN_NUM = "cnNum";//国别
     public static String APPCONFIG_API_ID = "apiId";//api账号

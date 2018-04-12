@@ -13,12 +13,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <CheckBox
+            android:visibility="gone"
             android:id="@+id/isFeed"
             android:textColor="#2E2E2E"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="feed"
+            android:textSize="18sp"
+            />
+        <CheckBox
+            android:id="@+id/isAirChangeIp"
+            android:textColor="#2E2E2E"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="飞行模式换ip"
             android:textSize="18sp"
             />
         <CheckBox
@@ -29,67 +39,15 @@
             android:layout_weight="1"
             android:text="登录成功暂停"
             android:textSize="18sp" />
-
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:layout_weight="1"
-            android:id="@+id/apiSetting"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="api配置"
-            android:textSize="18sp" />
-        <Button
-            android:layout_weight="1"
-            android:id="@+id/auto_login"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="综合参数"
-            android:textSize="18sp" />
-
-    </LinearLayout>
-
-
-    <Button
-        android:id="@+id/open_assist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="开始运行"
-        android:textSize="18sp" />
-    <Button
-        android:id="@+id/del_upload_file"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="其他配置"
-        android:textSize="18sp" />
-    <TextView
-        android:text="综合参数"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#2E2E2E"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/ext"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <EditText
-        android:id="@+id/cnNum"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:text="开始:"
+            android:text="开始序号:"
             android:textSize="20sp"
             android:textColor="#2E2E2E"
             android:layout_width="wrap_content"
@@ -107,7 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:text="结束:"
+            android:text="结束序号:"
             android:textSize="20sp"
             android:textColor="#2E2E2E"
             android:layout_width="wrap_content"
@@ -121,25 +79,25 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <Button
             android:layout_weight="1"
-            android:id="@+id/importBakData"
+            android:id="@+id/apiSetting"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="导入数据"
+            android:text="api配置"
             android:textSize="18sp" />
         <Button
             android:layout_weight="1"
-            android:id="@+id/exportBakData"
+            android:id="@+id/auto_login"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="导出数据"
+            android:text="综合参数"
             android:textSize="18sp" />
     </LinearLayout>
-
 
     <LinearLayout
         android:orientation="horizontal"
@@ -150,8 +108,71 @@
             android:id="@+id/btn_yh_setting"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="养号设置"
+            android:text="运行配置"
             android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/del_upload_file"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="其他操作"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+    <TextView
+        android:visibility="gone"
+        android:text="综合参数"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#2E2E2E"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:visibility="gone"
+        android:id="@+id/ext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:visibility="gone"
+        android:id="@+id/cnNum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+   <!-- <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/importBakData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="导入备份数据"
+            android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/exportBakData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="导出备份数据"
+            android:textSize="18sp" />
+    </LinearLayout>-->
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <!--<Button
+            android:layout_weight="1"
+            android:id="@+id/btn_yh_setting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="运行配置"
+            android:textSize="18sp" />-->
         <Button
             android:layout_weight="1"
             android:id="@+id/clearAppData"
@@ -159,10 +180,18 @@
             android:layout_height="wrap_content"
             android:text="清除应用数据"
             android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_kill_app"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="关闭"
+            android:textSize="18sp" />
     </LinearLayout>
 
 
-    <LinearLayout
+
+    <!--<LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -180,6 +209,19 @@
             android:layout_height="wrap_content"
             android:text="导出a数据"
             android:textSize="18sp" />
-    </LinearLayout>
+    </LinearLayout>-->
+    <Button
+        android:id="@+id/btn_data_impExp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="数据导入导出"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/open_assist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="开始运行"
+        android:textSize="18sp" />
 
 </LinearLayout>

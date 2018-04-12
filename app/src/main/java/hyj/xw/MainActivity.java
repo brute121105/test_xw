@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,16 +27,15 @@ import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
+import hyj.xw.activity.DataImpExpActivity;
 import hyj.xw.activity.YhSettingActivity;
 import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
-import hyj.xw.conf.ImpExpData;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
@@ -49,6 +47,8 @@ import hyj.xw.service.SmsReciver;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
+import hyj.xw.util.DialogButtonListener;
+import hyj.xw.util.DialogUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     EditText editText;
     EditText cnNumEditText;
+    CheckBox isAirChangeIpCheckBox;
     CheckBox isFeedCheckBox;
     CheckBox loginSucessPauseCheckBox;
 
@@ -87,10 +88,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             MyWindowManager.createSmallWindow2(getApplicationContext());
         }
 
-
+        //飞行模式换ip
+        isAirChangeIpCheckBox = (CheckBox)this.findViewById(R.id.isAirChangeIp);
+        String isAirChangeIp = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_AIR_CHANGE_IP);
+        isAirChangeIpCheckBox.setChecked("1".equals(isAirChangeIp)||TextUtils.isEmpty(isAirChangeIp)?true:false);
+        isAirChangeIpCheckBox.setOnClickListener(this);
         //养号
         isFeedCheckBox = (CheckBox)this.findViewById(R.id.isFeed);
-        isFeedCheckBox.setChecked("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_FEED))?true:false);
+        String ifFeed = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_FEED);
+        isFeedCheckBox.setChecked("1".equals(ifFeed)||TextUtils.isEmpty(ifFeed)?true:false);
         isFeedCheckBox.setOnClickListener(this);
         //登录成功暂停
         loginSucessPauseCheckBox = (CheckBox)this.findViewById(R.id.loginSucessPause);
@@ -130,24 +136,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Button openAssitBtn = (Button)this.findViewById(R.id.open_assist);
         Button autoLoginBtn = (Button)this.findViewById(R.id.auto_login);
-        Button importBakDataBtn = (Button)this.findViewById(R.id.importBakData);
-        Button exportBakDataBtn = (Button)this.findViewById(R.id.exportBakData);
         Button clearAppDataBtn = (Button)this.findViewById(R.id.clearAppData);
         Button apiSettingBtn = (Button)this.findViewById(R.id.apiSetting);
         Button del_upload_fileBtn = (Button)this.findViewById(R.id.del_upload_file);
         Button yhBtn = (Button)this.findViewById(R.id.btn_yh_setting);
-        Button btn_impAData = (Button)this.findViewById(R.id.btn_impAData);
-        Button btn_expAData = (Button)this.findViewById(R.id.btn_expAData);
+        Button btn_data_impExp = (Button)this.findViewById(R.id.btn_data_impExp);
         openAssitBtn.setOnClickListener(this);
         autoLoginBtn.setOnClickListener(this);
-        importBakDataBtn.setOnClickListener(this);
-        exportBakDataBtn.setOnClickListener(this);
         clearAppDataBtn.setOnClickListener(this);
         apiSettingBtn.setOnClickListener(this);
         del_upload_fileBtn.setOnClickListener(this);
         yhBtn.setOnClickListener(this);
-        btn_impAData.setOnClickListener(this);
-        btn_expAData.setOnClickListener(this);
+        btn_data_impExp.setOnClickListener(this);
+        Button killAppBtn = (Button)this.findViewById(R.id.btn_kill_app);
+        killAppBtn.setOnClickListener(this);
 
         //AutoUtil.addPhoneContacts("zz","12365489658");
        // AutoUtil.addPhoneContacts("zz1","12365489658");
@@ -272,12 +274,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AutoUtil.clearAppData();
         Toast.makeText(MainActivity.this, "清除完成",Toast.LENGTH_LONG).show();
 
-        String phone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGINACCOUNT);
+       /* String phone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGINACCOUNT);
         Wx008Data wx008Data = DaoUtil.findByPhone(phone);
         wx008Data.setPhoneInfo(wx008Data.getDatas());
 
         //覆盖式写入文件
-        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(wx008Data.getPhoneInfo()));
+        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(wx008Data.getPhoneInfo()));*/
         //读取文件
       /*  String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
         System.out.println("phoneInfo---->"+con);*/
@@ -290,30 +292,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         System.out.println("vie --clic000--->"+view.getId());
         switch (view.getId()){
-            case R.id.importBakData:
-                //Toast.makeText(this, "已删除：" + DaoUtil.deleteAll() + "条", Toast.LENGTH_LONG).show();
-                Toast.makeText(this, "已导入数据：" + PhoneConf.importData() + "条", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.exportBakData:
-                List<Wx008Data> datas = DataSupport.findAll(Wx008Data.class);
-                //setPhoneInfo1置为空，解决导出后，导入失败
-                Log.i("exportBakData","00");
-                for(Wx008Data data:datas){
-                    data.setPhoneInfo1(null);
-                }
-                Log.i("exportBakData","11");
-                if (datas != null && datas.size() > 0) {
-                    LogUtil.export("/sdcard/A_hyj_008data/", JSON.toJSONString(datas));
-                    Toast.makeText(this, "已导出数据：" + datas.size() + "条", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(this, "没有可导出数据", Toast.LENGTH_LONG).show();
-                }
-                break;
             case R.id.auto_login:
                 testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
             case R.id.open_assist:
+                DialogUtil dialogUtil = new DialogUtil();
+                dialogUtil.show("确认修改吗?", new DialogButtonListener() {
+                    @Override
+                    public void sure() {
+                        System.out.println("DialogUtil00");
+                        //ToastUtil.show("点击了确认");
+                    }
+
+                    @Override
+                    public void cancel() {
+                        System.out.println("DialogUtil11");
+                        // ToastUtil.show("点击了取消");
+                    }
+                });
+
                 int start = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
                 int end = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX));
                 if(start>end){
@@ -329,6 +327,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.isFeed:
                 System.out.println("isFeedCheckBox.isChecked()-->"+isFeedCheckBox.isChecked());
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_FEED,isFeedCheckBox.isChecked()?"1":"0");
+                break;
+            case R.id.isAirChangeIp:
+                AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_AIR_CHANGE_IP,isAirChangeIpCheckBox.isChecked()?"1":"0");
                 break;
             case R.id.loginSucessPause:
                 System.out.println("loginSucessPauseCheckBox.isChecked()-->"+loginSucessPauseCheckBox.isChecked());
@@ -349,12 +350,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_yh_setting:
                 startActivity(new Intent(MainActivity.this, YhSettingActivity.class));
                 break;
-            case R.id.btn_impAData:
-                Map<String,Object> result =  ImpExpData.importAData();
-                Toast.makeText(this,"导入成功："+result.get("countSucc")+"条,失败："+result.get("countExist")+"条", Toast.LENGTH_SHORT).show();
+            case R.id.btn_data_impExp:
+                startActivity(new Intent(MainActivity.this, DataImpExpActivity.class));
                 break;
-            case R.id.btn_expAData:
-                ImpExpData.importAData();
+            case R.id.btn_kill_app:
+                AutoUtil.killApp();
                 break;
         }
     }

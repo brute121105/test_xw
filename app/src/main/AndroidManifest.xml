@@ -81,7 +81,8 @@
         <activity android:name=".activity.ApiSettingActivity" />
         <activity android:name=".activity.AppSettingActivity" />
         <activity android:name=".activity.YhSettingActivity" />
-        <activity android:name=".activity.AfSettingActivity"></activity>
+        <activity android:name=".activity.AfSettingActivity" />
+        <activity android:name=".activity.DataImpExpActivity"></activity>
     </application>
 
 </manifest>

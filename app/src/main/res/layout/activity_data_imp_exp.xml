@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@android:style/Theme.Black.NoTitleBar"
+    tools:context="hyj.xw.activity.DataImpExpActivity">
+
+    <TextView
+        android:text="导入数据前把数据放到相应目录\n1、备份数据存放目录：azy/dataBF\n2、a数据存放目录：azy/dataA\n3、62数据存放目录：azy/data62\n4、账号密码存放目录：azy/dataZH"
+        android:textSize="20sp"
+        android:textColor="#2E2E2E"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/importBakData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="导入备份数据"
+            android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/exportBakData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="导出备份数据"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_impAData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="导入a数据"
+            android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_expAData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="导出a数据"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_imp62Data"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="导入62数据"
+            android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_exp62Data"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="导出62数据"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_impAcData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="导入账号密码"
+            android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_expAcData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="导出账号密码"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_kill_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="关闭-导入数据后需关闭重启"
+        android:textSize="18sp" />
+    <Button
+        android:id="@+id/btn_af_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="返回上一级"
+        android:textSize="18sp" />
+
+</LinearLayout>

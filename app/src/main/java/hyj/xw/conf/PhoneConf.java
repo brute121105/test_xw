@@ -28,7 +28,7 @@ import hyj.xw.util.StringUtilHyj;
  */
 
 public class PhoneConf {
-    static  String str;
+    /*static String str;
     static {
         File file = new File("/sdcard/A_hyj_008data");
         File[] files = file.listFiles();
@@ -37,8 +37,19 @@ public class PhoneConf {
             System.out.println("--->导入文件：" + imporFileName);
             str = FileUtil.readAll(imporFileName);
         }
-    }
-   public static PhoneInfo createPhoneInfo(int index){
+    }*/
+   public static String readBakFile(String filePath){
+       String str="";
+       File file = new File(filePath);
+       File[] files = file.listFiles();
+       if(files!=null&&files.length>0){
+           String imporFileName = files[files.length - 1].getPath();//获取最新文件名
+           System.out.println("--->导入文件：" + imporFileName);
+           str = FileUtil.readAll(imporFileName);
+       }
+       return str;
+   }
+   /*public static PhoneInfo createPhoneInfo(int index){
        System.out.println("str-->" + str);
        List<Wx008Data> datas = JSON.parseArray(str, Wx008Data.class);
        int i=0;
@@ -51,10 +62,10 @@ public class PhoneConf {
        System.out.println("datas-->"+JSON.toJSONString(datas));
        System.out.println("teime-->"+simpleDateFormat.format(wx008Data.getCreateTime()));
        return wx008Data.getPhoneInfo();
-   }
+   }*/
 
-   public static int importData(){
-        List<Wx008Data> datas = JSON.parseArray(str, Wx008Data.class);
+   public static int importData(String filePath){
+        List<Wx008Data> datas = JSON.parseArray(readBakFile(filePath), Wx008Data.class);
         int successCount = 0;
         for (Wx008Data data : datas) {
             List<Wx008Data> getData=null;

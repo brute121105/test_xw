@@ -10,10 +10,12 @@ public class FilePathCommon {
 
     public static final String baseAppPath;
     public static final String importDataAPath;
+    public static final String dataBakPath;
     public static final String phoneTagPath;
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
         importDataAPath=baseAppPath+"/dataA";
+        dataBakPath=baseAppPath+"/dataBF/";
         phoneTagPath=baseAppPath+"/hk/phoneTag.txt";
     }
 }
