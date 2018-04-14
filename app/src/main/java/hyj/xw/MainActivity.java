@@ -1,5 +1,6 @@
 package hyj.xw;
 
+import android.app.backup.IBackupManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -7,6 +8,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
+import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -23,23 +27,23 @@ import com.alibaba.fastjson.JSON;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.activity.DataImpExpActivity;
 import hyj.xw.activity.YhSettingActivity;
-import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
-import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
@@ -47,8 +51,6 @@ import hyj.xw.service.SmsReciver;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
-import hyj.xw.util.DialogButtonListener;
-import hyj.xw.util.DialogUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
@@ -228,11 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppConfigDao.saveOrUpdate(config);
         //国别
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_CN_NUM,cnNumEditText.getText().toString());
-        if(isFeedCheckBox.isChecked()){
-            FileUtil.writeContentToJsonTxt("isFeedStatus.txt","1");
-        }else {
-            FileUtil.writeContentToJsonTxt("isFeedStatus.txt","0");
-        }
+        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_AIR_CHANGE_IP,isAirChangeIpCheckBox.isChecked()?"1":"0");
 
     }
     @Override
@@ -246,8 +244,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         save();
         super.onDestroy();
     }
-    public void testMethod(){
-        List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
+    public void testMethod()  {
+        //ActivityManager localActivityManager = (ActivityManager)GlobalApplication.getContext1().getSystemService(Context.ACTIVITY_SERVICE);
+        //localActivityManager.forceStopPackage("hyj.xw");
+
+        File localFile = new File(FilePathCommon.baseAppPath, "wx.db");
+        ParcelFileDescriptor localParcelFileDescriptor = null;
+        try {
+            localParcelFileDescriptor = ParcelFileDescriptor.open(localFile,ParcelFileDescriptor.MODE_WRITE_ONLY);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        ArrayList localArrayList = new ArrayList();
+        localArrayList.add("com.tencent.mm");
+        IBackupManager localIBackupManager = IBackupManager.Stub.asInterface(ServiceManager.getService("backup"));
+        try {
+            localIBackupManager.fullBackup(localParcelFileDescriptor, true, false, false, false, false, false, true, (String[])localArrayList.toArray(new String[localArrayList.size()]));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+
+        /*List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
         Wx008Data  data = wx008Datas.get(105);
         LogUtil.d("testMethod data",JSON.toJSONString(data));
         NewPhoneInfo pi = PhoneConf.xw2awData(data);
@@ -256,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FileUtil.writeContent2FileForceUtf8("/sdcard/A_hyj_json/a1/","PhoneInfo.aw", JSON.toJSONString(pi));
         //Log.i("testMethod-->",JSON.toJSONString(pi));
         String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/PhoneInfo.aw");
-        LogUtil.d("testMethod con",con);
+        LogUtil.d("testMethod con",con);*/
         //LogUtil.d("testMethod json",JSON.toJSONString(pi));
         //GetpropRp.doRp(GlobalApplication.getContext(),pi);
        // String con1 = FileUtil.readAll1(PathFileUtil.str10+ File.separator+"getprop");
@@ -293,11 +311,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.out.println("vie --clic000--->"+view.getId());
         switch (view.getId()){
             case R.id.auto_login:
-                testMethod();
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
             case R.id.open_assist:
-                DialogUtil dialogUtil = new DialogUtil();
+                testMethod();
+                /*DialogUtil dialogUtil = new DialogUtil();
                 dialogUtil.show("确认修改吗?", new DialogButtonListener() {
                     @Override
                     public void sure() {
@@ -310,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         System.out.println("DialogUtil11");
                         // ToastUtil.show("点击了取消");
                     }
-                });
+                });*/
 
                 int start = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
                 int end = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX));

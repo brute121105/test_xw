@@ -68,7 +68,7 @@ public class AutoFeedThread extends BaseThread {
             //记录数据，悬浮框显示
             recordFlowInfo(wx008Datas,loginIndex);
             AutoUtil.sleep(500);
-            LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+            LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause+" isAirChangeIp:"+isAirChangeIp);
             if(currentWx008Data!=null){
                 LogUtil.d(TAG,"wxid:"+currentWx008Data.getWxId()+" pwd:"+currentWx008Data.getWxPwd());
             }

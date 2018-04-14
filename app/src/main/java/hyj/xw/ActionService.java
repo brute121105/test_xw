@@ -35,8 +35,11 @@ public class ActionService  extends AccessibilityService {
         parameters.setIsStop(0);
         parameters.setStartLoginIndex(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         System.out.println("008-->extValue:"+extValue);
+        //养号
+        executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
+        AutoUtil.startWx();
         //AutoUtil.startWx();
-        if("008".equals(extValue)){
+       /* if("008".equals(extValue)){
             executorService.submit(ThreadFactory.getThread("fetch008Data",this,record,parameters));
             AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         }else if("001".equals(extValue)){
@@ -46,9 +49,9 @@ public class ActionService  extends AccessibilityService {
             AutoUtil.startWx();
         }
         else {
-            /**
+            *//**
              * 非综合参数动作
-             */
+             *//*
             if("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_FEED))){
                 //养号
                 executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
@@ -59,7 +62,7 @@ public class ActionService  extends AccessibilityService {
                 //executorService.submit(ThreadFactory.getThread("alzAPI",this,record,parameters));
                 //AutoUtil.startWx();
             }
-        }
+        }*/
 
     }
     @Override
