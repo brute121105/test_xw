@@ -1,6 +1,5 @@
 package hyj.xw;
 
-import android.app.backup.IBackupManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
-import android.os.ServiceManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -82,9 +80,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //TODO do something you need
             }
         }*/
-        //创建文件路径
         FileUtil.createFilePath(FilePathCommon.baseAppPath);
         FileUtil.createFilePath(FilePathCommon.importDataAPath);
+        FileUtil.createFilePath(FilePathCommon.dataBakPath);
         if (Build.VERSION.SDK_INT < 23) {
             MyWindowManager.createSmallWindow(getApplicationContext());
             MyWindowManager.createSmallWindow2(getApplicationContext());
@@ -158,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //getSysLanguage();
         //DeviceParamUtil.getAwPhoneInfo();
         PhoneConf.getAddFrWx();
+        //System.out.println("mac-->"+AutoUtil.getLocalMacAddress());
     }
 
     @Override
@@ -248,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //ActivityManager localActivityManager = (ActivityManager)GlobalApplication.getContext1().getSystemService(Context.ACTIVITY_SERVICE);
         //localActivityManager.forceStopPackage("hyj.xw");
 
-        File localFile = new File(FilePathCommon.baseAppPath, "wx.db");
+        /*File localFile = new File(FilePathCommon.baseAppPath, "wx.db");
         ParcelFileDescriptor localParcelFileDescriptor = null;
         try {
             localParcelFileDescriptor = ParcelFileDescriptor.open(localFile,ParcelFileDescriptor.MODE_WRITE_ONLY);
@@ -262,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             localIBackupManager.fullBackup(localParcelFileDescriptor, true, false, false, false, false, false, true, (String[])localArrayList.toArray(new String[localArrayList.size()]));
         } catch (RemoteException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
         /*List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();

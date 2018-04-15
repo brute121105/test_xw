@@ -93,6 +93,8 @@ public class PhoneConf {
         List<String> datas = new ArrayList<String>();
         for (int i = 0, l = wx008Datas.size(); i < l; i++) {
             Wx008Data wd = wx008Datas.get(i);
+            if(i<100)
+            System.out.println(i+" wx008Datas-->"+JSON.toJSONString(wd));
             //Log.i(i+" friends-->",JSON.toJSONString(wx008Datas.get(i).getFriends()));
             //修改操作开始
             /*System.out.println(i+" dataType-->"+wd.getDataType());
@@ -320,8 +322,8 @@ public class PhoneConf {
         npi.setBuildUser(pi.getBUILD_USER());
         npi.setBuildBrand(pi.getBrand());
         npi.setBuildId(pi.getBuildId());
-        npi.setBuildAbi(StringUtilHyj.nullToString(pi.getCPU_ABI()));
-        npi.setBuildAbi2(StringUtilHyj.nullToString(pi.getCPU_ABI2()));
+        npi.setBuildAbi(TextUtils.isEmpty(pi.getCPU_ABI())?"armeabi-v7a":pi.getCPU_ABI());
+        npi.setBuildAbi2(TextUtils.isEmpty(pi.getCPU_ABI2())?"armeabi":pi.getCPU_ABI2());
         npi.setBuildDevice(pi.getDevice());
         npi.setBuildProduct(pi.getDevice());  //---
         npi.setDeviceId(pi.getDeviceId());

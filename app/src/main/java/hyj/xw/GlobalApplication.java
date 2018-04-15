@@ -1,12 +1,14 @@
 package hyj.xw;
 
-import android.app.ActivityThread;
 import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.widget.Toast;
 
 import org.litepal.LitePalApplication;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 
 /**
@@ -20,8 +22,8 @@ public class GlobalApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        //context = revokeContext();
-        context = getContext1();
+        context = revokeContext();
+        //context = getContext1();
         resolver = getContentResolver();
         //程序崩溃错误捕捉
         CrashHandler crashHandler = CrashHandler.getInstance();
@@ -36,10 +38,10 @@ public class GlobalApplication extends Application {
     public static ContentResolver getResolver(){
         return resolver;
     }
-    public static Context getContext1()
+    /*public static Context getContext1()
     {
         return ActivityThread.currentApplication();
-    }
+    }*/
 
 
    /* //EventBus.getDefault().post("ddd");
@@ -57,7 +59,7 @@ public class GlobalApplication extends Application {
             this.O0000O0o.show();
         }
 
-    }
+    }*/
 
     public Context revokeContext(){
         Class<?> clazz= null;
@@ -81,6 +83,6 @@ public class GlobalApplication extends Application {
             e.printStackTrace();
         }
         return application.getApplicationContext();
-    }*/
+    }
 
 }

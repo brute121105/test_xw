@@ -130,6 +130,18 @@ public class DaoUtil {
         return cn;
     }
 
+    public static int updateExpMsg(Wx008Data wx008Data,String expMsg){
+        wx008Data.setExpMsg(expMsg);
+        String wxid = wx008Data.getWxId();
+        int cn=-1 ;
+        if(!TextUtils.isEmpty(wxid)){
+            cn = wx008Data.updateAll("wxId=?",wx008Data.getWxId());
+        }else {
+            cn = wx008Data.updateAll("phone=?",wx008Data.getPhone());
+        }
+        return cn;
+    }
+
     public static int updateRepPhone(Wx008Data wx008Data,String phone){
         wx008Data.setReplacePhone(phone);
         String wxid = wx008Data.getWxId();
