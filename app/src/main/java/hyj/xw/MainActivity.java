@@ -32,13 +32,11 @@ import hyj.xw.activity.AppSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.activity.DataImpExpActivity;
 import hyj.xw.activity.YhSettingActivity;
-import hyj.xw.aw.util.BuildFileUtil;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
-import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
@@ -241,12 +239,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
-        /*List<NewPhoneInfo> npis =  BuildFileUtil.getBuildPhoneInfo();
-        for(NewPhoneInfo npi:npis){
-            System.out.println("npi-->"+JSON.toJSONString(npi));
-        }*/
+      /* AutoUtil.execShell("screencap /sdcard/258.png");
         NewPhoneInfo npi = BuildFileUtil.createOneDevice("112233");
-        System.out.println("npi-->"+JSON.toJSONString(npi));
+        System.out.println("npi-->"+JSON.toJSONString(npi));*/
 
         //ActivityManager localActivityManager = (ActivityManager)GlobalApplication.getContext1().getSystemService(Context.ACTIVITY_SERVICE);
         //localActivityManager.forceStopPackage("hyj.xw");
