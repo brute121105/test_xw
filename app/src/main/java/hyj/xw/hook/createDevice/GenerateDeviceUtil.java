@@ -16,7 +16,7 @@ import hyj.xw.hook.newHook.NewPhoneInfo;
  * Created by Administrator on 2018/4/16.
  */
 
-public class Edbw69C30UgVp2ocKByJ
+public class GenerateDeviceUtil
 {
     private static final String[] O000000o;
     private static final String[] O00000Oo;
@@ -66,7 +66,7 @@ public class Edbw69C30UgVp2ocKByJ
         O0000oOO = new String[] { "2048&1536", "1280&752", "1200&720", "1812&1080", "1208&720", "1800&1080", "1184&720", "976&768", "976&600", "1776&1080", "1232&800", "2048&1536", "1216&800", "1280&800", "1024&600", "2560&1440" };
         O0000oOo = new int[] { 240, 320, 480, 560 };
         O0000oo0 = new String[] { "MSM8x74", "MSM8992", "MSM8994", "MSM8996", "MSM8998", "MSM8936", "MSM8939", "MSM8952", "MSM8953", "MSM8956", "MSM8976", "MSM8x26", "MSM8x30", "MSM8916", "MSM8929", "MSM8917", "MSM8920", "MSM8937", "MSM8940", "MSM8x25", "MSM8x10", "MSM8x12", "MSM8208", "MSM8909", "MSM8909", "MSM8225", "MSM8625", "MSM8260A", "MSM8960", "MSM8960T", "MSM8255T", "MSM8260", "MSM8660" };
-        Edbw69C30UgVp2ocKByJ.O0000oo = new int[] { 3750148, 1833364, 516312, 2806760, 204876, 16438852, 94096, 96547 };
+        GenerateDeviceUtil.O0000oo = new int[] { 3750148, 1833364, 516312, 2806760, 204876, 16438852, 94096, 96547 };
         O0000ooO = new String[] { "\u5976\u5976", "\u59d1\u5988", "\u5916\u5a46", "\u5916\u516c", "\u8205\u8205", "\u8205\u5988", "\u59e8\u7236", "\u59e8\u5a18", "\u4eb2\u7231\u7684", "\u8001\u5f1f", "\u8001\u59b9", "\u5c0f\u660e", "\u5c0f\u674e\u5b50" };
     }
 
@@ -88,7 +88,7 @@ public class Edbw69C30UgVp2ocKByJ
         return (int)(Math.random() * (1 + (n2 - n)) + n);
     }
 
-    public static NewPhoneInfo O000000o(final NewPhoneInfo phoneInfo, final String line1Number) {
+    public static NewPhoneInfo createPhoneInfo(final NewPhoneInfo phoneInfo, final String line1Number) {
         phoneInfo.setBuildBoard(createBuildBoard());
         phoneInfo.setBuildHardware("qcom");
         phoneInfo.setBuildAbi("armeabi-v7a");
@@ -102,7 +102,7 @@ public class Edbw69C30UgVp2ocKByJ
         phoneInfo.setBuildId(createBuildId(Integer.valueOf(phoneInfo.getBuildSdk())));
         phoneInfo.setDeviceId(createDeviceId());
         phoneInfo.setAndroidId(createAndroidId());
-        final long memTotal = 1000L * (-500 + Edbw69C30UgVp2ocKByJ.O0000oo[new Random().nextInt(Edbw69C30UgVp2ocKByJ.O0000oo.length)] + new Random().nextInt(1000)) + new Random().nextInt(1000);
+        final long memTotal = 1000L * (-500 + GenerateDeviceUtil.O0000oo[new Random().nextInt(GenerateDeviceUtil.O0000oo.length)] + new Random().nextInt(1000)) + new Random().nextInt(1000);
         int n;
         if (new Random().nextInt(2) == 0) {
             n = 3;
@@ -115,7 +115,7 @@ public class Edbw69C30UgVp2ocKByJ
         phoneInfo.setMemTotal(memTotal);
         phoneInfo.setMemFree(memFree);
         phoneInfo.setMemAvailable(memAvailable);
-        int nextInt2 = new Random().nextInt(Edbw69C30UgVp2ocKByJ.O00000Oo.length);
+        int nextInt2 = new Random().nextInt(GenerateDeviceUtil.O00000Oo.length);
         if (!TextUtils.isEmpty((CharSequence)line1Number)) {
             final String substring = line1Number.substring(0, 3);
             if ("139,138,137,136,135,134,159,158,157,150,151,152,147,188,187,182,183,184,178".contains(substring)) {
@@ -137,8 +137,8 @@ public class Edbw69C30UgVp2ocKByJ
         }
         phoneInfo.setSimOperator(substring2);
         phoneInfo.setNetworkOperator(substring2);
-        phoneInfo.setNetworkOperatorName(Edbw69C30UgVp2ocKByJ.O00000Oo[nextInt2]);
-        phoneInfo.setSimOperatorName(Edbw69C30UgVp2ocKByJ.O00000Oo[nextInt2]);
+        phoneInfo.setNetworkOperatorName(GenerateDeviceUtil.O00000Oo[nextInt2]);
+        phoneInfo.setSimOperatorName(GenerateDeviceUtil.O00000Oo[nextInt2]);
         phoneInfo.setSimCountryIso("cn");
         phoneInfo.setNetworkCountryIso("cn");
         final int o000000o = O000000o(nextInt2);
@@ -147,10 +147,10 @@ public class Edbw69C30UgVp2ocKByJ
         phoneInfo.setNetworkTypeName(O00000o0(o000000o));
         phoneInfo.setPhoneType(1);
         phoneInfo.setMnc("00");
-        if (Edbw69C30UgVp2ocKByJ.O00000Oo[nextInt2].contains("\u8054\u901a")) {
+        if (GenerateDeviceUtil.O00000Oo[nextInt2].contains("\u8054\u901a")) {
             phoneInfo.setMnc("01");
         }
-        else if (Edbw69C30UgVp2ocKByJ.O00000Oo[nextInt2].contains("\u7535\u4fe1")) {
+        else if (GenerateDeviceUtil.O00000Oo[nextInt2].contains("\u7535\u4fe1")) {
             phoneInfo.setMnc("03");
             phoneInfo.setPhoneType(2);
         }
@@ -164,7 +164,7 @@ public class Edbw69C30UgVp2ocKByJ
         phoneInfo.setBuildSerialno(phoneInfo.getSerialno());
         phoneInfo.setBtName(phoneInfo.getBuildModel());
         phoneInfo.setBtAddress(O0000oOo());
-        phoneInfo.setDensityDpi(Edbw69C30UgVp2ocKByJ.O0000oOo[new Random().nextInt(Edbw69C30UgVp2ocKByJ.O0000oOo.length)]);
+        phoneInfo.setDensityDpi(GenerateDeviceUtil.O0000oOo[new Random().nextInt(GenerateDeviceUtil.O0000oOo.length)]);
         final int nextInt3 = new Random().nextInt(2);
         phoneInfo.setType(nextInt3);
         String typeName;
@@ -214,7 +214,7 @@ public class Edbw69C30UgVp2ocKByJ
   /*  public static List<String> O000000o() {
         final File file = new File(pU9KwKC2ppIRCaiFhaek.O00000Oo + File.separator + "pcontacts");
         final ArrayList<Object> list = new ArrayList<Object>();
-        final List<String> o000000o = com.money.utils.Edbw69C30UgVp2ocKByJ.O000000o(file);
+        final List<String> o000000o = com.money.utils.GenerateDeviceUtil.O000000o(file);
         if (file.exists() && o000000o.size() > 0) {
             Collections.shuffle(o000000o);
             final int n = 25 + new Random().nextInt(15);
@@ -267,7 +267,7 @@ public class Edbw69C30UgVp2ocKByJ
 
    /* public static List<String> O00000Oo() {
         final ArrayList<String> list = new ArrayList<String>();
-        for (final String s : Edbw69C30UgVp2ocKByJ.O0000ooO) {
+        for (final String s : GenerateDeviceUtil.O0000ooO) {
             final String[] array = { "46000", "46002", "46007", "46001", "46003" };
             list.add(s + "," + O000000o(array[new Random().nextInt(array.length)]));
         }
@@ -302,7 +302,7 @@ public class Edbw69C30UgVp2ocKByJ
     public static String createBuildIncremental() {
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 8; ++i) {
-            sb.append(Edbw69C30UgVp2ocKByJ.O0000OoO[(int)(16.0 * Math.random())]);
+            sb.append(GenerateDeviceUtil.O0000OoO[(int)(16.0 * Math.random())]);
         }
         return sb.toString();
     }
@@ -485,12 +485,12 @@ public class Edbw69C30UgVp2ocKByJ
     }
 
     public static String O0000O0o(final int n) {
-        String s = Edbw69C30UgVp2ocKByJ.O0000O0o[new Random().nextInt(Edbw69C30UgVp2ocKByJ.O0000O0o.length)];
+        String s = GenerateDeviceUtil.O0000O0o[new Random().nextInt(GenerateDeviceUtil.O0000O0o.length)];
         if (n == 0) {
-            s = Edbw69C30UgVp2ocKByJ.O00000o0[new Random().nextInt(Edbw69C30UgVp2ocKByJ.O00000o0.length)];
+            s = GenerateDeviceUtil.O00000o0[new Random().nextInt(GenerateDeviceUtil.O00000o0.length)];
         }
         else if (n == 1) {
-            s = Edbw69C30UgVp2ocKByJ.O00000oO[new Random().nextInt(Edbw69C30UgVp2ocKByJ.O00000oO.length)];
+            s = GenerateDeviceUtil.O00000oO[new Random().nextInt(GenerateDeviceUtil.O00000oO.length)];
         }
         int n2 = 1000000;
         int n3 = 9000000;
@@ -503,16 +503,16 @@ public class Edbw69C30UgVp2ocKByJ
     }
 
     public static String createBuildBoard() {
-        return Edbw69C30UgVp2ocKByJ.buildBoards[new Random().nextInt(Edbw69C30UgVp2ocKByJ.buildBoards.length)];
+        return GenerateDeviceUtil.buildBoards[new Random().nextInt(GenerateDeviceUtil.buildBoards.length)];
     }
 
     public static String O0000OOo(final int n) {
-        String s = Edbw69C30UgVp2ocKByJ.O0000OOo[new Random().nextInt(Edbw69C30UgVp2ocKByJ.O0000OOo.length)];
+        String s = GenerateDeviceUtil.O0000OOo[new Random().nextInt(GenerateDeviceUtil.O0000OOo.length)];
         if (n == 0) {
-            s = Edbw69C30UgVp2ocKByJ.O00000o[new Random().nextInt(Edbw69C30UgVp2ocKByJ.O00000o.length)];
+            s = GenerateDeviceUtil.O00000o[new Random().nextInt(GenerateDeviceUtil.O00000o.length)];
         }
         else if (n == 1) {
-            s = Edbw69C30UgVp2ocKByJ.O00000oo[new Random().nextInt(Edbw69C30UgVp2ocKByJ.O00000oo.length)];
+            s = GenerateDeviceUtil.O00000oo[new Random().nextInt(GenerateDeviceUtil.O00000oo.length)];
         }
         return s + "" + (10000 + new Random().nextInt(90000)) + "" + (10000 + new Random().nextInt(90000));
     }
@@ -544,7 +544,7 @@ public class Edbw69C30UgVp2ocKByJ
 
     public static List<String> O0000Oo() {
         final ArrayList<String> list = new ArrayList<String>();
-        final String[] o0000oOO = Edbw69C30UgVp2ocKByJ.O0000oOO;
+        final String[] o0000oOO = GenerateDeviceUtil.O0000oOO;
         for (int length = o0000oOO.length, i = 0; i < length; ++i) {
             final String s = o0000oOO[i].split("&")[1];
             if (!list.contains(s)) {
@@ -558,7 +558,7 @@ public class Edbw69C30UgVp2ocKByJ
         int i = 0;
         String string = "";
         while (i < n) {
-            string = String.valueOf(string) + Edbw69C30UgVp2ocKByJ.O0000Oo[new Random().nextInt(Edbw69C30UgVp2ocKByJ.O0000Oo.length)];
+            string = String.valueOf(string) + GenerateDeviceUtil.O0000Oo[new Random().nextInt(GenerateDeviceUtil.O0000Oo.length)];
             ++i;
         }
         return string;
@@ -574,7 +574,7 @@ public class Edbw69C30UgVp2ocKByJ
 
     public static List<String> O0000OoO() {
         final ArrayList<String> list = new ArrayList<String>();
-        final String[] o0000oOO = Edbw69C30UgVp2ocKByJ.O0000oOO;
+        final String[] o0000oOO = GenerateDeviceUtil.O0000oOO;
         for (int length = o0000oOO.length, i = 0; i < length; ++i) {
             final String s = o0000oOO[i].split("&")[0];
             if (!list.contains(s)) {
@@ -587,23 +587,23 @@ public class Edbw69C30UgVp2ocKByJ
     public static String createAndroidId() {
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 16; ++i) {
-            sb.append(Edbw69C30UgVp2ocKByJ.O0000OoO[(int)(16.0 * Math.random())]);
+            sb.append(GenerateDeviceUtil.O0000OoO[(int)(16.0 * Math.random())]);
         }
         return sb.toString();
     }
 
     public static String O0000o() {
-        return Edbw69C30UgVp2ocKByJ.O000000o[(int)(Math.random() * Edbw69C30UgVp2ocKByJ.O000000o.length)];
+        return GenerateDeviceUtil.O000000o[(int)(Math.random() * GenerateDeviceUtil.O000000o.length)];
     }
 
     public static List<String> O0000o0() {
-        return new ArrayList<String>(Arrays.asList(Edbw69C30UgVp2ocKByJ.O00000Oo));
+        return new ArrayList<String>(Arrays.asList(GenerateDeviceUtil.O00000Oo));
     }
 
     public static String O0000o00() {
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 8; ++i) {
-            sb.append(Edbw69C30UgVp2ocKByJ.O0000OoO[(int)(16.0 * Math.random())]);
+            sb.append(GenerateDeviceUtil.O0000OoO[(int)(16.0 * Math.random())]);
         }
         return sb.toString();
     }
@@ -620,7 +620,7 @@ public class Edbw69C30UgVp2ocKByJ
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 6; ++i) {
             for (int j = 0; j < 2; ++j) {
-                sb.append(Edbw69C30UgVp2ocKByJ.O0000OoO[(int)(16.0 * Math.random())]);
+                sb.append(GenerateDeviceUtil.O0000OoO[(int)(16.0 * Math.random())]);
             }
             if (i != 5) {
                 sb.append(":");
@@ -633,7 +633,7 @@ public class Edbw69C30UgVp2ocKByJ
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 6; ++i) {
             for (int j = 0; j < 2; ++j) {
-                sb.append(Edbw69C30UgVp2ocKByJ.O0000OoO[(int)(16.0 * Math.random())]);
+                sb.append(GenerateDeviceUtil.O0000OoO[(int)(16.0 * Math.random())]);
             }
             if (i != 5) {
                 sb.append(":");
@@ -654,7 +654,7 @@ public class Edbw69C30UgVp2ocKByJ
         final int n = (int)(8.0 + 10.0 * Math.random());
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; ++i) {
-            sb.append(Edbw69C30UgVp2ocKByJ.O0000Oo0[(int)(Math.random() * Edbw69C30UgVp2ocKByJ.O0000Oo0.length)]);
+            sb.append(GenerateDeviceUtil.O0000Oo0[(int)(Math.random() * GenerateDeviceUtil.O0000Oo0.length)]);
         }
         return sb.toString();
     }

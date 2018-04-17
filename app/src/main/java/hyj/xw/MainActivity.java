@@ -7,8 +7,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
-import android.os.RemoteException;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -25,10 +23,7 @@ import com.alibaba.fastjson.JSON;
 
 import org.litepal.crud.DataSupport;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.net.NetworkInterface;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 
@@ -37,11 +32,13 @@ import hyj.xw.activity.AppSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.activity.DataImpExpActivity;
 import hyj.xw.activity.YhSettingActivity;
+import hyj.xw.aw.util.BuildFileUtil;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
+import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
@@ -244,6 +241,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
+        /*List<NewPhoneInfo> npis =  BuildFileUtil.getBuildPhoneInfo();
+        for(NewPhoneInfo npi:npis){
+            System.out.println("npi-->"+JSON.toJSONString(npi));
+        }*/
+        NewPhoneInfo npi = BuildFileUtil.createOneDevice("112233");
+        System.out.println("npi-->"+JSON.toJSONString(npi));
+
         //ActivityManager localActivityManager = (ActivityManager)GlobalApplication.getContext1().getSystemService(Context.ACTIVITY_SERVICE);
         //localActivityManager.forceStopPackage("hyj.xw");
 
