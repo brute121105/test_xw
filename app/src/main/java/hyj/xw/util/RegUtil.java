@@ -20,6 +20,7 @@ public class RegUtil {
         Matcher m = createMatcher(str, reg);
         if (m.find()) {
             resultString = m.group(groupNum);
+
         }
         return resultString;
     }
