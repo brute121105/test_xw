@@ -74,12 +74,6 @@ public class AutoFeedThread extends BaseThread {
                 System.out.println("currentWx008Data-->"+JSON.toJSONString(currentWx008Data));
             }
 
-
-            if(parameters.getIsStop()==1){
-                LogUtil.d(TAG,"暂停....");
-                continue;
-            }
-
             //保持屏幕常亮
             AutoUtil.wake();
 
@@ -95,12 +89,18 @@ public class AutoFeedThread extends BaseThread {
                 }
                 continue;
             }
+                ParseRootUtil.debugRoot(root);
+
+                if(parameters.getIsStop()==1){
+                    LogUtil.d(TAG,"暂停....");
+                    continue;
+                }
+
             //不在wx界面，启动wx
             AutoUtil.doNotInCurrentView(root,record);
 
             NodeActionUtil.doClickByNodePathAndText(root,"微信无响应。要将其关闭吗？|确定","01","等待",record,"exception",500);
 
-            ParseRootUtil.debugRoot(root);
 
                 //登录完成所有号退出
                 if(AutoUtil.actionContains(record,"wx登陆完成")) {
@@ -228,6 +228,11 @@ public class AutoFeedThread extends BaseThread {
                     LogUtil.d(TAG,"recfnd-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
                     LoginSuccessActionConfig.recfnd(root,record,currentWx008Data,context);
                 }
+                //获取昵称
+                if(AutoUtil.actionContains(record,"getNickName")){
+                    LogUtil.d(TAG,"getNickName-- "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause);
+                    LoginSuccessActionConfig.getNickName(root,record,currentWx008Data,context,parameters);
+                }
 
 
             }catch (Exception e){
@@ -330,10 +335,10 @@ public class AutoFeedThread extends BaseThread {
                 AutoUtil.recordAndLog(record,getLoginSeccessThenDoAction(extValue));
                 LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             }
-            //登录成功&开启登录成功暂停 修改暂停标识为1
-            if("1".equals(isLoginSucessPause)){
+           //登录成功&开启登录成功暂停 修改暂停标识为1
+            /*if("1".equals(isLoginSucessPause)){
                 parameters.setIsStop(1);
-            }
+            }*/
             //AutoUtil.sleep(1000);
             //登陆成功或失败序号加1
             doNextIndexAndRecord2DB();
@@ -558,6 +563,7 @@ public class AutoFeedThread extends BaseThread {
         actions.put("609","af添加好友");
         actions.put("610","qggzh取关公总号");
         actions.put("611","recfnd通过好友");
+        actions.put("612","getNickName获取昵称");
         actions.put("609603","af添加好友&扫码登录");
         if(actions.containsKey(extValue)){
             return actions.get(extValue);

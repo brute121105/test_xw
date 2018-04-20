@@ -121,7 +121,6 @@
 
 
     <TextView
-        android:visibility="gone"
         android:text="综合参数"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -129,7 +128,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <EditText
-        android:visibility="gone"
         android:id="@+id/ext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

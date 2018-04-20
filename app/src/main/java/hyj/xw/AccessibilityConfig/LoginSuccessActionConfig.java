@@ -16,6 +16,7 @@ import hyj.xw.common.CommonConstant;
 import hyj.xw.common.WxNickNameConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
+import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneApi;
 import hyj.xw.thread.GetOrUpdateServerStatusThread;
@@ -522,6 +523,24 @@ public class LoginSuccessActionConfig {
                 isScrollForward = AutoUtil.performScroll(listNode,record,"recfnd下滚");
                 AutoUtil.sleep(500);
                 return;
+            }
+        }
+    }
+    //获取昵称
+    public static void getNickName(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data,AccessibilityService context,AccessibilityParameters parameters){
+        NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","040","我",record,"getNickName点击我",500);
+        NodeActionUtil.doClickByNodePathAndDesc(root,"通讯录|发现","00611","查看二维码",record,"getNickName点击查看二维码",500);
+        NodeActionUtil.doClickByNodePathAndDesc(root,"通讯录|发现","000611","查看二维码",record,"getNickName点击查看二维码",500);
+        NodeActionUtil.doClickByNodePathAndDesc(root,"通讯录|发现","00511","查看二维码",record,"getNickName点击查看二维码",500);
+        NodeActionUtil.doClickByNodePathAndDesc(root,"通讯录|发现","000511","查看二维码",record,"getNickName点击查看二维码",500);
+
+        if(NodeActionUtil.isContainsStrs(root,"扫一扫上面的二维码图案")){
+            String nickName = NodeActionUtil.getTextByNodePath(root,"0030");
+            if(!TextUtils.isEmpty(nickName)){
+                int cn = DaoUtil.updateNickName(currentWx008Data,nickName);
+                System.out.println("getNickName-->"+nickName+" cn:"+cn);
+                AutoUtil.performBack(context,record,"wx登陆成功");
+                //parameters.setIsStop(1);
             }
         }
     }
