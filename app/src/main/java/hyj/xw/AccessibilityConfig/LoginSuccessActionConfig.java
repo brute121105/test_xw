@@ -79,26 +79,27 @@ public class LoginSuccessActionConfig {
         return AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_NEW_PWD);
     }
     //扫码登录pc端
+    static boolean  isStartLogin=false;
     public static void doLoginPc(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data){
-        String status = getServerStatus();
-        System.out.println("doLoginPc GetOrUpdateServerStatusThread status--->"+status);
-        if(!"3".equals(status)&&!"1".equals(status)&&AutoUtil.checkAction(record,"loginPc扫码登录")){
-            startThreadByFuture("3");//标志可以生成二维码
+        if(!isStartLogin){
+            String status = getServerStatus();
+            System.out.println("doLoginPc GetOrUpdateServerStatusThread status--->"+status);
+            if("1".equals(status)){//如果二维码没刷新，返回
+                isStartLogin = true;
+            }
         }
-        if(!"1".equals(status)){//如果二维码没没出现，返回
-            return;
-        }
+        if(!isStartLogin) return;
+
         if(NodeActionUtil.isWindowContainStr(root,"Windows 微信已登录")||NodeActionUtil.isWindowContainStr(root,"iPad 微信已登录")){
             waitLoginSuccessCn = 0;
             AutoUtil.recordAndLog(record,"wx登陆成功");
-            startThreadByFuture("2");//标志登录成功
+            isStartLogin = false;
             return;
         }else if(AutoUtil.checkAction(record,"loginPc点击登录确认")){//超过一定时间没登录成功重新扫
             System.out.println("waitLoginSuccessCn-->"+waitLoginSuccessCn);
             waitLoginSuccessCn = waitLoginSuccessCn+1;
             if(waitLoginSuccessCn>40){
                 waitLoginSuccessCn= 0;
-                startThreadByFuture("2");
                 AutoUtil.recordAndLog(record,"wx登陆成功");
                 System.out.println("waitLoginSuccessCn recordAndLog-->"+waitLoginSuccessCn);
                 return;
