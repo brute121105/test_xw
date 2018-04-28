@@ -155,4 +155,20 @@
             />
     </LinearLayout>
 
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:layout_weight="1"
+            android:id="@+id/isLoginByPhone"
+            android:textColor="#2E2E2E"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="用手机号登录（默认微信号）"
+            android:textSize="18sp"
+            />
+    </LinearLayout>
+
 </LinearLayout>
