@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        AutoUtil.clickXY(0,0);
         GetPermissionUtil.getReadAndWriteContactPermision(this,MainActivity.this);
         /*if (Build.VERSION.SDK_INT >= 23) {
             if (!Settings.canDrawOverlays(this)) {
@@ -239,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
+
       /* AutoUtil.execShell("screencap /sdcard/258.png");
         NewPhoneInfo npi = BuildFileUtil.createOneDevice("112233");
         System.out.println("npi-->"+JSON.toJSONString(npi));*/
@@ -327,9 +327,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         // ToastUtil.show("点击了取消");
                     }
                 });*/
-
-                int start = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
-                int end = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX));
+                String startStr = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX);
+                String endStr = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX);
+                int start = Integer.parseInt(TextUtils.isEmpty(startStr)?"0":startStr);
+                int end = Integer.parseInt(TextUtils.isEmpty(endStr)?"0":endStr);
                 if(start>end){
                     Toast.makeText(this, "已设置的开始序号【"+start+"】不能大于结束序号【"+end+"】", Toast.LENGTH_LONG).show();
                 }else {

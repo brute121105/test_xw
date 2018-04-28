@@ -22,6 +22,10 @@ public class PhoneInfo {
     private int phoneType;//手机类型
     private int simState;//手机卡状态
 
+    private String macAddress;
+    private String routeName;
+    private String routeAddress;
+
     private String release;//系统版本 6.0.1
     private String sdk;//系统版本值
     private String brand;//品牌
@@ -43,6 +47,30 @@ public class PhoneInfo {
     private String BUILD_TAGS;
     private String BUILD_TYPE;
     private String BUILD_USER;
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    public String getRouteName() {
+        return routeName;
+    }
+
+    public void setRouteName(String routeName) {
+        this.routeName = routeName;
+    }
+
+    public String getRouteAddress() {
+        return routeAddress;
+    }
+
+    public void setRouteAddress(String routeAddress) {
+        this.routeAddress = routeAddress;
+    }
 
     public String getBUILD_TAGS() {
         return BUILD_TAGS;

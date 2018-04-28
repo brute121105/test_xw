@@ -22,6 +22,7 @@ public class YhSettingActivity extends AppCompatActivity implements View.OnClick
     CheckBox isSetWxisCheckBox;
     CheckBox isSmjqCheckBox;
     CheckBox isReplacePhoneCheckBox;
+    CheckBox isLoginByPhoneCheckBox;
 
     EditText newPwdEditText;
 
@@ -58,6 +59,10 @@ public class YhSettingActivity extends AppCompatActivity implements View.OnClick
         isReplacePhoneCheckBox = (CheckBox)this.findViewById(R.id.isReplacePhone);
         isReplacePhoneCheckBox.setChecked("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_REP_PHONE))?true:false);
         isReplacePhoneCheckBox.setOnClickListener(this);
+        //手机号登录
+        isLoginByPhoneCheckBox = (CheckBox)this.findViewById(R.id.isLoginByPhone);
+        isLoginByPhoneCheckBox.setChecked("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_BY_PHONE))?true:false);
+        isLoginByPhoneCheckBox.setOnClickListener(this);
 
         newPwdEditText = (EditText)findViewById(R.id.et_new_pwd);
         String pwd = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_NEW_PWD);
@@ -91,6 +96,9 @@ public class YhSettingActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.isReplacePhone:
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_REP_PHONE,isReplacePhoneCheckBox.isChecked()?"1":"0");
+                break;
+            case R.id.isLoginByPhone:
+                AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_LOGIN_BY_PHONE,isLoginByPhoneCheckBox.isChecked()?"1":"0");
                 break;
             case R.id.btn_af_setting:
                 startActivity(new Intent(YhSettingActivity.this, AfSettingActivity.class));

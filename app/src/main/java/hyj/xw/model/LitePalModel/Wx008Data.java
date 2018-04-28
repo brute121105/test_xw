@@ -73,6 +73,10 @@ public class Wx008Data  extends DataSupport{
         phoneInfo.setPhoneType(Integer.parseInt(strs[27+i]));
         phoneInfo.setSimState(Integer.parseInt(strs[29+i]));
 
+        phoneInfo.setMacAddress(strs[31+i]);
+        phoneInfo.setRouteName(strs[33+i]);
+        phoneInfo.setRouteAddress(strs[35+i]);
+
         phoneInfo.setRelease(strs[37+i]);
         phoneInfo.setSdk(strs[39+i]);
 

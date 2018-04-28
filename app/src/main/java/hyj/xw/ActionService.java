@@ -36,8 +36,16 @@ public class ActionService  extends AccessibilityService {
         parameters.setStartLoginIndex(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         System.out.println("008-->extValue:"+extValue);
         //养号
-        executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
-        AutoUtil.startWx();
+        if("008".equals(extValue)){//生成数据
+            executorService.submit(ThreadFactory.getThread("fetch008Data",this,record,parameters));
+            AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+        }else if("0081".equals(extValue)){//抓取历史
+            executorService.submit(ThreadFactory.getThread("fetch008DataHistory",this,record,parameters));
+            AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+        }else{
+            executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
+            AutoUtil.startWx();
+        }
         //AutoUtil.startWx();
        /* if("008".equals(extValue)){
             executorService.submit(ThreadFactory.getThread("fetch008Data",this,record,parameters));

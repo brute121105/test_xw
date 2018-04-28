@@ -10,6 +10,7 @@ import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.thread.AutoFeedThread;
 import hyj.xw.thread.AutoLoginThread;
 import hyj.xw.thread.AutoRegThread;
+import hyj.xw.thread.Fetch008DataHistoryThread;
 import hyj.xw.thread.Fetch008DataThread;
 import hyj.xw.thread.TestThread;
 
@@ -33,6 +34,8 @@ public class ThreadFactory {
                 return new ALZGetPhoneAndValidCodeThread(parameters.getPa());
             case "fetch008Data":
                 return new Fetch008DataThread(context,record,parameters);
+            case "fetch008DataHistory":
+                return new Fetch008DataHistoryThread(context,record,parameters);
 
         }
         throw new RuntimeException("【"+name+"】没有相关服务！");

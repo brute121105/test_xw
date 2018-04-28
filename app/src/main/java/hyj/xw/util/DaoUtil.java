@@ -1,5 +1,6 @@
 package hyj.xw.util;
 
+import android.os.Environment;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -174,5 +175,42 @@ public class DaoUtil {
         wx008Data.setWxPwd(pwd);
         int cn = wx008Data.updateAll("wxId=?",wxid);
         System.out.println("更新记录-->cn:"+cn+" wxid:"+wxid+" pwd:"+pwd);
+    }
+
+    public static void updatePwdByPhone(String phone,String pwd){
+        Wx008Data wx008Data = new Wx008Data();
+        wx008Data.setWxPwd(pwd);
+        int cn = wx008Data.updateAll("phone=?",phone);
+        System.out.println("更新记录-->cn:"+cn+" phone:"+phone+" pwd:"+pwd);
+    }
+
+    //读取azy文件的账号密码，更新到数据库
+    public void readFilePhoneAndPwdUpdate2Db(){
+      List<String> strs = FileUtil.read008Data(Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy.txt");
+        if(strs!=null&&strs.size()>0){
+            for(String str:strs){
+                if(str.indexOf(",")>-1){
+                    String[] arr = str.split(",");
+                    if(arr.length>2){
+                        updatePwdByPhone(arr[0],arr[2]);
+                    }
+                }
+            }
+        }
+    }
+
+    //008原始数据提取手机号到 phone字段
+    public static  void getPhoneFromDataStrAndSet(){
+        List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
+        if(wx008Datas!=null&&wx008Datas.size()>0){
+            for(Wx008Data data:wx008Datas){
+                data.setPhoneInfo(data.getDatas());
+                if(TextUtils.isEmpty(data.getPhone())){
+                    data.setPhone(data.getPhoneInfo().getLineNumber());
+                    boolean fl = data.save();
+                    System.out.println("fl-->"+fl);
+                }
+            }
+        }
     }
 }

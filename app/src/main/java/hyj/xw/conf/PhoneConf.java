@@ -21,7 +21,6 @@ import hyj.xw.model.PhoneInfo;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.FileUtil;
-import hyj.xw.util.StringUtilHyj;
 
 /**
  * Created by Administrator on 2018/1/4.
@@ -130,7 +129,7 @@ public class PhoneConf {
             String showMsg = i + "-" + wxid + " " + time + " " + (cn == null ? "86" : cn);
             datas.add(showMsg);
 
-            System.out.println(showMsg+" --nickName:"+wx008Datas.get(i).getNickName()+" repPhone:"+wx008Datas.get(i).getReplacePhone()+" pwd:"+wx008Datas.get(i).getWxPwd()+" phone:"+wx008Datas.get(i).getPhone()+" wxid:"+wx008Datas.get(i).getWxid19());
+            System.out.println(showMsg+" --nickName:"+wd.getNickName()+" repPhone:"+wd.getReplacePhone()+" pwd:"+wd.getWxPwd()+" phone:"+wd.getPhone()+" wxid:"+wd.getWxid19()+" exp:"+wd.getExpMsg());
             //删除测试
             //保护结束
 
@@ -350,8 +349,13 @@ public class PhoneConf {
         npi.setSimSerialNumber(pi.getSimSerialNumber());
         npi.setSimState(pi.getSimState());
         npi.setSubscriberId(pi.getSubscriberId());
-        npi.setMacAddress(pi.getBlueAddress());//--
-        npi.setP2p0Mac(pi.getBlueAddress());//--
+        //npi.setMacAddress(pi.getBlueAddress());//--
+        npi.setMacAddress(pi.getMacAddress());
+          if(pi.getBlueAddress().indexOf(":")==-1){
+              npi.setP2p0Mac(pi.getMacAddress());
+          }else {
+              npi.setP2p0Mac(pi.getBlueAddress());//--
+          }
         npi.setCpuName("");
         npi.setIpAddress("192.168.1.2");
         npi.setNetworkTypeName("CDMA - EvDo rev. A");

@@ -23,6 +23,8 @@ public class CommonConstant {
     public static String APPCONFIG_IS_SET_WXID = "isSetWxis";//设置微信号
     public static String APPCONFIG_IS_SMJQ = "isSmjq";//扫码加群
     public static String APPCONFIG_IS_REP_PHONE = "isReplacePhone";//解绑手机
+    public static String APPCONFIG_IS_LOGIN_BY_PHONE = "isLoginByPhone";//手机号登录
+
     public static String APPCONFIG_NEW_PWD = "newPwd";//修改密码新密码
 
     public static String APPCONFIG_IS_AIR_CHANGE_IP = "isAirChangeIp";//飞行模式换ip

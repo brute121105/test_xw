@@ -12,7 +12,6 @@ import hyj.xw.BaseThread;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.util.AutoUtil;
-import hyj.xw.util.DaoUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.NodeActionUtil;
 import hyj.xw.util.ParseRootUtil;
@@ -32,7 +31,7 @@ public class Fetch008DataThread extends BaseThread {
     public Object call()  {
         while (true){
             AutoUtil.sleep(3000);
-            DaoUtil.findByDataFlag("008");
+            //DaoUtil.findByDataFlag("008");
             LogUtil.d(TAG,Thread.currentThread().getName());
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){

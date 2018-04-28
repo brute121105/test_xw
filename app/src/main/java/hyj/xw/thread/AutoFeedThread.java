@@ -46,7 +46,7 @@ public class AutoFeedThread extends BaseThread {
     }
     List<Wx008Data> wx008Datas;
     Wx008Data currentWx008Data;
-    String extValue,isAirChangeIp;
+    String extValue,isAirChangeIp,isLoginByPhone;
     PhoneApi pa = new PhoneApi();
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
@@ -57,6 +57,7 @@ public class AutoFeedThread extends BaseThread {
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
         extValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
         isAirChangeIp = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_AIR_CHANGE_IP);
+        isLoginByPhone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_BY_PHONE);
         if(extValue.contains("605")){//605换绑手机，需接吗
             new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
         }
@@ -68,7 +69,7 @@ public class AutoFeedThread extends BaseThread {
             //记录数据，悬浮框显示
             recordFlowInfo(wx008Datas,loginIndex);
             AutoUtil.sleep(500);
-            LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause+" isAirChangeIp:"+isAirChangeIp);
+            LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause+" isLoginByPhone:"+isLoginByPhone);
             if(currentWx008Data!=null){
                 LogUtil.d(TAG,"wxid:"+currentWx008Data.getWxId()+" pwd:"+currentWx008Data.getWxPwd());
                 System.out.println("currentWx008Data-->"+JSON.toJSONString(currentWx008Data));
@@ -76,6 +77,12 @@ public class AutoFeedThread extends BaseThread {
 
             //保持屏幕常亮
             AutoUtil.wake();
+
+
+                if(parameters.getIsStop()==1){
+                    LogUtil.d(TAG,"暂停....");
+                    continue;
+                }
 
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             //roor超过5次为空，启动wx
@@ -90,11 +97,6 @@ public class AutoFeedThread extends BaseThread {
                 continue;
             }
                 ParseRootUtil.debugRoot(root);
-
-                if(parameters.getIsStop()==1){
-                    LogUtil.d(TAG,"暂停....");
-                    continue;
-                }
 
             //不在wx界面，启动wx
             AutoUtil.doNotInCurrentView(root,record);
@@ -145,6 +147,8 @@ public class AutoFeedThread extends BaseThread {
                             pi = JSON.parseObject(currentWx008Data.getPhoneStrsAw(),NewPhoneInfo.class);
                         }else {
                             pi = PhoneConf.xw2awData(currentWx008Data);
+                            System.out.println(" auto pi1-->"+JSON.toJSONString(currentWx008Data.getPhoneInfo()));
+                            System.out.println(" auto pi-->"+JSON.toJSONString(pi));
                         }
                         Log.i("currentWx008Data-->",JSON.toJSONString(currentWx008Data));
                         CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
@@ -257,27 +261,27 @@ public class AutoFeedThread extends BaseThread {
         String wxid = (currentWx008Data.getWxId()!=null&&currentWx008Data.getWxId().length()==6)?currentWx008Data.getWxId():currentWx008Data.getWxid19();
         String pwd = currentWx008Data.getWxPwd();
         //微信号为空用手机号登陆
-        if(TextUtils.isEmpty(wxid)){
+        if("1".equals(isLoginByPhone)||TextUtils.isEmpty(wxid)){
             String cnNum = currentWx008Data.getCnNum();
             if(cnNum!=null&&!"86".equals(cnNum)){
                 selsectCn(root,cnNum);
             }
-            if(cnNum==null||AutoUtil.checkAction(record,"wx选择国家")||AutoUtil.checkAction(record,"wx输入手机号")){
+            if("86".equals(cnNum)||cnNum==null||AutoUtil.checkAction(record,"wx选择国家")||AutoUtil.checkAction(record,"wx输入手机号")){
                 String phone = currentWx008Data.getPhone();
                 if("255".equals(cnNum)&&"255".equals(phone.substring(0,3))){
                     phone = phone.substring(3);
                 }
-                if(!NodeActionUtil.doInputByNodePathAndText(root,"国家/地区|下一步|请填写手机号","00321",phone,record,"wx输入手机号",500)){
-                    NodeActionUtil.doInputByNodePathAndText(root,"国家/地区|下一步|请填写手机号","00221",phone,record,"wx输入手机号",500);
-                }
-                NodeActionUtil.doClickByNodePathAndText(root,"国家/地区|下一步|请填写手机号","0034","下一步",record,"wx下一步",1000);
+                NodeActionUtil.doInputByNodePathAndText(root,"国家/地区|下一步|请填写手机号","00221",phone,record,"wx输入手机号",500);
+                NodeActionUtil.doClickByNodePathAndText(root,"国家/地区|下一步|请填写手机号","0024","下一步",record,"wx下一步",1000);
 
             }
-            if(!NodeActionUtil.doInputByNodePathAndText(root,"手机号登录|用短信验证码登录","00331",pwd,record,"wx输入密码",1000)){
-                NodeActionUtil.doInputByNodePathAndText(root,"手机号登录|用短信验证码登录","00231",pwd,record,"wx输入密码",1000);
-            }
+            NodeActionUtil.doInputByNodePathAndText(root,"手机号登录|用短信验证码登录","00231",pwd,record,"wx输入密码",1000);
+            NodeActionUtil.doClickByNodePathAndText(root,"手机号登录|用短信验证码登录","0025","登录",record,"wx点击登录",1500);
+           /* if(!NodeActionUtil.doInputByNodePathAndText(root,"手机号登录|用短信验证码登录","00331",pwd,record,"wx输入密码",1000)){
+
+            }*/
             if(!NodeActionUtil.doClickByNodePathAndText(root,"手机号登录|用短信验证码登录","0035","登录",record,"wx点击登录",3000)){
-                NodeActionUtil.doClickByNodePathAndText(root,"手机号登录|用短信验证码登录","0025","登录",record,"wx点击登录",1500);
+
             }
         }else {
             NodeActionUtil.doClickByNodePathAndText(root,"请填写手机号|手机号登录","0033","用微信号/QQ号/邮箱登录",record,"wx点击微信号/QQ号/邮箱登录");
@@ -332,6 +336,8 @@ public class AutoFeedThread extends BaseThread {
                 /**
                  * 登录成功判断是否有其他动作
                  */
+                int cn = DaoUtil.updateExpMsg(currentWx008Data,"登录成功-"+AutoUtil.getCurrentDate());
+                System.out.println("excpMsg-->"+cn);
                 AutoUtil.recordAndLog(record,getLoginSeccessThenDoAction(extValue));
                 LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             }
@@ -359,18 +365,22 @@ public class AutoFeedThread extends BaseThread {
                 if(NodeActionUtil.isWindowContainStr(root,"超出验证频率限制")){
                     excpMsg="超出验证频率限制";
                 }
+                if(TextUtils.isEmpty(excpMsg)||"null".equals(excpMsg)){
+                    excpMsg= ParseRootUtil.getCurrentViewAllTexts(root);
+                }
 
             }else if(NodeActionUtil.isWindowContainStr(root,"你正在一台新设备登录微信")){
                 AutoUtil.recordAndLog(record,"wx登陆异常");
                 excpMsg= "新设备登录微信";
             }
             if(AutoUtil.checkAction(record,"wx登陆异常")){
-                int cn = DaoUtil.updateExpMsg(currentWx008Data,excpMsg);
+                int cn = DaoUtil.updateExpMsg(currentWx008Data,excpMsg+"-"+AutoUtil.getCurrentDate());
                 System.out.println("excpMsg-->"+cn);
                 LogUtil.login(loginIndex+" fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" -"+excpMsg+" ip:"+record.remove("ipMsg"));
                 //登陆成功或失败序号加1
                 doNextIndexAndRecord2DB();
             }
+            System.out.println("excpMsg-->"+excpMsg);
         }
         return flag;
     }

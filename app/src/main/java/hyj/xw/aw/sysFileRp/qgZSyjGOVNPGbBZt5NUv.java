@@ -2,6 +2,8 @@ package hyj.xw.aw.sysFileRp;
 
 import android.content.Context;
 
+import com.alibaba.fastjson.JSON;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -176,11 +178,16 @@ public class qgZSyjGOVNPGbBZt5NUv
             if (s.contains("wlan0")) {
                 final String substring = s.substring(s.indexOf("fe80"), s.indexOf(" "));
                 final String[] split = phoneInfo.getMacAddress().toLowerCase().split(":");
+                System.out.println("tt s--->"+s);
+                System.out.println("tt s split--->"+ JSON.toJSONString(split));
                 s = s.replaceAll(substring, "fe80000000000000" + split[0] + split[1] + split[2] + "fffe" + split[3] + split[4] + split[5]);
             }
             else if (s.contains("p2p0")) {
-                final String substring2 = s.substring(s.indexOf("fe80"), s.indexOf(" "));
-                final String[] split2 = phoneInfo.getP2p0Mac().toLowerCase().split(":");
+                String substring2 = s.substring(s.indexOf("fe80"), s.indexOf(" "));
+                String[] split2 = phoneInfo.getP2p0Mac().toLowerCase().split(":");
+                if(split2==null||split2.length<5){
+                    split2 = phoneInfo.getMacAddress().toLowerCase().split(":");
+                }
                 s = s.replaceAll(substring2, "fe80000000000000" + split2[0] + split2[1] + split2[2] + "fffe" + split2[3] + split2[4] + split2[5]);
             }
             sb.append(s).append("\n");
