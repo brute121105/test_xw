@@ -31,5 +31,5 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
     testCompile 'junit:junit:4.12'
-    provided 'de.robv.android.xposed:api:82'
+    provided 'de.robv.android.xposed:api:53'
 }

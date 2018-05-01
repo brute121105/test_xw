@@ -185,14 +185,14 @@ public class DaoUtil {
     }
 
     //读取azy文件的账号密码，更新到数据库
-    public void readFilePhoneAndPwdUpdate2Db(){
+    public static void readFilePhoneAndPwdUpdate2Db(){
       List<String> strs = FileUtil.read008Data(Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy.txt");
         if(strs!=null&&strs.size()>0){
             for(String str:strs){
                 if(str.indexOf(",")>-1){
                     String[] arr = str.split(",");
-                    if(arr.length>2){
-                        updatePwdByPhone(arr[0],arr[2]);
+                    if(arr.length>1){
+                        updatePwdByPhone(arr[0],arr[1]);
                     }
                 }
             }

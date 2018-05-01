@@ -1,4 +1,4 @@
-package hyj.xw.test;
+package hyj.xw.util;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -12,9 +12,14 @@ import android.telephony.TelephonyManager;
 
 import com.alibaba.fastjson.JSON;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import hyj.xw.GlobalApplication;
+import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.util.LogUtil;
 
 /**
@@ -128,5 +133,97 @@ public class GetPhoneInfoUtil {
                 .getSystemService(Context.WIFI_SERVICE);
         WifiInfo info = wifi.getConnectionInfo();
         return info.getMacAddress();
+    }
+
+    public static NewPhoneInfo getEnvironmentAwData(){
+        TelephonyManager phone = (TelephonyManager) GlobalApplication.getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        NewPhoneInfo npi = new NewPhoneInfo();
+        npi.setBuildAbi(Build.CPU_ABI);
+        npi.setBuildAbi2(Build.CPU_ABI2);
+        npi.setBuildBoard(Build.BOARD);
+        npi.setBuildBrand(Build.BRAND);
+        npi.setBuildCodename(Build.VERSION.CODENAME);
+        npi.setBuildDescription("");
+        npi.setBuildDevice(Build.DEVICE);
+        npi.setBuildFingerprint(Build.FINGERPRINT);
+        npi.setBuildHardware(Build.HARDWARE);
+        npi.setBuildHost(Build.HOST);
+        npi.setBuildId(Build.ID);
+        npi.setBuildIncremental(Build.VERSION.INCREMENTAL);
+        npi.setBuildManufacturer(Build.MANUFACTURER);
+        npi.setBuildModel(Build.MODEL);
+        npi.setBuildName(Build.MANUFACTURER);//BuildName 字段对应Build.MANUFACTURER 或  Build.BRANDB，开始对应Build.PRODUCT 无法登陆
+        npi.setBuildProduct(Build.PRODUCT);
+        npi.setBuildRadioVersion(Build.getRadioVersion());
+        npi.setBuildRelease(Build.VERSION.RELEASE);
+        npi.setBuildSdk( Build.VERSION.SDK);
+        npi.setSerialno(Build.SERIAL);
+        npi.setBuildTags(Build.TAGS);
+        npi.setType(1);//
+        npi.setBuildUser(Build.USER);
+        npi.setBuildUtc(1467439854767L);
+        String androidId = Settings.Secure.getString(
+                GlobalApplication.getResolver(), Settings.Secure.ANDROID_ID);//android_id
+        String macAddress = getLocalMac(GlobalApplication.getContext());//mac地址
+        WifiManager wm=(WifiManager)GlobalApplication.getContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wi=wm.getConnectionInfo();
+        npi.setBSSID(wi.getBSSID());
+        npi.setIpAddress("192.168.1.2");
+        npi.setP2p0Mac(macAddress);
+        npi.setSSID(wi.getSSID());
+
+
+        npi.setAndroidId(androidId);
+        npi.setBatteryLevel(60);
+        npi.setBtAddress("");
+        npi.setBtName("");
+
+        npi.setCpuName(getCpuName());
+        npi.setDensityDpi(480);
+
+        npi.setDeviceId(phone.getDeviceId());
+        npi.setDeviceSvn("29");
+        npi.setDisplayId(Build.DISPLAY);//
+        npi.setExtraInfo("");
+        npi.setLine1Number(phone.getLine1Number());
+        npi.setRgPhoneNo(phone.getLine1Number());
+        npi.setRgWxPasswd("");
+        npi.setMacAddress(macAddress);
+        npi.setNetworkClass(phone.getNetworkType());
+        npi.setNetworkCountryIso(phone.getNetworkCountryIso());
+        npi.setNetworkOperator(phone.getNetworkOperator());
+        npi.setNetworkOperatorName(phone.getNetworkOperatorName());
+        npi.setNetworkType(phone.getNetworkType());
+        npi.setNetworkTypeName("LTE");
+        npi.setPhoneType(phone.getPhoneType());
+        npi.setSerialno(Build.SERIAL);
+        npi.setSimCountryIso(phone.getSimCountryIso());
+        npi.setSimOperator(phone.getSimOperator());
+        npi.setSimOperatorName(phone.getSimOperatorName());
+        npi.setSimSerialNumber(phone.getSimSerialNumber());
+        npi.setSimState(phone.getSimState());
+        npi.setSubscriberId(phone.getSubscriberId());
+        npi.setRgTime(new Date().getTime());
+
+        System.out.println("getEnvironmentAwData--->"+JSON.toJSONString(npi));
+        return npi;
+    }
+
+    public static String getCpuName(){
+        String str1 = "/proc/cpuinfo";
+        String str2 = "";
+        try {
+            FileReader fr = new FileReader(str1);
+            BufferedReader localBufferedReader = new BufferedReader(fr);
+            while ((str2=localBufferedReader.readLine()) != null) {
+                if (str2.contains("Hardware")) {
+                    return str2.split(":")[1];
+                }
+            }
+            localBufferedReader.close();
+        } catch (IOException e) {
+        }
+        return null;
+
     }
 }

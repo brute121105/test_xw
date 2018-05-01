@@ -46,6 +46,7 @@ import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
+import hyj.xw.util.GetPhoneInfoUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.OkHttpUtil;
 
@@ -149,8 +150,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        // AutoUtil.addPhoneContacts("zz1","12365489658");
         //getSysLanguage();
         //DeviceParamUtil.getAwPhoneInfo();
-        PhoneConf.getAddFrWx();
+        //PhoneConf.getAddFrWx();
         //System.out.println("mac-->"+AutoUtil.getLocalMacAddress());
+        //GetPhoneInfoUtil.getEnvironmentAwData();
+        DaoUtil.readFilePhoneAndPwdUpdate2Db();
     }
 
     @Override

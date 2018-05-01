@@ -338,7 +338,8 @@ public class PhoneConf {
         npi.setNetworkOperatorName(pi.getNetworkOperatorName());
         npi.setNetworkType(pi.getNetworkType());
         npi.setPhoneType(pi.getPhoneType());
-        npi.setBuildName(pi.getProductName());
+        //npi.setBuildName(pi.getProductName());
+        npi.setBuildName(pi.getManufacturer());
         npi.setBuildRadioVersion(pi.getRadioVersion());
         npi.setBuildRelease(pi.getRelease());
         npi.setBuildSdk(pi.getSdk());
@@ -356,6 +357,9 @@ public class PhoneConf {
           }else {
               npi.setP2p0Mac(pi.getBlueAddress());//--
           }
+          if(TextUtils.isEmpty(npi.getMacAddress())&&pi.getBlueAddress().indexOf(":")>-1){
+              npi.setMacAddress(pi.getBlueAddress());
+          }
         npi.setCpuName("");
         npi.setIpAddress("192.168.1.2");
         npi.setNetworkTypeName("CDMA - EvDo rev. A");
@@ -366,5 +370,8 @@ public class PhoneConf {
           npi.setBuildIncremental("");
           npi.setBuildBoard("");
         return npi;
+    }
+    public static void getEnvironmentAwData(){
+
     }
 }

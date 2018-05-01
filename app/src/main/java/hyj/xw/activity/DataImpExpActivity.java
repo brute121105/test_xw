@@ -18,8 +18,10 @@ import hyj.xw.R;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.conf.ImpExpData;
 import hyj.xw.conf.PhoneConf;
+import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.util.AutoUtil;
+import hyj.xw.util.GetPhoneInfoUtil;
 import hyj.xw.util.LogUtil;
 
 public class DataImpExpActivity extends AppCompatActivity implements View.OnClickListener{
@@ -73,7 +75,11 @@ public class DataImpExpActivity extends AppCompatActivity implements View.OnClic
                 Toast.makeText(this,"导入成功："+result.get("countSucc")+"条,失败："+result.get("countExist")+"条", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_expAData:
-                ImpExpData.importAData();
+                //ImpExpData.importAData();
+                NewPhoneInfo npi = GetPhoneInfoUtil.getEnvironmentAwData();
+                String json =  JSON.toJSONString(npi);
+                LogUtil.exportAWUtf8ByPhoneName(FilePathCommon.importDataAPath,json,npi.getLine1Number());
+                Toast.makeText(this, npi.getLine1Number(), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_kill_app:
                 AutoUtil.killApp();

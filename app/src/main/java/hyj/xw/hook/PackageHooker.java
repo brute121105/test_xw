@@ -133,7 +133,7 @@ public class PackageHooker {
 
     private String dumpStaticField(String fieldStr){
         String fieldValue = "";
-        if(fieldStr!=null&&fieldStr.indexOf("static")>-1){
+        /*if(fieldStr!=null&&fieldStr.indexOf("static")>-1){
             String[] strs1 = fieldStr.split("\\s");
             if(strs1!=null&&strs1.length>1){
                 String str = strs1[strs1.length-1];
@@ -145,7 +145,7 @@ public class PackageHooker {
                     XposedBridge.log("hyj--fieldType:"+fieldType+"fieldName:"+fieldName+" value:"+JSON.toJSONString(obj));
                 }
             }
-        }
+        }*/
         return fieldValue;
     }
 

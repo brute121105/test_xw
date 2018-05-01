@@ -112,6 +112,12 @@ public class AutoFeedThread extends BaseThread {
                 if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")
                         ||AutoUtil.checkAction(record,"wx改机失败")){
 
+                    currentWx008Data = wx008Datas.get(loginIndex);
+                    if(!"null".equals(currentWx008Data.getExpMsg())&&!TextUtils.isEmpty(currentWx008Data.getExpMsg())&&currentWx008Data.getExpMsg().indexOf("登录成功")==-1){
+                        doNextIndexAndRecord2DB();
+                        continue;
+                    }
+
                     if(!AutoUtil.checkAction(record,"debug")){
                         AutoUtil.clearAppData();
                         AutoUtil.sleep(2000);
@@ -121,8 +127,6 @@ public class AutoFeedThread extends BaseThread {
                         //FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","wxid.txt","");
                     }
                     String hookPhoneDataStr="";
-                    currentWx008Data = wx008Datas.get(loginIndex);
-
 
                    /*if(TextUtils.isEmpty(currentWx008Data.getPhoneStrs())){//旧008数据
                         currentWx008Data.setPhoneInfo(currentWx008Data.getDatas());
@@ -147,10 +151,9 @@ public class AutoFeedThread extends BaseThread {
                             pi = JSON.parseObject(currentWx008Data.getPhoneStrsAw(),NewPhoneInfo.class);
                         }else {
                             pi = PhoneConf.xw2awData(currentWx008Data);
-                            System.out.println(" auto pi1-->"+JSON.toJSONString(currentWx008Data.getPhoneInfo()));
-                            System.out.println(" auto pi-->"+JSON.toJSONString(pi));
                         }
-                        Log.i("currentWx008Data-->",JSON.toJSONString(currentWx008Data));
+                        pi.setCpuName(pi.getCpuName().trim());
+                        System.out.println(" auto pi-->"+JSON.toJSONString(pi));
                         CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
                         FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
                         //FileUtil.writeContent2FileForceUtf8("/sdcard/A_hyj_json/a1/","PhoneInfo.aw", JSON.toJSONString(pi));
@@ -166,7 +169,7 @@ public class AutoFeedThread extends BaseThread {
                             //new SetAirPlaneModeThread(500).start();
                             AutoUtil.setAriplaneMode(1000);
                         }
-                        AutoUtil.sleep(3000);
+                        AutoUtil.sleep(5000);
                         AutoUtil.startWx();
                         AutoUtil.recordAndLog(record,"wx飞行模式&清除数据后启动微信");
                         //记录ip
@@ -342,9 +345,9 @@ public class AutoFeedThread extends BaseThread {
                 LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             }
            //登录成功&开启登录成功暂停 修改暂停标识为1
-            /*if("1".equals(isLoginSucessPause)){
+            if("1".equals(isLoginSucessPause)){
                 parameters.setIsStop(1);
-            }*/
+            }
             //AutoUtil.sleep(1000);
             //登陆成功或失败序号加1
             doNextIndexAndRecord2DB();

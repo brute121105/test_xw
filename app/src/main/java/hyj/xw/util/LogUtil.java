@@ -54,6 +54,20 @@ public class LogUtil {
         FileUtil.writeContent2File(path,fileName,msg);
     }
     //记录008数据到sd卡
+    public static void exportAWUtf8(String path,String msg){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String dateTime = sdf.format(new Date());
+        String fileName = "aw_"+dateTime+".aw";
+        FileUtil.writeContent2FileForceUtf8(path,fileName,msg);
+    }
+    //记录008数据到sd卡
+    public static void exportAWUtf8ByPhoneName(String path,String msg,String phone){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String dateTime = sdf.format(new Date());
+        String fileName = "aw_"+phone+".aw";
+        FileUtil.writeContent2FileForceUtf8(path,fileName,msg);
+    }
+    //记录008数据到sd卡
     public static void exportConfig(String path,String msg){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String dateTime = sdf.format(new Date());

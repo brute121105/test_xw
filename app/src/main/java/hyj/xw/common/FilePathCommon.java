@@ -18,7 +18,7 @@ public class FilePathCommon {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
         baseAppPathAW= Environment.getExternalStorageDirectory().getAbsolutePath()+"/.money/";
         npiFileName = "PhoneInfo.aw";
-        importDataAPath=baseAppPath+"/dataA";
+        importDataAPath=baseAppPath+"/dataA/";
         dataBakPath=baseAppPath+"/dataBF/";
         phoneTagPath=baseAppPath+"/hk/phoneTag.txt";
     }

@@ -31,7 +31,8 @@ public class ImpExpData {
             if(file!=null&&files.length>0){
                 countAll = files.length;
                 for(File f:files){
-                    String json = FileUtil.readAllUtf8(FilePathCommon.importDataAPath+"/"+f.getName());
+                    String json = FileUtil.readAllUtf8(FilePathCommon.importDataAPath+f.getName());
+                    System.out.println("ImpExpData json-->"+json);
                     NewPhoneInfo npi = JSON.parseObject(json,NewPhoneInfo.class);
                     Wx008Data wx008Data = createImportAwData(npi);
                     List<Wx008Data> getData = DataSupport.where("phone=?", wx008Data.getPhone()).find(Wx008Data.class);
