@@ -22,7 +22,8 @@ public class GlobalApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        context = revokeContext();
+        context =getApplicationContext();
+        //context = revokeContext();
         //context = getContext1();
         resolver = getContentResolver();
         //程序崩溃错误捕捉

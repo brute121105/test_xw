@@ -42,6 +42,9 @@ public class ActionService  extends AccessibilityService {
         }else if("0081".equals(extValue)){//抓取历史
             executorService.submit(ThreadFactory.getThread("fetch008DataHistory",this,record,parameters));
             AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+        }else if("0082".equals(extValue)){//还原008数据
+            executorService.submit(ThreadFactory.getThread("recover008Data",this,record,parameters));
+            AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         }else{
             executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
             AutoUtil.startWx();

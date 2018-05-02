@@ -37,7 +37,7 @@ public class XposedInit implements IXposedHookLoadPackage {
         }
 
        // if(packageName.equals(PACKAGE_NAME)||"hyj.xw".equals(packageName)){
-        if(packageName.equals(PACKAGE_NAME)||packageName.equals("hyj.xw")){
+        if(packageName.equals(PACKAGE_NAME)){
              //aw hook开始
              String con = FileUtil.readAllUtf8(FilePathCommon.baseAppPathAW+FilePathCommon.npiFileName);
              //String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/PhoneInfo.aw");

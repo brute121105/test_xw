@@ -2,7 +2,6 @@ package hyj.xw.thread;
 
 import android.accessibilityservice.AccessibilityService;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.alibaba.fastjson.JSON;
@@ -113,10 +112,10 @@ public class AutoFeedThread extends BaseThread {
                         ||AutoUtil.checkAction(record,"wx改机失败")){
 
                     currentWx008Data = wx008Datas.get(loginIndex);
-                    if(!"null".equals(currentWx008Data.getExpMsg())&&!TextUtils.isEmpty(currentWx008Data.getExpMsg())&&currentWx008Data.getExpMsg().indexOf("登录成功")==-1){
+                   /* if(!"null".equals(currentWx008Data.getExpMsg())&&!TextUtils.isEmpty(currentWx008Data.getExpMsg())&&currentWx008Data.getExpMsg().indexOf("登录成功")==-1){
                         doNextIndexAndRecord2DB();
                         continue;
-                    }
+                    }*/
 
                     if(!AutoUtil.checkAction(record,"debug")){
                         AutoUtil.clearAppData();
@@ -152,7 +151,7 @@ public class AutoFeedThread extends BaseThread {
                         }else {
                             pi = PhoneConf.xw2awData(currentWx008Data);
                         }
-                        pi.setCpuName(pi.getCpuName().trim());
+                        pi.setCpuName(pi.getCpuName().trim().toLowerCase());
                         System.out.println(" auto pi-->"+JSON.toJSONString(pi));
                         CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
                         FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
