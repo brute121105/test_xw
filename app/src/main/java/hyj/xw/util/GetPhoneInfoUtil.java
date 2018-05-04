@@ -158,6 +158,7 @@ public class GetPhoneInfoUtil {
         npi.setBuildRelease(Build.VERSION.RELEASE);
         npi.setBuildSdk( Build.VERSION.SDK);
         npi.setSerialno(Build.SERIAL);
+        npi.setBuildSerialno(Build.SERIAL);//漏掉
         npi.setBuildTags(Build.TAGS);
         npi.setType(1);//
         npi.setBuildUser(Build.USER);
