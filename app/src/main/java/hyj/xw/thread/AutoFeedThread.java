@@ -153,9 +153,9 @@ public class AutoFeedThread extends BaseThread {
                         //飞行模式
                         if("1".equals(isAirChangeIp)){
                             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"开启飞行模式");
-                            new SetAirPlaneModeThread(500).start();
+                            new SetAirPlaneModeThread(3000).start();
                         }
-                        //AutoUtil.sleep(2500);
+                        AutoUtil.sleep(5000);
                         AutoUtil.startWx();
                         AutoUtil.recordAndLog(record,"wx飞行模式&清除数据后启动微信");
                         //记录ip
