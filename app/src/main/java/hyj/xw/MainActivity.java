@@ -23,11 +23,10 @@ import com.alibaba.fastjson.JSON;
 
 import org.litepal.crud.DataSupport;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
@@ -43,7 +42,6 @@ import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.service.SmsReciver;
-import hyj.xw.uiauto.TestUi;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
@@ -243,32 +241,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
-        TestUi tu = new TestUi();
-        //tu.testDemo();
-        Class localClass = null;
-        try {
-            localClass = Class.forName(TestUi.class.getName());
-            try {
-                Object localObject = localClass.newInstance();
-                try {
-                    Method m1 = localClass.getDeclaredMethod("testDemo");
-                    try {
-                        m1.invoke(localObject);
-                        tu.testDemo();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+          List<String> phones = FileUtil.read008Data("/sdcard/onlineNames.txt");
+          for(String phone:phones){
+              System.out.println("nickName-->"+phone);
+              Wx008Data wx008Data = new Wx008Data();
+              int  ncn = DaoUtil.findByNickName(phone);
+              if(ncn==0){
+                  ncn = DaoUtil.findByNickName(phone+" ");
+              }
+              wx008Data.setDieFlag(66+ncn);
+              int cn = wx008Data.updateAll("nickName=?",phone);
+              if(cn==0){
+                  cn = wx008Data.updateAll("nickName=?",phone+" ");
+              }
+              if(cn>0){
+                  System.out.println("cn nickName-->"+cn+" nickName:"+phone+" ncn:"+ncn);
+              }
+          }
         //new UiThread().start();
       /* AutoUtil.execShell("screencap /sdcard/258.png");
         NewPhoneInfo npi = BuildFileUtil.createOneDevice("112233");
