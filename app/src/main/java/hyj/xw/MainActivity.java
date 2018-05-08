@@ -26,7 +26,6 @@ import org.litepal.crud.DataSupport;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
@@ -241,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
-          List<String> phones = FileUtil.read008Data("/sdcard/onlineNames.txt");
+         /* List<String> phones = FileUtil.read008Data("/sdcard/onlineNames.txt");
           for(String phone:phones){
               System.out.println("nickName-->"+phone);
               Wx008Data wx008Data = new Wx008Data();
@@ -257,47 +256,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
               if(cn>0){
                   System.out.println("cn nickName-->"+cn+" nickName:"+phone+" ncn:"+ncn);
               }
-          }
-        //new UiThread().start();
-      /* AutoUtil.execShell("screencap /sdcard/258.png");
-        NewPhoneInfo npi = BuildFileUtil.createOneDevice("112233");
-        System.out.println("npi-->"+JSON.toJSONString(npi));*/
-
-        //ActivityManager localActivityManager = (ActivityManager)GlobalApplication.getContext1().getSystemService(Context.ACTIVITY_SERVICE);
-        //localActivityManager.forceStopPackage("hyj.xw");
-
-        /*File localFile = new File(FilePathCommon.baseAppPath, "wx.db");
-        ParcelFileDescriptor localParcelFileDescriptor = null;
-        try {
-            localParcelFileDescriptor = ParcelFileDescriptor.open(localFile,ParcelFileDescriptor.MODE_WRITE_ONLY);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        ArrayList localArrayList = new ArrayList();
-        localArrayList.add("com.tencent.mm");
-        IBackupManager localIBackupManager = IBackupManager.Stub.asInterface(ServiceManager.getService("backup"));
-        try {
-            localIBackupManager.fullBackup(localParcelFileDescriptor, true, false, false, false, false, false, true, (String[])localArrayList.toArray(new String[localArrayList.size()]));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }*/
-
-
-        /*List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
-        Wx008Data  data = wx008Datas.get(105);
-        LogUtil.d("testMethod data",JSON.toJSONString(data));
-        NewPhoneInfo pi = PhoneConf.xw2awData(data);
-        LogUtil.d("testMethod NewPhoneInfo",JSON.toJSONString(pi));
-        CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
-        FileUtil.writeContent2FileForceUtf8("/sdcard/A_hyj_json/a1/","PhoneInfo.aw", JSON.toJSONString(pi));
-        //Log.i("testMethod-->",JSON.toJSONString(pi));
-        String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/PhoneInfo.aw");
-        LogUtil.d("testMethod con",con);*/
-        //LogUtil.d("testMethod json",JSON.toJSONString(pi));
-        //GetpropRp.doRp(GlobalApplication.getContext(),pi);
-       // String con1 = FileUtil.readAll1(PathFileUtil.str10+ File.separator+"getprop");
-        //LogUtil.d("testMethod con1",con1);
-        //GetPhoneInfoUtil.getPhoneInfo();
+          }*/
 
     }
 
