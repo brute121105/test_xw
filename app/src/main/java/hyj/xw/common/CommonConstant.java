@@ -9,7 +9,7 @@ public class CommonConstant {
     public static String APPCONFIG_LOGIN_ACCOUNT = "loginAccount";
     public static String APPCONFIG_EXT = "ext"; //008提取008数据 001自动切换登录  601设置微信号 602修改密码  603扫描登录pc 604微信号搜索昵称
     //6051 换绑手机（重新登录获取接码平台token）6050 换绑手机（本地数据库获取token） 606扫码加群 607发朋友圈  608筷子挂机test开发模式 609微信号搜索添加指定好友  611自动通过好友添加请求
-    //610取关公总号
+    //610取关公总号  612获取昵称
     public static String APPCONFIG_START_LOGINACCOUNT = "startLoginAccount";//开始登陆号码
     public static String APPCONFIG_START_LOGIN_INDEX= "startLoginIndex";//开始登陆序号
     public static String APPCONFIG_END_LOGIN_INDEX= "endLoginIndex";
@@ -23,6 +23,8 @@ public class CommonConstant {
     public static String APPCONFIG_IS_SET_WXID = "isSetWxis";//设置微信号
     public static String APPCONFIG_IS_SMJQ = "isSmjq";//扫码加群
     public static String APPCONFIG_IS_REP_PHONE = "isReplacePhone";//解绑手机
+    public static String APPCONFIG_IS_LOGIN_BY_PHONE = "isLoginByPhone";//手机号登录
+
     public static String APPCONFIG_NEW_PWD = "newPwd";//修改密码新密码
 
     public static String APPCONFIG_IS_AIR_CHANGE_IP = "isAirChangeIp";//飞行模式换ip

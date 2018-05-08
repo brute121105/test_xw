@@ -2,7 +2,6 @@ package hyj.xw.thread;
 
 import android.accessibilityservice.AccessibilityService;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.alibaba.fastjson.JSON;
@@ -15,12 +14,8 @@ import hyj.xw.AccessibilityConfig.LoginSuccessActionConfig;
 import hyj.xw.BaseThread;
 import hyj.xw.GlobalApplication;
 import hyj.xw.api.GetPhoneAndValidCodeThread;
-import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
 import hyj.xw.common.CommonConstant;
-import hyj.xw.common.FilePathCommon;
-import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
-import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneApi;
@@ -47,7 +42,7 @@ public class AutoFeedThread extends BaseThread {
     }
     List<Wx008Data> wx008Datas;
     Wx008Data currentWx008Data;
-    String extValue,isAirChangeIp;
+    String extValue,isAirChangeIp,isLoginByPhone;
     PhoneApi pa = new PhoneApi();
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
@@ -58,6 +53,7 @@ public class AutoFeedThread extends BaseThread {
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
         extValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
         isAirChangeIp = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_AIR_CHANGE_IP);
+        isLoginByPhone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_BY_PHONE);
         if(extValue.contains("605")){//605换绑手机，需接吗
             new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
         }
@@ -69,7 +65,7 @@ public class AutoFeedThread extends BaseThread {
             //记录数据，悬浮框显示
             recordFlowInfo(wx008Datas,loginIndex);
             AutoUtil.sleep(500);
-            LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause+" isAirChangeIp:"+isAirChangeIp);
+            LogUtil.d(TAG,Thread.currentThread().getName()+" "+record+" loginIndex:"+loginIndex+" isLoginSucessPause:"+isLoginSucessPause+" isLoginByPhone:"+isLoginByPhone);
             if(currentWx008Data!=null){
                 LogUtil.d(TAG,"wxid:"+currentWx008Data.getWxId()+" pwd:"+currentWx008Data.getWxPwd());
                 System.out.println("currentWx008Data-->"+JSON.toJSONString(currentWx008Data));
@@ -109,7 +105,7 @@ public class AutoFeedThread extends BaseThread {
                     return null;
                 }
                 if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")
-                        ||AutoUtil.checkAction(record,"wx改机失败")){
+                        ||AutoUtil.checkAction(record,"wx改机失败")||NodeActionUtil.isWindowContainStr(root,"你的微信版本过低")){
 
                     if(!AutoUtil.checkAction(record,"debug")){
                         AutoUtil.clearAppData();
@@ -249,12 +245,12 @@ public class AutoFeedThread extends BaseThread {
         String wxid = (currentWx008Data.getWxId()!=null&&currentWx008Data.getWxId().length()==6)?currentWx008Data.getWxId():currentWx008Data.getWxid19();
         String pwd = currentWx008Data.getWxPwd();
         //微信号为空用手机号登陆
-        if(TextUtils.isEmpty(wxid)){
+        if("1".equals(isLoginByPhone)||TextUtils.isEmpty(wxid)){
             String cnNum = currentWx008Data.getCnNum();
             if(cnNum!=null&&!"86".equals(cnNum)){
                 selsectCn(root,cnNum);
             }
-            if(cnNum==null||AutoUtil.checkAction(record,"wx选择国家")||AutoUtil.checkAction(record,"wx输入手机号")){
+            if("86".equals(cnNum)||cnNum==null||AutoUtil.checkAction(record,"wx选择国家")||AutoUtil.checkAction(record,"wx输入手机号")){
                 String phone = currentWx008Data.getPhone();
                 if("255".equals(cnNum)&&"255".equals(phone.substring(0,3))){
                     phone = phone.substring(3);
@@ -324,10 +320,12 @@ public class AutoFeedThread extends BaseThread {
                 /**
                  * 登录成功判断是否有其他动作
                  */
+                int cn = DaoUtil.updateExpMsg(currentWx008Data,"登录成功-"+AutoUtil.getCurrentDate());
+                System.out.println("excpMsg-->"+cn);
                 AutoUtil.recordAndLog(record,getLoginSeccessThenDoAction(extValue));
                 LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             }
-            //登录成功&开启登录成功暂停 修改暂停标识为1
+           //登录成功&开启登录成功暂停 修改暂停标识为1
             if("1".equals(isLoginSucessPause)){
                 parameters.setIsStop(1);
             }
@@ -351,18 +349,22 @@ public class AutoFeedThread extends BaseThread {
                 if(NodeActionUtil.isWindowContainStr(root,"超出验证频率限制")){
                     excpMsg="超出验证频率限制";
                 }
+                if(TextUtils.isEmpty(excpMsg)||"null".equals(excpMsg)){
+                    excpMsg= ParseRootUtil.getCurrentViewAllTexts(root);
+                }
 
             }else if(NodeActionUtil.isWindowContainStr(root,"你正在一台新设备登录微信")){
                 AutoUtil.recordAndLog(record,"wx登陆异常");
                 excpMsg= "新设备登录微信";
             }
             if(AutoUtil.checkAction(record,"wx登陆异常")){
-                int cn = DaoUtil.updateExpMsg(currentWx008Data,excpMsg);
+                int cn = DaoUtil.updateExpMsg(currentWx008Data,excpMsg+"-"+AutoUtil.getCurrentDate());
                 System.out.println("excpMsg-->"+cn);
                 LogUtil.login(loginIndex+" fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" -"+excpMsg+" ip:"+record.remove("ipMsg"));
                 //登陆成功或失败序号加1
                 doNextIndexAndRecord2DB();
             }
+            System.out.println("excpMsg-->"+excpMsg);
         }
         return flag;
     }
@@ -555,6 +557,7 @@ public class AutoFeedThread extends BaseThread {
         actions.put("609","af添加好友");
         actions.put("610","qggzh取关公总号");
         actions.put("611","recfnd通过好友");
+        actions.put("612","getNickName获取昵称");
         actions.put("609603","af添加好友&扫码登录");
         if(actions.containsKey(extValue)){
             return actions.get(extValue);
