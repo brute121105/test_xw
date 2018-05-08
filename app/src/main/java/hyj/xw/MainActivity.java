@@ -23,6 +23,8 @@ import com.alibaba.fastjson.JSON;
 
 import org.litepal.crud.DataSupport;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -41,12 +43,12 @@ import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.service.SmsReciver;
+import hyj.xw.uiauto.TestUi;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
-import hyj.xw.util.GetPhoneInfoUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.OkHttpUtil;
 
@@ -241,7 +243,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
-
+        TestUi tu = new TestUi();
+        //tu.testDemo();
+        Class localClass = null;
+        try {
+            localClass = Class.forName(TestUi.class.getName());
+            try {
+                Object localObject = localClass.newInstance();
+                try {
+                    Method m1 = localClass.getDeclaredMethod("testDemo");
+                    try {
+                        m1.invoke(localObject);
+                        tu.testDemo();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        //new UiThread().start();
       /* AutoUtil.execShell("screencap /sdcard/258.png");
         NewPhoneInfo npi = BuildFileUtil.createOneDevice("112233");
         System.out.println("npi-->"+JSON.toJSONString(npi));*/
