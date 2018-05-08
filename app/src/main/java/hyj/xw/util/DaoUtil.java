@@ -29,7 +29,7 @@ public class DaoUtil {
         return wx008Datas;
     }
     public static List<Wx008Data> findByDataBydataFlag(){
-        List<Wx008Data> wx008Datas = DataSupport.where("dataFlag=? or dataFlag=? or dataFlag=?","007","008","009").order("createTime asc").find(Wx008Data.class);
+        List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and dieFlag=0","007","008","009").order("createTime asc").find(Wx008Data.class);
         return wx008Datas;
     }
 
@@ -45,6 +45,14 @@ public class DaoUtil {
         List<Wx008Data> wx008Datas = DataSupport.where("phone=?",phone).find(Wx008Data.class);
         if(wx008Datas!=null&&wx008Datas.size()==1)
             return wx008Datas.get(0);
+        else
+            return null;
+    }
+
+    public static Integer findByNickName(String name){
+        List<Wx008Data> wx008Datas = DataSupport.where("nickName=?",name).find(Wx008Data.class);
+        if(wx008Datas!=null)
+            return wx008Datas.size();
         else
             return null;
     }

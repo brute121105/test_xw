@@ -32,13 +32,11 @@ import hyj.xw.activity.AppSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.activity.DataImpExpActivity;
 import hyj.xw.activity.YhSettingActivity;
-import hyj.xw.aw.util.BuildFileUtil;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
-import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
@@ -241,49 +239,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
-        /*List<NewPhoneInfo> npis =  BuildFileUtil.getBuildPhoneInfo();
-        for(NewPhoneInfo npi:npis){
-            System.out.println("npi-->"+JSON.toJSONString(npi));
-        }*/
-        NewPhoneInfo npi = BuildFileUtil.createOneDevice("112233");
-        System.out.println("npi-->"+JSON.toJSONString(npi));
-
-        //ActivityManager localActivityManager = (ActivityManager)GlobalApplication.getContext1().getSystemService(Context.ACTIVITY_SERVICE);
-        //localActivityManager.forceStopPackage("hyj.xw");
-
-        /*File localFile = new File(FilePathCommon.baseAppPath, "wx.db");
-        ParcelFileDescriptor localParcelFileDescriptor = null;
-        try {
-            localParcelFileDescriptor = ParcelFileDescriptor.open(localFile,ParcelFileDescriptor.MODE_WRITE_ONLY);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        ArrayList localArrayList = new ArrayList();
-        localArrayList.add("com.tencent.mm");
-        IBackupManager localIBackupManager = IBackupManager.Stub.asInterface(ServiceManager.getService("backup"));
-        try {
-            localIBackupManager.fullBackup(localParcelFileDescriptor, true, false, false, false, false, false, true, (String[])localArrayList.toArray(new String[localArrayList.size()]));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }*/
-
-
-        /*List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
-        Wx008Data  data = wx008Datas.get(105);
-        LogUtil.d("testMethod data",JSON.toJSONString(data));
-        NewPhoneInfo pi = PhoneConf.xw2awData(data);
-        LogUtil.d("testMethod NewPhoneInfo",JSON.toJSONString(pi));
-        CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
-        FileUtil.writeContent2FileForceUtf8("/sdcard/A_hyj_json/a1/","PhoneInfo.aw", JSON.toJSONString(pi));
-        //Log.i("testMethod-->",JSON.toJSONString(pi));
-        String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/PhoneInfo.aw");
-        LogUtil.d("testMethod con",con);*/
-        //LogUtil.d("testMethod json",JSON.toJSONString(pi));
-        //GetpropRp.doRp(GlobalApplication.getContext(),pi);
-       // String con1 = FileUtil.readAll1(PathFileUtil.str10+ File.separator+"getprop");
-        //LogUtil.d("testMethod con1",con1);
-        //GetPhoneInfoUtil.getPhoneInfo();
-
+        /* List<String> phones = FileUtil.read008Data("/sdcard/onlineNames.txt");
+          for(String phone:phones){
+              System.out.println("nickName-->"+phone);
+              Wx008Data wx008Data = new Wx008Data();
+              int  ncn = DaoUtil.findByNickName(phone);
+              if(ncn==0){
+                  ncn = DaoUtil.findByNickName(phone+" ");
+              }
+              wx008Data.setDieFlag(66+ncn);
+              int cn = wx008Data.updateAll("nickName=?",phone);
+              if(cn==0){
+                  cn = wx008Data.updateAll("nickName=?",phone+" ");
+              }
+              if(cn>0){
+                  System.out.println("cn nickName-->"+cn+" nickName:"+phone+" ncn:"+ncn);
+              }
+          }*/
     }
 
     public void clearAppData(){
