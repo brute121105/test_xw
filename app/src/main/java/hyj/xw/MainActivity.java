@@ -26,6 +26,7 @@ import org.litepal.crud.DataSupport;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
@@ -240,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
-         /* List<String> phones = FileUtil.read008Data("/sdcard/onlineNames.txt");
+           List<String> phones = FileUtil.read008Data("/sdcard/onlineNames.txt");
           for(String phone:phones){
               System.out.println("nickName-->"+phone);
               Wx008Data wx008Data = new Wx008Data();
@@ -256,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
               if(cn>0){
                   System.out.println("cn nickName-->"+cn+" nickName:"+phone+" ncn:"+ncn);
               }
-          }*/
+          }
 
     }
 
