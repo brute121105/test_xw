@@ -489,7 +489,7 @@ public class LoginSuccessActionConfig {
     static int rcFrNum=0;
     public static void recfnd(AccessibilityNodeInfo root, Map<String, String> record,Wx008Data currentWx008Data,AccessibilityService context){
         String id1 = "com.tencent.mm:id/b8d";//朋友推荐及下方
-        String id2 = "com.tencent.mm:id/b8v";//ListView 接受好友区
+        String id2 = "com.tencent.mm:id/b8u";//ListView 接受好友区 6.6.6版本
         AccessibilityNodeInfo node2 = AutoUtil.findNodeInfosByText(root,"接受");
         AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"已添加");
         NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","020","通讯录",record,"recfnd点击通讯录",0);
