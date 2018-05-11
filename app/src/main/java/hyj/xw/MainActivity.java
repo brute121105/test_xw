@@ -240,6 +240,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
+       /* List<Wx008Data> datas = JSON.parseArray(PhoneConf.readBakFile("/sdcard/ni"), Wx008Data.class);
+        for(int i=0,l=datas.size();i<l;i++){
+            Wx008Data wd = datas.get(i);
+            if(TextUtils.isEmpty(wd.getFriends())) continue;
+            Wx008Data nwd = new Wx008Data();
+            nwd.setFriends(wd.getFriends());
+            int cn = nwd.updateAll("wxid19=?",wd.getWxid19());
+            System.out.println(i+" wxid-->"+wd.getPhone()+" fr:"+wd.getFriends()+" cn:"+cn);
+        }*/
           /* List<String> phones = FileUtil.read008Data("/sdcard/onlineNames.txt");
           for(String phone:phones){
               System.out.println("nickName-->"+phone);
