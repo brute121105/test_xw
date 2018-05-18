@@ -92,8 +92,11 @@ public class PhoneConf {
         List<String> datas = new ArrayList<String>();
         for (int i = 0, l = wx008Datas.size(); i < l; i++) {
             Wx008Data wd = wx008Datas.get(i);
-            if(i<100)
+
             System.out.println(i+" wx008Datas-->"+JSON.toJSONString(wd));
+            if(i>432&&i<443){
+                //DaoUtil.updatePwdByPhone(wd.getPhone(),"www12345");
+            }
             //Log.i(i+" friends-->",JSON.toJSONString(wx008Datas.get(i).getFriends()));
             //修改操作开始
             /*System.out.println(i+" dataType-->"+wd.getDataType());

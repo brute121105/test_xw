@@ -16,6 +16,7 @@ import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.LogUtil;
+import hyj.xw.util.NodeActionUtil;
 import hyj.xw.util.ParseRootUtil;
 
 /**
@@ -37,8 +38,6 @@ public class Recover008DataThread extends BaseThread {
     Wx008Data currentWx008Data;
     private void init(){
         wx008Datas = DaoUtil.getWx008Datas();
-        loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
-        currentWx008Data = wx008Datas.get(loginIndex);
     }
 
     int count=1;
@@ -55,6 +54,7 @@ public class Recover008DataThread extends BaseThread {
                     AutoUtil.sleep(500);
                     continue;
                 }
+                if(!AutoUtil.actionContains(record,"008")) continue;
                 System.out.println("deb==================================");
                 ParseRootUtil.debugRoot(root);
                 ParseRootUtil.getCurrentViewAllNode(root);
@@ -63,13 +63,16 @@ public class Recover008DataThread extends BaseThread {
                     LogUtil.d(TAG,"暂停....");
                     continue;
                 }
+                AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"允许"),record,"008允许权限");
+                if(NodeActionUtil.isWindowContainStr(root,"截止使用日期为")){
+                    AutoUtil.clickXY(500,500);
+                }
 
                 AccessibilityNodeInfo cnNode1 = ParseRootUtil.getNodePath(root,"091");
-                if(cnNode1!=null&&"序列号".equals(cnNode1.getText().toString())&&AutoUtil.checkAction(record,"init")){
+                if(cnNode1!=null&&"序列号".equals(cnNode1.getText().toString())){
                     //填充数据
                     set008Data(root);
                 }
-
 
 
             }catch (Exception e){
@@ -81,11 +84,13 @@ public class Recover008DataThread extends BaseThread {
 
     private void set008Data(AccessibilityNodeInfo root){
         AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
+        System.out.println("list-->"+list);
         if(list!=null){
             System.out.println("--list-getChildCount->"+list.getChildCount());
         }
         if(list!=null&&list.getChildCount()>90){
-            AutoUtil.sleep(3000);
+            loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
+            currentWx008Data = wx008Datas.get(loginIndex);
             System.out.println("currentWx008Data---->"+JSON.toJSONString(currentWx008Data));
             List<String> dataStrs =  JSON.parseArray(currentWx008Data.getDatas(),String.class);
             for(int i=1;i<91;i++){
@@ -102,10 +107,9 @@ public class Recover008DataThread extends BaseThread {
             }
             AutoUtil.recordAndLog(record,"008写入数据完成");
             if(AutoUtil.checkAction(record,"008写入数据完成")){
-                AutoUtil.sleep(3000);
                 AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
-                AutoUtil.performClick(save,record,"st保存",3500);
-                AutoUtil.recordAndLog(record,"saat写入数据");
+                AutoUtil.performClick(save,record,"008保存数据",1000);
+                AutoUtil.recordAndLog(record,"wx设置数据完成");
             }
         }
     }

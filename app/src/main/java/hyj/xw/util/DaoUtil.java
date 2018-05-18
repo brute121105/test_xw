@@ -34,7 +34,7 @@ public class DaoUtil {
         //List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and dieFlag=0","007","008","009").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and expMsg like '登录成功%'","007","008","009").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and expMsg like '新设备登录%'","007","008","009").order("createTime asc").find(Wx008Data.class);
-       List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and (expMsg like '新设备登录%' or expMsg like '登录成功%')","007","008","009").order("createTime asc").find(Wx008Data.class);
+        List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and (expMsg like '新设备登录%' or expMsg like '登录成功%')","007","008","009").order("createTime asc").find(Wx008Data.class);
 
         return wx008Datas;
     }
@@ -189,6 +189,7 @@ public class DaoUtil {
         int cn = wx008Data.updateAll("wxId=?",wxid);
         System.out.println("更新记录-->cn:"+cn+" wxid:"+wxid+" pwd:"+pwd);
     }
+
 
     public static void updatePwdByPhone(String phone,String pwd){
         Wx008Data wx008Data = new Wx008Data();

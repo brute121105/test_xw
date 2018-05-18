@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //PhoneConf.getAddFrWx();
         //System.out.println("mac-->"+AutoUtil.getLocalMacAddress());
         //GetPhoneInfoUtil.getEnvironmentAwData();
-        DaoUtil.readFilePhoneAndPwdUpdate2Db();
+        //DaoUtil.readFilePhoneAndPwdUpdate2Db();
     }
 
     @Override

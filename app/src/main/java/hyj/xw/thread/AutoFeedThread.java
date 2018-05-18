@@ -57,6 +57,7 @@ public class AutoFeedThread extends BaseThread {
         extValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
         isAirChangeIp = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_AIR_CHANGE_IP);
         isLoginByPhone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_BY_PHONE);
+        currentWx008Data = wx008Datas.get(loginIndex);
         if(extValue.contains("605")){//605换绑手机，需接吗
             new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
         }
@@ -73,10 +74,11 @@ public class AutoFeedThread extends BaseThread {
                 LogUtil.d(TAG,"wxid:"+currentWx008Data.getWxId()+" pwd:"+currentWx008Data.getWxPwd());
                 System.out.println("currentWx008Data-->"+JSON.toJSONString(currentWx008Data));
             }
+            //008处理不往下走
+            if(AutoUtil.actionContains(record,"008")) continue;
 
             //保持屏幕常亮
             AutoUtil.wake();
-
 
                 if(parameters.getIsStop()==1){
                     LogUtil.d(TAG,"暂停....");
@@ -98,10 +100,9 @@ public class AutoFeedThread extends BaseThread {
                 ParseRootUtil.debugRoot(root);
 
             //不在wx界面，启动wx
-            AutoUtil.doNotInCurrentView(root,record);
-
-            NodeActionUtil.doClickByNodePathAndText(root,"微信无响应。要将其关闭吗？|确定","01","等待",record,"exception",500);
-
+            if(AutoUtil.actionContains(record,"wx")){
+                AutoUtil.doNotInCurrentView(root,record);
+            }
 
                 //登录完成所有号退出
                 if(AutoUtil.actionContains(record,"wx登陆完成")) {
@@ -109,13 +110,18 @@ public class AutoFeedThread extends BaseThread {
                     return null;
                 }
                 if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")
-                        ||AutoUtil.checkAction(record,"wx改机失败")){
+                        ||AutoUtil.checkAction(record,"wx改机失败")||AutoUtil.checkAction(record,"wx设置数据完成")){
 
                     currentWx008Data = wx008Datas.get(loginIndex);
                    /* if(!"null".equals(currentWx008Data.getExpMsg())&&!TextUtils.isEmpty(currentWx008Data.getExpMsg())&&currentWx008Data.getExpMsg().indexOf("登录成功")==-1){
                         doNextIndexAndRecord2DB();
                         continue;
                     }*/
+                   if(extValue.contains("008")&&!AutoUtil.checkAction(record,"wx设置数据完成")){
+                        AutoUtil.recordAndLog(record,"008处理");
+                        AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+                        continue;
+                    }
 
                     if(!AutoUtil.checkAction(record,"debug")){
                         AutoUtil.clearAppData();
@@ -123,49 +129,28 @@ public class AutoFeedThread extends BaseThread {
                         isSelectFail = false;
                         LogUtil.d(TAG,"清除app数据");
                         AutoUtil.recordAndLog(record,"wx清除app数据");
-                        //FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","wxid.txt","");
                     }
-                    String hookPhoneDataStr="";
 
-                   /*if(TextUtils.isEmpty(currentWx008Data.getPhoneStrs())){//旧008数据
-                        currentWx008Data.setPhoneInfo(currentWx008Data.getDatas());
-                        hookPhoneDataStr = JSON.toJSONString(currentWx008Data.getPhoneInfo());
-                    }else {//自己注册
-                        hookPhoneDataStr = currentWx008Data.getPhoneStrs();
-                        PhoneInfo opi = JSON.parseObject(hookPhoneDataStr, PhoneInfo.class);
-                        if(TextUtils.isEmpty(opi.getCPU_ABI())){
-                            opi.setCPU_ABI("armeabi-v7a");
-                        }
-                       if(TextUtils.isEmpty(opi.getCPU_ABI2())){
-                           opi.setCPU_ABI2("armeabi");
-                       }
-                       hookPhoneDataStr = JSON.toJSONString(opi);
-                        System.out.println("--phoneStr:"+hookPhoneDataStr);
-                    }
-*/
                     if(!AutoUtil.checkAction(record,"debug")){
 
-                        NewPhoneInfo pi = null;
-                        if(!TextUtils.isEmpty(currentWx008Data.getPhoneStrsAw())){//aw数据
-                            pi = JSON.parseObject(currentWx008Data.getPhoneStrsAw(),NewPhoneInfo.class);
-                        }else {
-                            pi = PhoneConf.xw2awData(currentWx008Data);
+                        //自改机开始---------------------------------
+                        if(!extValue.contains("008")){
+                            NewPhoneInfo pi = null;
+                            if(!TextUtils.isEmpty(currentWx008Data.getPhoneStrsAw())){//aw数据
+                                pi = JSON.parseObject(currentWx008Data.getPhoneStrsAw(),NewPhoneInfo.class);
+                            }else {
+                                pi = PhoneConf.xw2awData(currentWx008Data);
+                            }
+                            pi.setCpuName(pi.getCpuName().trim().toLowerCase());
+                            System.out.println(" auto pi-->"+JSON.toJSONString(pi));
+                            CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
+                            FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
                         }
-                        pi.setCpuName(pi.getCpuName().trim().toLowerCase());
-                        System.out.println(" auto pi-->"+JSON.toJSONString(pi));
-                        CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
-                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
-                        //FileUtil.writeContent2FileForceUtf8("/sdcard/A_hyj_json/a1/","PhoneInfo.aw", JSON.toJSONString(pi));
+                        //自改机结束-------------------------------
 
-                        //覆盖式写入文件
-                        //FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt",hookPhoneDataStr);
-                        //读取文件
-                        //String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
-                        //System.out.println("phoneInfo---->"+con);
                         //飞行模式
                         if("1".equals(isAirChangeIp)){
                             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"开启飞行模式");
-                            //new SetAirPlaneModeThread(500).start();
                             AutoUtil.setAriplaneMode(1000);
                         }
                         AutoUtil.sleep(5000);
@@ -262,6 +247,8 @@ public class AutoFeedThread extends BaseThread {
         boolean flag = false;
         String wxid = (currentWx008Data.getWxId()!=null&&currentWx008Data.getWxId().length()==6)?currentWx008Data.getWxId():currentWx008Data.getWxid19();
         String pwd = currentWx008Data.getWxPwd();
+        //手机号当微信号登录
+        wxid = TextUtils.isEmpty(wxid)?currentWx008Data.getPhone():wxid;
         //微信号为空用手机号登陆
         if("1".equals(isLoginByPhone)||TextUtils.isEmpty(wxid)){
             String cnNum = currentWx008Data.getCnNum();
@@ -273,8 +260,10 @@ public class AutoFeedThread extends BaseThread {
                 if("255".equals(cnNum)&&"255".equals(phone.substring(0,3))){
                     phone = phone.substring(3);
                 }
-                NodeActionUtil.doInputByNodePathAndText(root,"国家/地区|下一步|请填写手机号","00221",phone,record,"wx输入手机号",500);
-                NodeActionUtil.doClickByNodePathAndText(root,"国家/地区|下一步|请填写手机号","0024","下一步",record,"wx下一步",1000);
+                if(NodeActionUtil.doInputByNodePathAndText(root,"国家/地区|下一步|请填写手机号","00221",phone,record,"wx输入手机号",500)){
+                    AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"下一步"),record,"wx下一步",1000);
+                }
+                //NodeActionUtil.doClickByNodePathAndText(root,"国家/地区|下一步|请填写手机号","0024","下一步",record,"wx下一步",1000);
 
             }
             NodeActionUtil.doInputByNodePathAndText(root,"手机号登录|用短信验证码登录","00231",pwd,record,"wx输入密码",1000);
@@ -287,7 +276,7 @@ public class AutoFeedThread extends BaseThread {
             }
         }else {
             NodeActionUtil.doClickByNodePathAndText(root,"请填写手机号|手机号登录","0033","用微信号/QQ号/邮箱登录",record,"wx点击微信号/QQ号/邮箱登录");
-            if(NodeActionUtil.isContainsStrs(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录")){
+            if(NodeActionUtil.isContainsStrs(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录")&&!extValue.contains("008")){
                 String phoneTag = FileUtil.readAllUtf8(FilePathCommon.phoneTagPath);
                 System.out.println("phoneTag-->"+phoneTag);
                if(!phoneTag.equals(TextUtils.isEmpty(currentWx008Data.getPhone())?currentWx008Data.getWxId():currentWx008Data.getPhone())){
@@ -600,5 +589,42 @@ public class AutoFeedThread extends BaseThread {
         }
     }
 
+    private void do008(AccessibilityNodeInfo root){
+        AccessibilityNodeInfo cnNode1 = ParseRootUtil.getNodePath(root,"091");
+        if(cnNode1!=null&&"序列号".equals(cnNode1.getText().toString())&&AutoUtil.checkAction(record,"init")){
+            //填充数据
+            set008Data(root);
+        }
+    }
+
+    private void set008Data(AccessibilityNodeInfo root){
+        AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
+        if(list!=null){
+            System.out.println("--list-getChildCount->"+list.getChildCount());
+        }
+        if(list!=null&&list.getChildCount()>90){
+            AutoUtil.sleep(3000);
+            System.out.println("currentWx008Data---->"+JSON.toJSONString(currentWx008Data));
+            List<String> dataStrs =  JSON.parseArray(currentWx008Data.getDatas(),String.class);
+            for(int i=1;i<91;i++){
+                if(list.getChild(i).isEditable()){
+                    String data;
+                    if(dataStrs.get(1).contains("历史记录")){//红米2s提取的008数据
+                        data  = dataStrs.get(i+1);
+                    }else {
+                        data  = dataStrs.get(i);
+                    }
+                    System.out.println("-rr->"+i+" "+data);
+                    AutoUtil.performSetText(list.getChild(i),data,record,"008写入"+i+" "+data);
+                }
+            }
+            AutoUtil.recordAndLog(record,"008写入数据完成");
+            if(AutoUtil.checkAction(record,"008写入数据完成")){
+                AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
+                AutoUtil.performClick(save,record,"008保存数据",3500);
+                AutoUtil.recordAndLog(record,"wx启动微信");
+            }
+        }
+    }
 
 }
