@@ -47,7 +47,7 @@
             android:value="hyj test" />
         <meta-data
             android:name="xposedminversion"
-            android:value="53" />
+            android:value="82" />
 
         <activity android:name=".MainActivity" >
             <intent-filter>
