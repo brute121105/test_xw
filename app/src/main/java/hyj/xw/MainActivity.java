@@ -26,6 +26,7 @@ import org.litepal.crud.DataSupport;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
@@ -239,23 +240,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
-        /* List<String> phones = FileUtil.read008Data("/sdcard/onlineNames.txt");
+         List<String> phones = FileUtil.read008Data("/sdcard/onlineWx.txt");
           for(String phone:phones){
-              System.out.println("nickName-->"+phone);
-              Wx008Data wx008Data = new Wx008Data();
-              int  ncn = DaoUtil.findByNickName(phone);
-              if(ncn==0){
-                  ncn = DaoUtil.findByNickName(phone+" ");
-              }
-              wx008Data.setDieFlag(66+ncn);
-              int cn = wx008Data.updateAll("nickName=?",phone);
-              if(cn==0){
-                  cn = wx008Data.updateAll("nickName=?",phone+" ");
-              }
+              phone = phone.substring(phone.indexOf("--")+2);
+              System.out.println("wxid-->"+phone);
+              Wx008Data  wd = DaoUtil.findByWxNumOrWxid(phone);
+              if(wd==null) continue;
+              wd.setDieFlag(999);
+              int cn = wd.updateAll("wxId=? or wxid19=?",phone,phone);
               if(cn>0){
-                  System.out.println("cn nickName-->"+cn+" nickName:"+phone+" ncn:"+ncn);
+                  System.out.println("cn-->"+cn+" wxid:"+phone);
               }
-          }*/
+          }
     }
 
     public void clearAppData(){
@@ -289,7 +285,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
             case R.id.open_assist:
-                testMethod();
                 /*DialogUtil dialogUtil = new DialogUtil();
                 dialogUtil.show("确认修改吗?", new DialogButtonListener() {
                     @Override
@@ -337,7 +332,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //new IpNetThread().start();
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
                 break;
-            case R.id.del_upload_file:
+            case R.id.del_upload_file://其他操作
+                testMethod();
                 startActivity(new Intent(MainActivity.this, AppSettingActivity.class));
                 break;
             case R.id.btn_yh_setting:
