@@ -26,7 +26,7 @@ public class XposedInit implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) {
         String packageName = lpparam.packageName;
-        System.out.println("hyj xw hyj-->"+packageName);
+        System.out.println("hyj xw hyj-->00"+packageName);
 
         if("hyj.xw".equals(packageName)){
           /*  new Phone(lpparam);

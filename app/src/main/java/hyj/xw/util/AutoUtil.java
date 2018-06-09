@@ -462,6 +462,9 @@ public class AutoUtil {
         execShell("rm -r -f /data/data/com.tencent.mm/shared_prefs" );
         execShell("rm -r -f /sdcard/tencent" );
     }
+    public static void clearAppDataSlight(){
+        execShell("pm clear com.tencent.mm" );
+    }
 
     //开启-休眠ms-关闭飞行模式
     public static void setAriplaneMode(long ms){

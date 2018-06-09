@@ -1,6 +1,7 @@
 package hyj.xw.thread;
 
 import android.accessibilityservice.AccessibilityService;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -99,20 +100,29 @@ public class AutoFeedThread extends BaseThread {
 
             ParseRootUtil.debugRoot(root);
 
+                if((AutoUtil.actionContains(record,"st")||AutoUtil.checkAction(record,"init"))){
+                    doVPN(root);
+                    continue;
+                }
+
                 //登录完成所有号退出
                 if(AutoUtil.actionContains(record,"wx登陆完成")) {
                     NodeActionUtil.doClickByNodePathAndText(root,"通讯录|发现","030","发现",record,record.get("recordAction"),500);
                     return null;
                 }
                 if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"wx登陆成功")||AutoUtil.checkAction(record,"wx登陆异常")||AutoUtil.checkAction(record,"debug")
-                        ||AutoUtil.checkAction(record,"wx改机失败")||NodeActionUtil.isWindowContainStr(root,"你的微信版本过低")){
+                        ||AutoUtil.checkAction(record,"wx改机失败")||NodeActionUtil.isWindowContainStr(root,"你的微信版本过低")||AutoUtil.checkAction(record,"wx连接成功")){
 
                     if(!AutoUtil.checkAction(record,"debug")){
-                        AutoUtil.clearAppData();
+                        if(AutoUtil.checkAction(record,"wx登陆成功")){
+                            AutoUtil.clearAppData();
+                        }else {
+                            AutoUtil.clearAppDataSlight();
+                        }
                         isSelectFail = false;
                         LogUtil.d(TAG,"清除app数据");
                         AutoUtil.recordAndLog(record,"wx清除app数据");
-                        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","wxid.txt","");
+                        //FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","wxid.txt","");
                     }
 
                     String hookPhoneDataStr="";
@@ -153,9 +163,9 @@ public class AutoFeedThread extends BaseThread {
                         //飞行模式
                         if("1".equals(isAirChangeIp)){
                             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"开启飞行模式");
-                            new SetAirPlaneModeThread(3000).start();
+                            new SetAirPlaneModeThread(1000).start();
                         }
-                        AutoUtil.sleep(5000);
+                        AutoUtil.sleep(9000);
                         AutoUtil.startWx();
                         AutoUtil.recordAndLog(record,"wx飞行模式&清除数据后启动微信");
                         //记录ip
@@ -268,7 +278,7 @@ public class AutoFeedThread extends BaseThread {
                 NodeActionUtil.doClickByNodePathAndText(root,"手机号登录|用短信验证码登录","0025","登录",record,"wx点击登录",3000);
             }
         }else {
-            NodeActionUtil.doClickByNodePathAndText(root,"请填写手机号|手机号登录","0033","用微信号/QQ号/邮箱登录",record,"wx点击微信号/QQ号/邮箱登录");
+            NodeActionUtil.doClickByNodePathAndText(root,"请填写手机号|手机号登录","0033","用微信号/QQ号/邮箱登录",record,"wx点击微信号/QQ号/邮箱登录",1500);
             /*if(NodeActionUtil.isContainsStrs(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录")){
                 String phoneTag = FileUtil.readAllUtf8(FilePathCommon.phoneTagPath);
                 System.out.println("phoneTag-->"+phoneTag);
@@ -282,16 +292,9 @@ public class AutoFeedThread extends BaseThread {
             /**
              * 6.5.16版本
              */
-            NodeActionUtil.doInputByNodePathAndText(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录","00311",wxid,record,"wx输入微信号",1500);
-            NodeActionUtil.doInputByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","00321",pwd,record,"wx输入密码",1500);
-            NodeActionUtil.doClickByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","0034","登录",record,"wx点击登录",3000);
-            /**
-             * 6.6.1版本
-             */
-            NodeActionUtil.doInputByNodePathAndText(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录","00211",wxid,record,"wx输入微信号",1500);
-            NodeActionUtil.doInputByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","00221",pwd,record,"wx输入密码",1500);
-            NodeActionUtil.doClickByNodePathAndText(root,wxid+"|微信号/QQ/邮箱登录","0024","登录",record,"wx点击登录",3000);
-
+            NodeActionUtil.doInputByNodePathAndText(root,"请填写微信号/QQ号/邮箱|微信号/QQ/邮箱登录","00311",wxid,record,"wx输入微信号",500);
+            NodeActionUtil.doInputByNodePathAndText(root,"用手机号登录|微信号/QQ/邮箱登录","00321",pwd,record,"wx输入密码",500);
+            NodeActionUtil.doClickByNodePathAndText(root,"用手机号登录|微信号/QQ/邮箱登录","0034","登录",record,"wx点击登录",3000);
         }
         //过滑块
         if(NodeActionUtil.isWindowContainStr(root,"拖动下方滑块完成拼图")&&dragFlag){
@@ -579,6 +582,89 @@ public class AutoFeedThread extends BaseThread {
             System.out.println("recordIp--->开始记录ip");
             record.put("ipMsg","开启ip记录线程");
             new IpNetThread(record).start();
+        }
+    }
+
+    private void doVPN(AccessibilityNodeInfo root){
+        if(AutoUtil.checkAction(record,"init")){
+            AutoUtil.recordAndLog(record,"st设置VPN");
+            AutoUtil.opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+            AutoUtil.sleep(500);
+        }
+        AccessibilityNodeInfo linkText = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
+        if(linkText!=null&&(linkText.getText().toString().equals("正在连接...")||linkText.getText().toString().equals("Connecting…"))){
+            System.out.println("hyj--->正在连接..");
+            AutoUtil.sleep(1000);
+            return;
+        }
+        if(AutoUtil.checkAction(record,"st点击连接")){
+            AccessibilityNodeInfo link =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"已连接");
+            AccessibilityNodeInfo link1 =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"Connected");
+            if(link!=null||link1!=null){
+                AutoUtil.recordAndLog(record,"wx连接成功");
+                //AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+                return;
+            }
+            AccessibilityNodeInfo linkText5 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
+            if(linkText5!=null){
+                System.out.println("linkText5-->"+linkText5.getText());
+            }
+            if(linkText5!=null&&(linkText5.getText().toString().equals("PPTP VPN")||linkText5.getText().toString().equals("失败")||linkText5.getText().toString().equals("Unsuccessful"))){
+                AutoUtil.clickXY(522,738);
+                AutoUtil.recordAndLog(record,"st点击连接");
+                AutoUtil.sleep(2000);
+                return;
+            }
+        }
+
+        clickTextXY1(514,425,"st点击VPN","miui:id/action_bar_title","无线和网络",800);
+        clickTextXY1(514,425,"st点击VPN","miui:id/action_bar_title","Wireless & networks",800);
+
+        if(AutoUtil.checkAction(record,"st点击VPN")||AutoUtil.checkAction(record,"st弹出")||AutoUtil.checkAction(record,"st设置VPN")){
+
+            AccessibilityNodeInfo linkText4 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
+            if(linkText4!=null){
+                if(linkText4.getText().toString().equals("已连接")||linkText4.getText().toString().equals("Connected")){
+                    AutoUtil.clickXY(522,738);
+                    AutoUtil.recordAndLog(record,"st弹出");
+                    AutoUtil.sleep(1500);
+
+                }else if (linkText4.getText().toString().equals("PPTP VPN")||linkText4.getText().toString().equals("失败")||linkText4.getText().toString().equals("Unsuccessful")){
+                    AutoUtil.clickXY(522,738);
+                    AutoUtil.recordAndLog(record,"st点击连接");
+                    AutoUtil.sleep(2000);
+                }
+            }
+        }
+        if(AutoUtil.checkAction(record,"st弹出")){
+            AccessibilityNodeInfo dkNode = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"断开连接");
+            AccessibilityNodeInfo dkNode1 = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"Disconnect");
+            if(dkNode!=null||dkNode1!=null){
+                AutoUtil.clickXY(756,1792);
+                AutoUtil.recordAndLog(record,"st断开");
+                AutoUtil.sleep(1000);
+                System.out.println("hyj--->断开连接等待");
+                AutoUtil.sleep(9000);
+            }
+            if(AutoUtil.checkAction(record,"st断开")){
+                AutoUtil.clickXY(522,738);
+                AutoUtil.recordAndLog(record,"st点击连接");
+                AutoUtil.sleep(2000);
+            }
+        }
+    }
+    //先判断所在页面，在点击操作
+    private void clickTextXY1(int x,int y,String action,String titleId,String title,int milliSeconds){
+        AccessibilityNodeInfo root = context.getRootInActiveWindow();
+        if(root==null){
+            LogUtil.d("myService",title+"is null");
+            return;
+        }
+        AccessibilityNodeInfo titleNode = AutoUtil.findNodeInfosById(root,titleId);
+        if(titleNode!=null&&titleNode.getText().toString().contains(title)){
+            AutoUtil.execShell("input tap "+x+" "+y);
+            AutoUtil.recordAndLog(record,action);
+            AutoUtil.sleep(milliSeconds);
         }
     }
 
