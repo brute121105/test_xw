@@ -9,6 +9,7 @@ import hyj.xw.api.ALZGetPhoneAndValidCodeThread;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.thread.AutoFeedThread;
 import hyj.xw.thread.AutoLoginThread;
+import hyj.xw.thread.AutoOperatonThread;
 import hyj.xw.thread.AutoRegThread;
 import hyj.xw.thread.Fetch008DataHistoryThread;
 import hyj.xw.thread.Fetch008DataThread;
@@ -23,6 +24,8 @@ public class ThreadFactory {
 
     public static BaseThread getThread(String name, AccessibilityService context, Map<String,String> record,AccessibilityParameters parameters){
         switch (name){
+            case "autoOperation":
+                return new AutoOperatonThread(context,record,parameters);
             case "login":
                 return new AutoLoginThread(context,record,parameters);
             case "test":

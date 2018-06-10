@@ -46,7 +46,8 @@ public class ActionService  extends AccessibilityService {
             executorService.submit(ThreadFactory.getThread("recover008Data",this,record,parameters));
             AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         }else{
-            executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
+            //executorService.submit(ThreadFactory.getThread("feed",this,record,parameters));
+            executorService.submit(ThreadFactory.getThread("autoOperation",this,record,parameters));
             if(extValue.contains("0082")){
                 executorService.submit(ThreadFactory.getThread("recover008Data",this,record,parameters));
                 //AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");

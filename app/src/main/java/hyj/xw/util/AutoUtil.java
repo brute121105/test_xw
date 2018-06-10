@@ -131,8 +131,14 @@ public class AutoUtil {
     public static AccessibilityNodeInfo findNodeInfosByText(AccessibilityNodeInfo nodeInfo, String text) {
         if(nodeInfo==null) return null;
         List<AccessibilityNodeInfo> list = nodeInfo.findAccessibilityNodeInfosByText(text);
-        if(list == null || list.isEmpty()) return null;
-        return list.get(0);
+        if(list != null&&list.size()>0){
+            for(AccessibilityNodeInfo node:list){
+                if(text.equals(node.getText()+"")){
+                    return node;
+                }
+            }
+        }
+        return null;
     }
     //通过文本查找节点
     public static AccessibilityNodeInfo findNodeInfosById(AccessibilityNodeInfo nodeInfo, String id) {
