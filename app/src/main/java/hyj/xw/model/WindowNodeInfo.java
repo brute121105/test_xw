@@ -3,6 +3,8 @@ package hyj.xw.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import hyj.xw.model.LitePalModel.Wx008Data;
+
 /**
  * Created by Administrator on 2018/6/10 0010.
  * 表格可增删改查，
@@ -27,11 +29,12 @@ public class WindowNodeInfo {
     private String remark;//备注
     private String findNodeResult;//节点查找结果
     private String inputText;//输入文本
+    private Wx008Data currentWx008Data;
 
     public WindowNodeInfo() {
     }
 
-    public WindowNodeInfo(String operation, int actionNo, String actionDesc) {
+    public WindowNodeInfo(String operation, double actionNo, String actionDesc) {
         this.operation = operation;
         this.actionNo = actionNo;
         this.actionDesc = actionDesc;
@@ -47,6 +50,13 @@ public class WindowNodeInfo {
         this.nodeText = nodeText;
     }
 
+    public Wx008Data getCurrentWx008Data() {
+        return currentWx008Data;
+    }
+
+    public void setCurrentWx008Data(Wx008Data currentWx008Data) {
+        this.currentWx008Data = currentWx008Data;
+    }
 
     public String getInputText() {
         return inputText;

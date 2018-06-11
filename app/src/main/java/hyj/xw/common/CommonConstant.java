@@ -41,5 +41,10 @@ public class CommonConstant {
 
     public static String APPCONFIG_AFS = "addFriendWxids";//添加好友微信号
 
+    public static String APPCONFIG_SWX = "启动微信";//启动微信
+    public static String APPCONFIG_CEVN = "清除并准备改机环境";//清除并准备改机环境
+    public static String APPCONFIG_VLS= "判断登录成功";//判断登录成功
+    public static String APPCONFIG_VEVN= "判断改机成功";//判断改机成功
+
     public static int index=0;
 }

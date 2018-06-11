@@ -6,10 +6,16 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.List;
 import java.util.Map;
 
 import hyj.xw.GlobalApplication;
+import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
+import hyj.xw.common.FilePathCommon;
+import hyj.xw.conf.PhoneConf;
+import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.WindowNodeInfo;
 
 /**
@@ -18,11 +24,12 @@ import hyj.xw.model.WindowNodeInfo;
 
 public class WindowOperationUtil {
 
-    public static boolean doActions(AccessibilityNodeInfo root,List<WindowNodeInfo> wInfos){
+   /* public static boolean doActions(AccessibilityNodeInfo root,List<WindowNodeInfo> wInfos){
         boolean flag = false;
         if(wInfos!=null&&wInfos.size()>0){
             for(WindowNodeInfo info:wInfos){
                 flag = doAction(root,info);
+                System.out.println("doActions-->:"+info.getActionDesc()+flag);
             }
         }
         return flag;
@@ -32,13 +39,34 @@ public class WindowOperationUtil {
         if("启动微信".equals(info.getActionDesc())){
             startWx();//启动微信
             flag = true;
-        }else if(1==info.getNodeType()){//按钮控件
+        }else if("清除并准备改机环境".equals(info.getActionDesc())){
+            AutoUtil.clearAppData();
+            AutoUtil.sleep(2000);
+
+            NewPhoneInfo pi = null;
+            if(!TextUtils.isEmpty(info.getCurrentWx008Data().getPhoneStrsAw())){//aw数据
+                pi = JSON.parseObject(info.getCurrentWx008Data().getPhoneStrsAw(),NewPhoneInfo.class);
+            }else {
+                pi = PhoneConf.xw2awData(info.getCurrentWx008Data());
+            }
+            pi.setCpuName(pi.getCpuName().trim().toLowerCase());
+            CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
+            FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
+            flag = true;
+        }else if("判断登录成功".equals(info.getActionDesc())){
+            if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")){
+                int cn = DaoUtil.updateExpMsg(info.getCurrentWx008Data(),"登录成功-"+AutoUtil.getCurrentDate());
+                System.out.println("excpMsg-->"+cn);
+                //LogUtil.login(loginIndex+" success",info.getCurrentWx008Data().getPhone()+" "+info.getCurrentWx008Data().getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
+            }
+        }
+        else if(1==info.getNodeType()){//按钮控件
             flag = performClick(getNodeByInfo(root,info),info);
         }else if(2==info.getNodeType()){//输入框控件
             flag = performSetText(getNodeByInfo(root,info),info);
         }
         return flag;
-    }
+    }*/
     public static boolean performSetText(AccessibilityNodeInfo nodeInfo,WindowNodeInfo info){
         boolean flag = false;
         if(nodeInfo == null) return flag;
