@@ -96,6 +96,17 @@ public class WindowOperationUtil {
         }
         return isClick;
     }
+    public static boolean performClickTest(AccessibilityNodeInfo nodeInfo) {
+        boolean isClick = false;
+        if(nodeInfo == null)  return false;
+        if(nodeInfo.isClickable()) {
+            isClick = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+        } else {
+            isClick = performClickTest(nodeInfo.getParent());
+        }
+        return isClick;
+    }
+
     //休眠毫秒
     public static  void sleep(long ms){
         try {

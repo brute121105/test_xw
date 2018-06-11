@@ -21,7 +21,7 @@ public class WindowNodeInfo {
     private int actionChildNo;//动作子序号
     private String actionDesc;//点击行为动作描述
     private long actionSleepMs;//点击行为后休眠毫秒数
-    private int nodeType;//节点类型，1按钮2输入框
+    private int nodeType;//节点类型，1 按钮 2 输入框 3 异常窗口
     private String nodeId;//节点id
     private String nodePath;//节点路径
     private String nodeText;//节点文本
@@ -30,6 +30,7 @@ public class WindowNodeInfo {
     private String findNodeResult;//节点查找结果
     private String inputText;//输入文本
     private Wx008Data currentWx008Data;
+    private boolean actionResultFlag;//执行结果标识
 
     public WindowNodeInfo() {
     }
@@ -57,6 +58,15 @@ public class WindowNodeInfo {
     public void setCurrentWx008Data(Wx008Data currentWx008Data) {
         this.currentWx008Data = currentWx008Data;
     }
+
+    public boolean isActionResultFlag() {
+        return actionResultFlag;
+    }
+
+    public void setActionResultFlag(boolean actionResultFlag) {
+        this.actionResultFlag = actionResultFlag;
+    }
+
 
     public String getInputText() {
         return inputText;

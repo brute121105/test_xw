@@ -37,18 +37,20 @@ public class AutoOperatonThread extends BaseThread {
     public  final String TAG = this.getClass().getSimpleName();
     private int countRootNull =0;
     private int actionNo=0;
-    private Map<Integer,List<WindowNodeInfo>> wInfoMap;
+    private Map<Integer,List<WindowNodeInfo>> wInfoMap,exceptionWInfoMap;
     private int loginIndex,endLoginIndex;//登录序号
     private String isLoginSucessPause;//登录成功是否暂停
     private List<Wx008Data> wx008Datas;
     private Wx008Data currentWx008Data;
     private String extValue,isAirChangeIp,isLoginByPhone;
+    private boolean isStartAirPlaneMode = false;
     public AutoOperatonThread(AccessibilityService context, Map<String, String> record, AccessibilityParameters parameters){
         super(context,record,parameters);
         intiParam();
     }
     private void intiParam(){
-        wInfoMap = WindowNodeInfoConf.getWinfoMap();
+        wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation("养号");
+        exceptionWInfoMap = WindowNodeInfoConf.getWinfoMapByOperation("异常");
         wx008Datas = DaoUtil.getWx008Datas();
         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
@@ -61,7 +63,7 @@ public class AutoOperatonThread extends BaseThread {
     public Object call() {
         while (true){
             try {
-                AutoUtil.sleep(1500);
+                AutoUtil.sleep(500);
                 LogUtil.d(TAG,Thread.currentThread().getName()+" actionNo:"+actionNo);
                 if(parameters.getIsStop()==1){
                     LogUtil.d(TAG,"暂停....");
@@ -78,16 +80,31 @@ public class AutoOperatonThread extends BaseThread {
 
                 ParseRootUtil.debugRoot(root);
 
-                List<WindowNodeInfo> wInfos = wInfoMap.get(actionNo);//获取当前需要需要执行动作
+                List<WindowNodeInfo> wInfos = wInfoMap.get(actionNo);//获取当前执行动作
+                //List<WindowNodeInfo> exceptionWInfos = exceptionWInfoMap.get(actionNo);//获取当前执行动作失败可能出现异常情况
                 setNodeInputText(wInfos,currentWx008Data);//设置输入框文本
                 System.out.println("winfo-->"+ JSON.toJSONString(wInfos));
                 if(doActions(root,wInfos)){
-                    if(wInfoMap.keySet().size()-1>actionNo){
+                    if(CommonConstant.APPCONFIG_APM.equals(wInfos.get(0).getActionDesc())&&!waitAriplaneModeSuc(root)) continue;//飞行模式没完成，继续
+                    String msg = getExpMsg(wInfos);//捕获处理异常界面消息
+                    if(wInfoMap.keySet().size()-1==actionNo||!"success".equals(msg)){
+                        actionNo=0;
+                        initWInfoFlag(wInfoMap);
+                        doNextIndexAndRecord2DB();
+                        currentWx008Data = wx008Datas.get(loginIndex);
+                        LogUtil.login(loginIndex+" msg:"+msg,currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
+                    }else {
                         ++actionNo;
                     }
-                }else {//当前动作执行失败后处理
-
+                    continue;
                 }
+                //如果改机不成功,重新登录
+                if(CommonConstant.APPCONFIG_VEVN.equals(wInfos.get(0).getActionDesc())){
+                    actionNo = 0;
+                    initWInfoFlag(wInfoMap);
+                    continue;
+                }
+
 
             }catch (Exception e){
               LogUtil.logError(e);
@@ -98,9 +115,15 @@ public class AutoOperatonThread extends BaseThread {
     public  boolean doActions(AccessibilityNodeInfo root,List<WindowNodeInfo> wInfos){
         boolean flag = false;
         if(wInfos!=null&&wInfos.size()>0){
-            for(WindowNodeInfo info:wInfos){
-                flag = doAction(root,info);
-                System.out.println("doActions-->:"+info.getActionDesc()+flag);
+            for(int i=0,l=wInfos.size();i<l;i++){
+                flag = doAction(root,wInfos.get(i));
+                System.out.println("doActions-->:"+wInfos.get(i).getActionDesc()+flag);
+                if(flag){
+                    if("处理异常".equals(wInfos.get(i).getActionDesc())
+                            ||(i<wInfos.size()-1&&"处理异常".equals(wInfos.get(i+1).getActionDesc()))){
+                        return flag;
+                    }
+                }
             }
         }
         return flag;
@@ -121,11 +144,27 @@ public class AutoOperatonThread extends BaseThread {
             if(validEnviroment()){//判断改机成功
                 flag = true;
             }
-        }
-        else if(1==info.getNodeType()){//按钮控件
+        }else if(CommonConstant.APPCONFIG_APM.equals(info.getActionDesc())){
+             if(!info.isActionResultFlag()){//开启飞行模式,只开启一次默认为开启成功
+                 AutoUtil.setAriplaneMode(1000);
+             }
+            flag = true;
+        }else if(1==info.getNodeType()){//按钮控件
             flag = WindowOperationUtil.performClick(WindowOperationUtil.getNodeByInfo(root,info),info);
         }else if(2==info.getNodeType()){//输入框控件
             flag = WindowOperationUtil.performSetText(WindowOperationUtil.getNodeByInfo(root,info),info);
+        }else if(3==info.getNodeType()){//异常窗口
+            flag = NodeActionUtil.isWindowContainStr(root,info.getNodeText());
+        }
+        info.setActionResultFlag(flag);//修改执行结果标识
+        return flag;
+    }
+
+    //等待飞行模式开启成功
+    private boolean waitAriplaneModeSuc(AccessibilityNodeInfo root){
+        boolean flag = false;
+        if(WindowOperationUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
+             flag = WindowOperationUtil.performClickTest(WindowOperationUtil.findNodeInfosByText(root,"确定"));
         }
         return flag;
     }
@@ -135,7 +174,7 @@ public class AutoOperatonThread extends BaseThread {
         if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")){
             int cn = DaoUtil.updateExpMsg(currentWx008Data,"登录成功-"+AutoUtil.getCurrentDate());
             System.out.println("excpMsg-->"+cn);
-            LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
+            //LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             flag = true;
         }
         return flag;
@@ -167,11 +206,6 @@ public class AutoOperatonThread extends BaseThread {
         CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
 
-        //飞行模式
-        if("1".equals(isAirChangeIp)){
-            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"开启飞行模式");
-            AutoUtil.setAriplaneMode(1000);
-        }
     }
 
     private void setNodeInputText(List<WindowNodeInfo> wInfos,Wx008Data currentWx008Data){
@@ -193,6 +227,38 @@ public class AutoOperatonThread extends BaseThread {
                 }
             }
         }
+    }
+    private void doNextIndexAndRecord2DB(){
+        int endLoginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX));
+        if(loginIndex==wx008Datas.size()-1||loginIndex==endLoginIndex){
+            AutoUtil.recordAndLog(record,"wx登陆完成序号【"+this.parameters.getStartLoginIndex()+"-"+endLoginIndex+"】");
+            return;
+        }
+        System.out.println("errRecord-->"+record);
+        System.out.println("errRecord loginIndex-->"+loginIndex);
+        loginIndex = loginIndex+1;
+        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
+    }
+    //重置动作执行标志位
+    private void initWInfoFlag(Map<Integer,List<WindowNodeInfo>> wInfoMap){
+        for(Integer key:wInfoMap.keySet()){
+            List<WindowNodeInfo> wInfos = wInfoMap.get(key);
+            for(WindowNodeInfo wInfo:wInfos){
+                wInfo.setActionResultFlag(false);
+            }
+        }
+    }
+    //捕获处理异常界面消息
+    private String getExpMsg(List<WindowNodeInfo> wInfos){
+        String expMsg = "success";
+        if(wInfos!=null&&wInfos.size()>0){
+            for(WindowNodeInfo wInfo:wInfos){
+                if("处理异常".equals(wInfo.getActionDesc())&&wInfo.isActionResultFlag()){
+                    expMsg = wInfo.getNodeText();
+                }
+            }
+        }
+        return expMsg;
     }
 
 }

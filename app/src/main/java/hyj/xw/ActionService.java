@@ -51,8 +51,6 @@ public class ActionService  extends AccessibilityService {
             if(extValue.contains("0082")){
                 executorService.submit(ThreadFactory.getThread("recover008Data",this,record,parameters));
                 //AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
-            }else {
-                AutoUtil.startWx();
             }
         }
         //AutoUtil.startWx();
