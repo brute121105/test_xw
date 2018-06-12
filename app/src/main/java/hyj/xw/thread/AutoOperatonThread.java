@@ -102,18 +102,8 @@ public class AutoOperatonThread extends BaseThread {
                     continue;
                 }
                 //随机异常界面
-                if(!exceptionWInfoMap.isEmpty()){
-                    if(doActions(root,exceptionWInfoMap.get(actionNo))){
-                        continue;
-                    }
-                   /* boolean ef = false;
-                    for(Integer key:exceptionWInfoMap.keySet()){
-                        if(doActions(root,exceptionWInfoMap.get(key))){
-                            ef = true;
-                            break;
-                        }
-                    }
-                    if(ef) continue;;*/
+                if(doActions(root,exceptionWInfoMap.get(actionNo))){
+                    continue;
                 }
                 //所有事件操作为false，重新轮询一遍(只针对点击、输入事件)
                 for(Integer key:wInfoMap.keySet()){
@@ -213,8 +203,8 @@ public class AutoOperatonThread extends BaseThread {
     private boolean validLoginSucc(AccessibilityNodeInfo root){
         boolean flag = false;
         if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")){
-            int cn = DaoUtil.updateExpMsg(currentWx008Data,"登录成功-"+AutoUtil.getCurrentDate());
-            System.out.println("excpMsg-->"+cn);
+            //int cn = DaoUtil.updateExpMsg(currentWx008Data,"登录成功-"+AutoUtil.getCurrentDate());
+            //System.out.println("excpMsg-->"+cn);
             //LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             flag = true;
         }

@@ -14,6 +14,16 @@ public class NodeActionUtil {
     //窗口包含当期全部字符str2，有一个不满足就返回false
     public static boolean isContainsStrs(AccessibilityNodeInfo root,String str2){
         String str1 = ParseRootUtil.getCurrentViewAllTexts(root);
+        //不含|, 模糊匹配
+        if(str2.indexOf("|")==-1){
+            if(str1.indexOf(str2)>-1)
+                return true;
+            else
+                return false;
+        }
+        /*
+         * 含|, 精确匹配所有项
+         */
         boolean flag = true;
         String[] str2s = str2.split("\\|");
         for(String str :str2s){
