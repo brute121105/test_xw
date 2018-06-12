@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSON;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -286,20 +287,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(MainActivity.this,AutoLoginSettingActivity.class));
                 break;
             case R.id.open_assist:
-                /*DialogUtil dialogUtil = new DialogUtil();
-                dialogUtil.show("确认修改吗?", new DialogButtonListener() {
-                    @Override
-                    public void sure() {
-                        System.out.println("DialogUtil00");
-                        //ToastUtil.show("点击了确认");
-                    }
-
-                    @Override
-                    public void cancel() {
-                        System.out.println("DialogUtil11");
-                        // ToastUtil.show("点击了取消");
-                    }
-                });*/
                 String startStr = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX);
                 String endStr = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX);
                 int start = Integer.parseInt(TextUtils.isEmpty(startStr)?"0":startStr);

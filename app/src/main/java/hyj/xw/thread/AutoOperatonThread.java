@@ -6,6 +6,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.alibaba.fastjson.JSON;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ public class AutoOperatonThread extends BaseThread {
     public  final String TAG = this.getClass().getSimpleName();
     private int countRootNull =0;
     private int actionNo=0;
+    private int loopNum =0;//标志循环到底部次数
     private Map<Integer,List<WindowNodeInfo>> wInfoMap,exceptionWInfoMap;
     private int loginIndex,endLoginIndex;//登录序号
     private String isLoginSucessPause;//登录成功是否暂停
@@ -79,12 +81,13 @@ public class AutoOperatonThread extends BaseThread {
                 if(root==null){
                     continue;
                 }
+                if(NodeActionUtil.isContainsStrs(root,"数据...")||NodeActionUtil.isContainsStrs(root,"登录...")) continue;
 
                 ParseRootUtil.debugRoot(root);
 
                 List<WindowNodeInfo> wInfos = wInfoMap.get(actionNo);//获取当前执行动作
+                //处理清除数据失败
                 setNodeInputText(wInfos,currentWx008Data);//设置输入框文本
-                System.out.println("winfo-->"+ JSON.toJSONString(wInfos));
                 if(doActions(root,wInfos)){
                     if(CommonConstant.APPCONFIG_APM.equals(wInfos.get(0).getActionDesc())&&!waitAriplaneModeSuc(root)) continue;//飞行模式没完成，继续
                     String msg = getExpMsg(wInfos);//捕获处理异常界面消息
@@ -93,6 +96,7 @@ public class AutoOperatonThread extends BaseThread {
                     }else {
                         ++actionNo;
                     }
+                    loopNum = 0;
                     continue;
                 }
                 //如果改机不成功,重新登录
@@ -101,24 +105,26 @@ public class AutoOperatonThread extends BaseThread {
                     initWInfoFlag(wInfoMap);
                     continue;
                 }
-                //随机异常界面
+                //c处理随机异常界面
                 if(doActions(root,exceptionWInfoMap.get(actionNo))){
                     continue;
                 }
-                //所有事件操作为false，重新轮询一遍(只针对点击、输入事件)
-                for(Integer key:wInfoMap.keySet()){
-                    List<WindowNodeInfo> wInfos1 = wInfoMap.get(key);
-                    if(wInfos1.get(0).getNodeType()>0&&doActions(root,wInfos1)){
-                        String msg = getExpMsg(wInfos1);//捕获处理异常界面消息
-                        if(key==wInfoMap.keySet().size()-1||!"success".equals(msg)){
-                            doLoginFinish(msg);
-                        }else {
-                            actionNo = key+1;
+                //所有事件操作loopNum次数为false，重新轮询一遍(只针对点击、输入事件)
+                ++loopNum;
+                if(loopNum>2){
+                    for(Integer key:wInfoMap.keySet()){
+                        List<WindowNodeInfo> wInfos1 = wInfoMap.get(key);
+                        if(wInfos1.get(0).getNodeType()>0&&doActions(root,wInfos1)){
+                            String msg = getExpMsg(wInfos1);//捕获处理异常界面消息
+                            if(key==wInfoMap.keySet().size()-1||!"success".equals(msg)){
+                                doLoginFinish(msg);
+                            }else {
+                                actionNo = key+1;
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
-
 
             }catch (Exception e){
               LogUtil.logError(e);
@@ -139,6 +145,7 @@ public class AutoOperatonThread extends BaseThread {
     public  boolean doActions(AccessibilityNodeInfo root,List<WindowNodeInfo> wInfos){
         boolean flag = false;
         if(wInfos!=null&&wInfos.size()>0){
+            if(wInfos.get(0).getNodeType()>0&&root.getPackageName().toString().indexOf("miui")>-1) return flag;//点击事件，监听到不符合应用包
             for(int i=0,l=wInfos.size();i<l;i++){
                 flag = doAction(root,wInfos.get(i));
                 System.out.println("doActions-->:"+wInfos.get(i).getActionMsg()+flag);
@@ -158,8 +165,13 @@ public class AutoOperatonThread extends BaseThread {
             WindowOperationUtil.startWx();//启动微信
             flag = true;
         }else if(CommonConstant.APPCONFIG_CEVN.equals(info.getActionDesc())){
-            clearEnviroment();//清除并准备改机环境
-            flag = true;
+            File file = new File("/data/data/com.tencent.mm/MicroMsg");
+            System.out.println("file--->"+file.isDirectory());
+            if(file.isDirectory()){//判断是否删除
+                clearEnviroment();//清除并准备改机环境
+            }else {
+                flag = true;
+            }
         }else if(CommonConstant.APPCONFIG_VLS.equals(info.getActionDesc())){
             if(validLoginSucc(root)){//判断登录成功
                 flag = true;
