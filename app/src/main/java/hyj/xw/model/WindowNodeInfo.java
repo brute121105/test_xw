@@ -195,4 +195,8 @@ public class WindowNodeInfo {
     public void setFindNodeResult(String findNodeResult) {
         this.findNodeResult = findNodeResult;
     }
+
+    public String getActionMsg(){
+        return (actionNo+actionDesc+"【"+nodeText+inputText+"】").replaceAll("null","").replaceAll("【】","");
+    }
 }
