@@ -30,6 +30,7 @@ public class WindowNodeInfoConf {
         infos.add(new WindowNodeInfo("养号","窗口文本",3,7.3,"登录异常","登录环境异常",""));
         infos.add(new WindowNodeInfo("养号","窗口文本",3,7.4,"登录异常","密码错误",""));
         infos.add(new WindowNodeInfo("养号","窗口文本",3,7.5,"登录异常","刷公众号",""));
+        infos.add(new WindowNodeInfo("养号","窗口文本",3,7.6,"登录异常","打招呼存在异常",""));
         infos.add(new WindowNodeInfo("异常界面","看看手机通讯录",1,7.1,"点击","否",""));
         infos.add(new WindowNodeInfo("异常界面","窗口文本",1,7.2,"点击完成应急联系人","完成",""));
         return infos;

@@ -223,9 +223,10 @@ public class AutoOperatonThread extends BaseThread {
     private boolean validLoginSucc(AccessibilityNodeInfo root){
         boolean flag = false;
         if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")){
-            //int cn = DaoUtil.updateExpMsg(currentWx008Data,"登录成功-"+AutoUtil.getCurrentDate());
-            //System.out.println("excpMsg-->"+cn);
-            //LogUtil.login(loginIndex+" success",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
+            //登录成功&开启登录成功暂停 修改暂停标识为1
+            if("1".equals(isLoginSucessPause)){
+                parameters.setIsStop(1);
+            }
             flag = true;
         }
         return flag;

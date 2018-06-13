@@ -133,6 +133,7 @@ public class PhoneConf {
             datas.add(showMsg);
 
             System.out.println(showMsg+" --nickName:"+wd.getNickName()+" repPhone:"+wd.getReplacePhone()+" pwd:"+wd.getWxPwd()+" phone:"+wd.getPhone()+" wxid:"+wd.getWxid19()+" exp:"+wd.getExpMsg()+" pwd:"+wd.getWxPwd()+" friends:"+JSON.toJSONString(wd.getFriends()));
+            //AutoUtil.sleep(10);
             //删除测试
             //保护结束
 
