@@ -22,6 +22,7 @@ import hyj.xw.dao.AppConfigDao;
 import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.model.LitePalModel.Wx008Data;
+import hyj.xw.model.PhoneInfo;
 import hyj.xw.model.WindowNodeInfo;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
@@ -88,6 +89,7 @@ public class AutoOperatonThread extends BaseThread {
                 ParseRootUtil.debugRoot(root);
 
                 List<WindowNodeInfo> wInfos = wInfoMap.get(actionNo);//获取当前执行动作
+                System.out.println("wInfos-->"+JSON.toJSONString(wInfos));
                 //处理清除数据失败
                 setNodeInputText(wInfos,currentWx008Data);//设置输入框文本
                 if(doActions(root,wInfos)){
@@ -102,11 +104,11 @@ public class AutoOperatonThread extends BaseThread {
                     continue;
                 }
                 //如果改机不成功,重新登录
-                if(CommonConstant.APPCONFIG_VEVN.equals(wInfos.get(0).getActionDesc())){
+                /*if(CommonConstant.APPCONFIG_VEVN.equals(wInfos.get(0).getActionDesc())){
                     actionNo = 0;
                     initWInfoFlag(wInfoMap);
                     continue;
-                }
+                }*/
                 //c处理随机异常界面
                 if(doActions(root,exceptionWInfoMap.get(actionNo))){
                     continue;
@@ -247,7 +249,7 @@ public class AutoOperatonThread extends BaseThread {
         AutoUtil.clearAppData();
         AutoUtil.sleep(2000);
 
-        NewPhoneInfo pi = null;
+        /*NewPhoneInfo pi = null;
         if(!TextUtils.isEmpty(currentWx008Data.getPhoneStrsAw())){//aw数据
             pi = JSON.parseObject(currentWx008Data.getPhoneStrsAw(),NewPhoneInfo.class);
         }else {
@@ -255,7 +257,25 @@ public class AutoOperatonThread extends BaseThread {
         }
         pi.setCpuName(pi.getCpuName().trim().toLowerCase());
         CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
-        FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));*/
+        String hookPhoneDataStr="";
+        currentWx008Data = wx008Datas.get(loginIndex);
+        if(TextUtils.isEmpty(currentWx008Data.getPhoneStrs())){//旧008数据
+            currentWx008Data.setPhoneInfo(currentWx008Data.getDatas());
+            hookPhoneDataStr = JSON.toJSONString(currentWx008Data.getPhoneInfo());
+        }else {//自己注册
+            hookPhoneDataStr = currentWx008Data.getPhoneStrs();
+            PhoneInfo opi = JSON.parseObject(hookPhoneDataStr, PhoneInfo.class);
+            if(TextUtils.isEmpty(opi.getCPU_ABI())){
+                opi.setCPU_ABI("armeabi-v7a");
+            }
+            if(TextUtils.isEmpty(opi.getCPU_ABI2())){
+                opi.setCPU_ABI2("armeabi");
+            }
+            hookPhoneDataStr = JSON.toJSONString(opi);
+            System.out.println("--phoneStr:"+hookPhoneDataStr);
+        }
+        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt",hookPhoneDataStr);
 
     }
 

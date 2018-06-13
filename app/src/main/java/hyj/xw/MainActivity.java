@@ -79,10 +79,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FileUtil.createFilePath(FilePathCommon.baseAppPath);
         FileUtil.createFilePath(FilePathCommon.importDataAPath);
         FileUtil.createFilePath(FilePathCommon.dataBakPath);
-        if (Build.VERSION.SDK_INT < 23) {
+        /*if (Build.VERSION.SDK_INT < 23) {
             MyWindowManager.createSmallWindow(getApplicationContext());
             MyWindowManager.createSmallWindow2(getApplicationContext());
-        }
+        }*/
 
         //飞行模式换ip
         isAirChangeIpCheckBox = (CheckBox)this.findViewById(R.id.isAirChangeIp);
