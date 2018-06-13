@@ -113,11 +113,13 @@ public class AutoOperatonThread extends BaseThread {
                 }
                 //所有事件操作loopNum次数为false，重新轮询一遍(只针对点击、输入事件)
                 ++loopNum;
+                System.out.println("loopNum--->"+loopNum);
                 if(loopNum>2){
                     for(Integer key:wInfoMap.keySet()){
                         List<WindowNodeInfo> wInfos1 = wInfoMap.get(key);
                         if(wInfos1.get(0).getNodeType()>0&&doActions(root,wInfos1)){
                             String msg = getExpMsg(wInfos1);//捕获处理异常界面消息
+                            System.out.println("key loopNum--->"+key);
                             if(key==wInfoMap.keySet().size()-1||!"success".equals(msg)){
                                 doLoginFinish(msg);
                             }else {
