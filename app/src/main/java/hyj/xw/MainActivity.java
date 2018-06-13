@@ -242,13 +242,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
-         List<String> phones = FileUtil.read008Data("/sdcard/onlineWx.txt");
+         List<String> phones = FileUtil.read008Data("/sdcard/brute9.txt");
           for(String phone:phones){
               phone = phone.substring(phone.indexOf("--")+2);
               System.out.println("wxid-->"+phone);
               Wx008Data  wd = DaoUtil.findByWxNumOrWxid(phone);
               if(wd==null) continue;
-              wd.setDieFlag(999);
+              wd.setDieFlag(888);
               int cn = wd.updateAll("wxId=? or wxid19=?",phone,phone);
               if(cn>0){
                   System.out.println("cn-->"+cn+" wxid:"+phone);
