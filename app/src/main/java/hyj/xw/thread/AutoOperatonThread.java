@@ -95,7 +95,7 @@ public class AutoOperatonThread extends BaseThread {
                 if(doActions(root,wInfos)){
                     if(CommonConstant.APPCONFIG_APM.equals(wInfos.get(0).getActionDesc())&&!waitAriplaneModeSuc(root)) continue;//飞行模式没完成，继续
                     String msg = getExpMsg(wInfos);//捕获处理异常界面消息
-                    if(wInfoMap.keySet().size()-1==actionNo||!"success".equals(msg)){
+                    if(wInfoMap.keySet().size()-1==actionNo||!msg.contains("success")){
                         doLoginFinish(msg);
                     }else {
                         ++actionNo;
@@ -122,7 +122,7 @@ public class AutoOperatonThread extends BaseThread {
                         if(wInfos1.get(0).getNodeType()>0&&doActions(root,wInfos1)){
                             String msg = getExpMsg(wInfos1);//捕获处理异常界面消息
                             System.out.println("key loopNum--->"+key);
-                            if(key==wInfoMap.keySet().size()-1||!"success".equals(msg)){
+                            if(key==wInfoMap.keySet().size()-1||!msg.contains("success")){
                                 doLoginFinish(msg);
                             }else {
                                 actionNo = key+1;
@@ -321,7 +321,7 @@ public class AutoOperatonThread extends BaseThread {
     }
     //捕获登录异常界面消息
     private String getExpMsg(List<WindowNodeInfo> wInfos){
-        String expMsg = "success";
+        String expMsg = "success2";
         if(wInfos!=null&&wInfos.size()>0){
             for(WindowNodeInfo wInfo:wInfos){
                 if("登录异常".equals(wInfo.getActionDesc())&&wInfo.isActionResultFlag()){
