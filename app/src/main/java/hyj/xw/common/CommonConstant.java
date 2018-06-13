@@ -46,6 +46,7 @@ public class CommonConstant {
     public static String APPCONFIG_VLS= "判断登录成功";//判断登录成功
     public static String APPCONFIG_VEVN= "判断改机成功";//判断改机成功
     public static String APPCONFIG_APM= "开启飞行模式";
+    public static String APPCONFIG_VPN= "连接VPN";
 
     public static int index=0;
 }

@@ -1,6 +1,7 @@
 package hyj.xw.thread;
 
 import android.accessibilityservice.AccessibilityService;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -53,6 +54,7 @@ public class AutoOperatonThread extends BaseThread {
         intiParam();
     }
     private void intiParam(){
+        AutoUtil.recordAndLog(record,"init");
         wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation("养号");
         exceptionWInfoMap = WindowNodeInfoConf.getWinfoMapByOperation("异常界面");
         wx008Datas = DaoUtil.getWx008Datas();
@@ -198,6 +200,10 @@ public class AutoOperatonThread extends BaseThread {
                     flag = NodeActionUtil.isWindowContainStr(root,info.getNodeText());
                 }
             }
+        }else if(CommonConstant.APPCONFIG_VPN.equals(info.getActionDesc())){
+            if(doVPN(root)){
+                flag = true;
+            }
         }
         info.setActionResultFlag(flag);//修改执行结果标识
         return flag;
@@ -302,6 +308,90 @@ public class AutoOperatonThread extends BaseThread {
             }
         }
         return expMsg;
+    }
+
+    private boolean doVPN(AccessibilityNodeInfo root){
+        if(AutoUtil.checkAction(record,"init")){
+            AutoUtil.recordAndLog(record,"st设置VPN");
+            AutoUtil.opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+            AutoUtil.sleep(500);
+        }
+        AccessibilityNodeInfo linkText = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
+        if(linkText!=null&&(linkText.getText().toString().equals("正在连接...")||linkText.getText().toString().equals("Connecting…"))){
+            System.out.println("hyj--->正在连接..");
+            AutoUtil.sleep(1000);
+            return false;
+        }
+        if(AutoUtil.checkAction(record,"st点击连接")){
+            AccessibilityNodeInfo link =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"已连接");
+            AccessibilityNodeInfo link1 =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"Connected");
+            if(link!=null||link1!=null){
+                AutoUtil.recordAndLog(record,"wx连接成功");
+                //AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+                return true;
+            }
+            AccessibilityNodeInfo linkText5 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
+            if(linkText5!=null){
+                System.out.println("linkText5-->"+linkText5.getText());
+            }
+            if(linkText5!=null&&(linkText5.getText().toString().equals("PPTP VPN")||linkText5.getText().toString().equals("失败")||linkText5.getText().toString().equals("Unsuccessful"))){
+                AutoUtil.clickXY(522,738);
+                AutoUtil.recordAndLog(record,"st点击连接");
+                AutoUtil.sleep(2000);
+                return false;
+            }
+        }
+
+        clickTextXY1(514,425,"st点击VPN","miui:id/action_bar_title","无线和网络",800);
+        clickTextXY1(514,425,"st点击VPN","miui:id/action_bar_title","Wireless & networks",800);
+
+        if(AutoUtil.checkAction(record,"st点击VPN")||AutoUtil.checkAction(record,"st弹出")||AutoUtil.checkAction(record,"st设置VPN")){
+
+            AccessibilityNodeInfo linkText4 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
+            if(linkText4!=null){
+                if(linkText4.getText().toString().equals("已连接")||linkText4.getText().toString().equals("Connected")){
+                    AutoUtil.clickXY(522,738);
+                    AutoUtil.recordAndLog(record,"st弹出");
+                    AutoUtil.sleep(1500);
+
+                }else if (linkText4.getText().toString().equals("PPTP VPN")||linkText4.getText().toString().equals("失败")||linkText4.getText().toString().equals("Unsuccessful")){
+                    AutoUtil.clickXY(522,738);
+                    AutoUtil.recordAndLog(record,"st点击连接");
+                    AutoUtil.sleep(2000);
+                }
+            }
+        }
+        if(AutoUtil.checkAction(record,"st弹出")){
+            AccessibilityNodeInfo dkNode = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"断开连接");
+            AccessibilityNodeInfo dkNode1 = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"Disconnect");
+            if(dkNode!=null||dkNode1!=null){
+                AutoUtil.clickXY(756,1792);
+                AutoUtil.recordAndLog(record,"st断开");
+                AutoUtil.sleep(1000);
+                System.out.println("hyj--->断开连接等待");
+                AutoUtil.sleep(3000);
+            }
+            if(AutoUtil.checkAction(record,"st断开")){
+                AutoUtil.clickXY(522,738);
+                AutoUtil.recordAndLog(record,"st点击连接");
+                AutoUtil.sleep(2000);
+            }
+        }
+        return false;
+    }
+    //先判断所在页面，在点击操作
+    private void clickTextXY1(int x,int y,String action,String titleId,String title,int milliSeconds){
+        AccessibilityNodeInfo root = context.getRootInActiveWindow();
+        if(root==null){
+            LogUtil.d("myService",title+"is null");
+            return;
+        }
+        AccessibilityNodeInfo titleNode = AutoUtil.findNodeInfosById(root,titleId);
+        if(titleNode!=null&&titleNode.getText().toString().contains(title)){
+            AutoUtil.execShell("input tap "+x+" "+y);
+            AutoUtil.recordAndLog(record,action);
+            AutoUtil.sleep(milliSeconds);
+        }
     }
 
 }
