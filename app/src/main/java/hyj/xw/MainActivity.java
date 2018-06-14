@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FileUtil.createFilePath(FilePathCommon.baseAppPath);
         FileUtil.createFilePath(FilePathCommon.importDataAPath);
         FileUtil.createFilePath(FilePathCommon.dataBakPath);
+        FileUtil.createFilePath(FilePathCommon.importData008Path);
         if (Build.VERSION.SDK_INT < 23) {
             MyWindowManager.createSmallWindow(getApplicationContext());
             MyWindowManager.createSmallWindow2(getApplicationContext());

@@ -35,10 +35,14 @@ public class DataImpExpActivity extends AppCompatActivity implements View.OnClic
         Button btn_expAData = (Button)this.findViewById(R.id.btn_expAData);
         Button importBakDataBtn = (Button)this.findViewById(R.id.importBakData);
         Button exportBakDataBtn = (Button)this.findViewById(R.id.exportBakData);
+        Button import008DataBtn = (Button)this.findViewById(R.id.btn_imp008Data);
+        Button export008DataBtn = (Button)this.findViewById(R.id.btn_exp008Data);
         importBakDataBtn.setOnClickListener(this);
         exportBakDataBtn.setOnClickListener(this);
         btn_impAData.setOnClickListener(this);
         btn_expAData.setOnClickListener(this);
+        import008DataBtn.setOnClickListener(this);
+        export008DataBtn.setOnClickListener(this);
 
         Button killAppBtn = (Button)this.findViewById(R.id.btn_kill_app);
         killAppBtn.setOnClickListener(this);
@@ -81,6 +85,12 @@ public class DataImpExpActivity extends AppCompatActivity implements View.OnClic
                 LogUtil.exportAWUtf8ByPhoneName(FilePathCommon.importDataAPath,json,npi.getLine1Number());
                 Toast.makeText(this, npi.getLine1Number(), Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.btn_imp008Data:
+                Map<String,Object> resultImport008 =  ImpExpData.import008Data();
+                Toast.makeText(this,"导入成功："+resultImport008.get("countSucc")+"条,失败："+resultImport008.get("countExist")+"条", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.btn_exp008Data:
+                break;
             case R.id.btn_kill_app:
                 AutoUtil.killApp();
                 break;
@@ -89,4 +99,5 @@ public class DataImpExpActivity extends AppCompatActivity implements View.OnClic
                 break;
         }
     }
+
 }

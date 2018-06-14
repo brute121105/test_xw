@@ -70,7 +70,7 @@ public class AutoOperatonThread extends BaseThread {
         while (true){
             try {
                 AutoUtil.sleep(500);
-                LogUtil.d(TAG,Thread.currentThread().getName()+" actionNo:"+actionNo);
+                LogUtil.d(TAG,Thread.currentThread().getName()+" actionNo:"+actionNo+" record:"+record);
                 if(parameters.getIsStop()==1){
                     LogUtil.d(TAG,"暂停....");
                     continue;
@@ -86,6 +86,7 @@ public class AutoOperatonThread extends BaseThread {
                 if(NodeActionUtil.isContainsStrs(root,"数据...")||NodeActionUtil.isContainsStrs(root,"登录...")) continue;
 
                 ParseRootUtil.debugRoot(root);
+                System.out.println("getPackageName--->"+root.getPackageName());
 
                 List<WindowNodeInfo> wInfos = wInfoMap.get(actionNo);//获取当前执行动作
                 //处理清除数据失败
@@ -102,7 +103,7 @@ public class AutoOperatonThread extends BaseThread {
                     continue;
                 }
                 //如果改机不成功,重新登录
-                if(CommonConstant.APPCONFIG_VEVN.equals(wInfos.get(0).getActionDesc())){
+                if(!validExist008(wInfoMap)&&CommonConstant.APPCONFIG_VEVN.equals(wInfos.get(0).getActionDesc())){
                     actionNo = 0;
                     initWInfoFlag(wInfoMap);
                     continue;
@@ -114,12 +115,12 @@ public class AutoOperatonThread extends BaseThread {
                 //所有事件操作loopNum次数为false，重新轮询一遍(只针对点击、输入事件)
                 ++loopNum;
                 System.out.println("loopNum--->"+loopNum);
-                if(loopNum>2){
+                if(wInfos.get(0).getNodeType()>0&&loopNum>2){//如果是点击界面&&loopNum>2
                     for(Integer key:wInfoMap.keySet()){
                         List<WindowNodeInfo> wInfos1 = wInfoMap.get(key);
                         if(wInfos1.get(0).getNodeType()>0&&doActions(root,wInfos1)){
                             String msg = getExpMsg(wInfos1);//捕获处理异常界面消息
-                            System.out.println("key loopNum--->"+key);
+                            System.out.println("key loopNum--->"+key+" msg:"+msg);
                             if(key==wInfoMap.keySet().size()-1||!"success".equals(msg)){
                                 doLoginFinish(msg);
                             }else {
@@ -181,7 +182,9 @@ public class AutoOperatonThread extends BaseThread {
                 flag = true;
             }
         }else if(CommonConstant.APPCONFIG_VEVN.equals(info.getActionDesc())){
-            if(validEnviroment()){//判断改机成功
+            if(validExist008(wInfoMap)){
+                flag = true;
+            }else if(validEnviroment()){//判断改机成功
                 flag = true;
             }
         }else if(CommonConstant.APPCONFIG_APM.equals(info.getActionDesc())){
@@ -203,7 +206,11 @@ public class AutoOperatonThread extends BaseThread {
                 }
             }
         }else if(CommonConstant.APPCONFIG_VPN.equals(info.getActionDesc())){
-            if(doVPN(root)){
+            if(!info.isActionResultFlag()&&doVPN(root)){
+                flag = true;
+            }
+        }else if(CommonConstant.APPCONFIG_008.equals(info.getActionDesc())){
+            if(!info.isActionResultFlag()&&set008Data(root)){
                 flag = true;
             }
         }
@@ -300,6 +307,18 @@ public class AutoOperatonThread extends BaseThread {
             }
         }
     }
+    //判断是否008改机
+    private boolean validExist008(Map<Integer,List<WindowNodeInfo>> wInfoMap){
+        for(Integer key:wInfoMap.keySet()){
+            List<WindowNodeInfo> wInfos = wInfoMap.get(key);
+            for(WindowNodeInfo wInfo:wInfos){
+                if(CommonConstant.APPCONFIG_008.equals(wInfo.getActionDesc())){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     //捕获登录异常界面消息
     private String getExpMsg(List<WindowNodeInfo> wInfos){
         String expMsg = "success";
@@ -314,7 +333,7 @@ public class AutoOperatonThread extends BaseThread {
     }
 
     private boolean doVPN(AccessibilityNodeInfo root){
-        if(AutoUtil.checkAction(record,"init")){
+        if(AutoUtil.checkAction(record,"init")||AutoUtil.checkAction(record,"008保存数据")){
             AutoUtil.recordAndLog(record,"st设置VPN");
             AutoUtil.opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
             AutoUtil.sleep(500);
@@ -348,7 +367,7 @@ public class AutoOperatonThread extends BaseThread {
         clickTextXY1(514,425,"st点击VPN","miui:id/action_bar_title","无线和网络",800);
         clickTextXY1(514,425,"st点击VPN","miui:id/action_bar_title","Wireless & networks",800);
 
-        if(AutoUtil.checkAction(record,"st点击VPN")||AutoUtil.checkAction(record,"st弹出")||AutoUtil.checkAction(record,"st设置VPN")){
+        if(AutoUtil.checkAction(record,"st点击VPN")||AutoUtil.checkAction(record,"st弹出")||AutoUtil.checkAction(record,"st设置VPN")||AutoUtil.checkAction(record,"wx连接成功")){
 
             AccessibilityNodeInfo linkText4 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
             if(linkText4!=null){
@@ -370,9 +389,8 @@ public class AutoOperatonThread extends BaseThread {
             if(dkNode!=null||dkNode1!=null){
                 AutoUtil.clickXY(756,1792);
                 AutoUtil.recordAndLog(record,"st断开");
-                AutoUtil.sleep(1000);
                 System.out.println("hyj--->断开连接等待");
-                AutoUtil.sleep(3000);
+                AutoUtil.sleep(2000);
             }
             if(AutoUtil.checkAction(record,"st断开")){
                 AutoUtil.clickXY(522,738);
@@ -395,6 +413,41 @@ public class AutoOperatonThread extends BaseThread {
             AutoUtil.recordAndLog(record,action);
             AutoUtil.sleep(milliSeconds);
         }
+    }
+
+    private boolean set008Data(AccessibilityNodeInfo root){
+        if(!root.getPackageName().toString().contains("008")){
+            AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+        }
+        AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
+        if(list!=null){
+            System.out.println("--list-getChildCount->"+list.getChildCount());
+        }
+        if(list!=null&&list.getChildCount()>90){
+            AutoUtil.sleep(3000);
+            System.out.println("currentWx008Data---->"+JSON.toJSONString(currentWx008Data));
+            List<String> dataStrs =  JSON.parseArray(currentWx008Data.getDatas(),String.class);
+            for(int i=1;i<91;i++){
+                if(list.getChild(i).isEditable()){
+                    String data;
+                    if(dataStrs.get(1).contains("历史记录")){//红米2s提取的008数据
+                        data  = dataStrs.get(i+1);
+                    }else {
+                        data  = dataStrs.get(i);
+                    }
+                    System.out.println("-rr->"+i+" "+data);
+                    AutoUtil.performSetText(list.getChild(i),data,record,"008写入"+i+" "+data);
+                }
+            }
+            AutoUtil.recordAndLog(record,"008写入数据完成");
+            if(AutoUtil.checkAction(record,"008写入数据完成")){
+                AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
+                AutoUtil.performClick(save,record,"008保存数据",3500);
+                //AutoUtil.recordAndLog(record,"wx启动微信");
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import org.litepal.crud.DataSupport;
 
@@ -235,6 +236,18 @@ public class PhoneConf {
         System.out.println("create008Data-->"+JSON.toJSONString(currentWx008Data));
         return currentWx008Data;
     }
+    public static Wx008Data createNew008Data(String phone,String pwd,String cnNum,String dataFlag,String phoneStrsAw){
+        Wx008Data currentWx008Data = new Wx008Data();
+        currentWx008Data.setGuid(AutoUtil.getUUID());
+        currentWx008Data.setPhone(phone);
+        currentWx008Data.setWxId(phone);
+        currentWx008Data.setWxPwd(pwd);
+        currentWx008Data.setCnNum(cnNum);
+        currentWx008Data.setCreateTime(new Date());
+        currentWx008Data.setDataFlag(dataFlag);
+        currentWx008Data.setPhoneStrsAw(phoneStrsAw);
+        return currentWx008Data;
+    }
 
 
     private  static String createTags() {
@@ -272,25 +285,6 @@ public class PhoneConf {
     public static List<String> getAddFrWx(){
         List<String> wxids = new ArrayList<>();
        /* wxids.add("ehg333");
-        wxids.add("ehg999");*/
-        /*wxids.add("w222qu");
-        wxids.add("w234wr");*/
-        /*wxids.add("w456mb");
-        wxids.add("w444mb");*/
-       /* wxids.add("w555mb");
-        wxids.add("w666mb");*/
-       /*wxids.add("w777mb");
-        wxids.add("w888mb");*/
-       /* wxids.add("w333mb");
-        wxids.add("w222mb");*/
-
-        /*wxids.add("w333wc");
-        wxids.add("w444wc");*/
-       /* wxids.add("w666wc");
-        wxids.add("w777wc");*/
-        /*wxids.add("w222wt");
-        wxids.add("w333wt");*/
-       /* wxids.add("w444wt");
         wxids.add("w555hb");*/
         String afs = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_AFS);
         if(afs.contains("\n")){
@@ -375,7 +369,70 @@ public class PhoneConf {
           npi.setBuildBoard("");
         return npi;
     }
-    public static void getEnvironmentAwData(){
 
-    }
+   public static NewPhoneInfo createPhoneDataFromSl008(String jsonStr){
+       JSONObject json = JSON.parseObject(jsonStr);
+       NewPhoneInfo npi = new NewPhoneInfo();
+       npi.setRgPhoneNo(json.getString("getLine1Number"));
+       npi.setAndroidId(json.getString("getString"));
+       npi.setBuildTags(json.getString("TAGS"));
+       npi.setBuildType(json.getString("TYPE"));
+       npi.setBuildUser(json.getString("USER"));
+       npi.setBuildBrand(json.getString("BRAND"));
+       npi.setBuildId(json.getString("ID"));
+
+       String abi="armeabi-v7a",abi2="armeabi";
+       String xtjg = json.getString("ARCH");
+       if(xtjg.contains("_")){
+           String[] xtjgs = xtjg.split("_");
+           if(xtjgs!=null&&xtjgs.length>0){
+               abi = xtjgs[0];
+               if(xtjgs.length>1){
+                   abi2 = xtjgs[1];
+               }
+           }
+       }
+       npi.setBuildAbi(abi);
+       npi.setBuildAbi2(abi2);
+
+       npi.setBuildDevice(json.getString("DEVICE"));
+       npi.setBuildProduct(json.getString("PRODUCT"));
+       npi.setDeviceId(json.getString("getDeviceId"));
+       npi.setBuildFingerprint(json.getString("FINGERPRINT"));
+       npi.setDisplayId(json.getString("DISPLAY"));
+       npi.setBuildHardware(json.getString("HARDWARE"));
+       npi.setLine1Number(json.getString("getLine1Number"));
+       npi.setBuildManufacturer(json.getString("MANUFACTURER"));
+       npi.setBuildModel(json.getString("MODEL"));
+       npi.setBtName(json.getString("MODEL"));//?
+       npi.setNetworkCountryIso(json.getString("getNetworkCountryIso"));
+       npi.setNetworkOperator(json.getString("getNetworkOperator"));
+       npi.setNetworkOperatorName(json.getString("getNetworkOperatorName"));
+       npi.setNetworkType(json.getInteger("getNetworkType"));
+       npi.setPhoneType(json.getInteger("getPhoneType"));
+       //npi.setBuildName(pi.getProductName());
+       npi.setBuildName(json.getString("MANUFACTURER"));//?
+       npi.setBuildRadioVersion(json.getString("getRadioVersion"));
+       npi.setBuildRelease(json.getString("RELEASE"));
+       npi.setBuildSdk(json.getString("SDK"));
+       npi.setSerialno(json.getString("SERIAL"));
+       npi.setSimCountryIso(json.getString("getSimCountryIso"));
+       npi.setSimOperator(json.getString("getSimOperator"));
+       npi.setSimOperatorName(json.getString("getSimOperatorName"));
+       npi.setSimSerialNumber(json.getString("getSimSerialNumber"));
+       npi.setSimState(json.getInteger("getSimState"));
+       npi.setSubscriberId(json.getString("getSubscriberId"));
+       npi.setMacAddress(json.getString("getMacAddress"));
+       npi.setP2p0Mac(json.getString("getMacAddress"));//?
+       npi.setCpuName(json.getString("setCpuName"));
+       npi.setIpAddress(json.getString("getAddress"));
+       npi.setNetworkTypeName(json.getString("getNetworkType"));
+       npi.setBuildDescription("");//?
+       npi.setBuildHost(json.getString("HOST"));
+       npi.setBSSID(json.getString("getBSSID"));
+       npi.setSSID(json.getString("getSSID"));
+       npi.setBuildIncremental("");
+       npi.setBuildBoard("");
+       return npi;
+   }
 }

@@ -67,4 +67,50 @@ public class ImpExpData {
         System.out.println("create008Data-->"+JSON.toJSONString(currentWx008Data));
         return currentWx008Data;
     }
+    public static Map<String,Object> import008Data()  {
+        int countAll=0,countExist=0,countSucc=0;
+        Map<String,Object> result = new HashMap<String,Object>();
+        System.out.println("importAData-->0");
+        File file = new File(FilePathCommon.sl008DataPath);
+        if(file.exists()){
+            File[] files = file.listFiles();
+            if(file!=null&&files.length>0){
+                countAll = files.length;
+                Map<String,String> pwds = getSl008Pwd();
+                for(File f:files){
+                    String json = FileUtil.readAllUtf8(FilePathCommon.sl008DataPath+f.getName());
+                    NewPhoneInfo npi = PhoneConf.createPhoneDataFromSl008(json);
+                    System.out.println("npi-->"+JSON.toJSONString(npi));
+                    Wx008Data wx008Data = PhoneConf.createNew008Data(npi.getLine1Number(),pwds.get(npi.getLine1Number()),"86","010",JSON.toJSONString(npi));
+                    System.out.println("sl008Data-->"+JSON.toJSONString(wx008Data));
+                    List<Wx008Data> getData = DataSupport.where("phone=?", wx008Data.getPhone()).find(Wx008Data.class);
+                    if(getData!=null&&getData.size()>0){//判断已存在不导入
+                        countExist = countExist+1;
+                    }else {
+                        if(wx008Data.save()){//导入成功
+                            countSucc = countSucc+1;
+                        }
+                    }
+                }
+            }
+        }
+        result.put("countAll",countAll);
+        result.put("countSucc",countSucc);
+        result.put("countExist",countExist);
+        System.out.println("importAData-->result:"+result);
+        return result;
+    }
+    private static Map<String,String> getSl008Pwd(){
+        Map<String,String> result = new HashMap<String,String>();
+        List<String> pwds = FileUtil.read008Data(FilePathCommon.sl008DataPwdPath);
+        for(String pwd:pwds){
+            if(pwd.contains(",")){
+                String[] arr = pwd.split(",");
+                if(arr.length==2){
+                    result.put(arr[0].trim(),arr[1].trim());
+                }
+            }
+        }
+        return result;
+    }
 }

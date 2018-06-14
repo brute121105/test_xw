@@ -16,8 +16,9 @@ public class WindowNodeInfoConf {
     public static List<WindowNodeInfo> getWindowNodeInfo(){
         List<WindowNodeInfo> infos = new ArrayList<WindowNodeInfo>();
         infos.add(new WindowNodeInfo("养号",0,CommonConstant.APPCONFIG_CEVN));//清除并准备改机环境
-        infos.add(new WindowNodeInfo("养号",1,CommonConstant.APPCONFIG_APM));//飞行模式
-        //infos.add(new WindowNodeInfo("养号",1.1,CommonConstant.APPCONFIG_VPN));//打开VPN界面
+        //infos.add(new WindowNodeInfo("养号",1,CommonConstant.APPCONFIG_APM));//飞行模式
+        infos.add(new WindowNodeInfo("养号",1,CommonConstant.APPCONFIG_VPN));//打开VPN界面
+        //infos.add(new WindowNodeInfo("养号",2,CommonConstant.APPCONFIG_008));//设置008
         infos.add(new WindowNodeInfo("养号",2, CommonConstant.APPCONFIG_SWX));//启动微信
         infos.add(new WindowNodeInfo("养号","注册|登录",1,3,"点击登录1","登录",""));
         infos.add(new WindowNodeInfo("养号","窗口文本",1,4,"点击用微信号登录","用微信号/QQ号/邮箱登录",""));
