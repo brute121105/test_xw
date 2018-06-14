@@ -21,6 +21,7 @@ public class WindowNodeInfo {
     private int actionChildNo;//动作子序号
     private String actionDesc;//点击行为动作描述
     private long actionSleepMs;//点击行为后休眠毫秒数
+    private String actionGroupTag;//分组标签
     private int nodeType;//节点类型，1 按钮 2 输入框 3 异常窗口
     private String nodeId;//节点id
     private String nodePath;//节点路径
@@ -35,16 +36,16 @@ public class WindowNodeInfo {
     public WindowNodeInfo() {
     }
 
-    public WindowNodeInfo(String operation, double actionNo, String actionDesc) {
+    public WindowNodeInfo(String operation, String actionGroupTag, String actionDesc) {
         this.operation = operation;
-        this.actionNo = actionNo;
+        this.actionGroupTag = actionGroupTag;
         this.actionDesc = actionDesc;
     }
 
-    public WindowNodeInfo(String operation,String windowText,int nodeType,double actionNo, String actionDesc,String nodeText,String nodePath) {
+    public WindowNodeInfo(String operation,String windowText,int nodeType,String actionGroupTag, String actionDesc,String nodeText,String nodePath) {
         this.windowText = windowText;
         this.operation = operation;
-        this.actionNo = actionNo;
+        this.actionGroupTag = actionGroupTag;
         this.actionDesc = actionDesc;
         this.nodeType = nodeType;
         this.nodePath = nodePath;
@@ -53,6 +54,14 @@ public class WindowNodeInfo {
 
     public Wx008Data getCurrentWx008Data() {
         return currentWx008Data;
+    }
+
+    public String getActionGroupTag() {
+        return actionGroupTag;
+    }
+
+    public void setActionGroupTag(String actionGroupTag) {
+        this.actionGroupTag = actionGroupTag;
     }
 
     public void setCurrentWx008Data(Wx008Data currentWx008Data) {
