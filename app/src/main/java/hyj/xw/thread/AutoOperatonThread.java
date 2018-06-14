@@ -6,8 +6,10 @@ import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +77,7 @@ public class AutoOperatonThread extends BaseThread {
                     LogUtil.d(TAG,"暂停....");
                     continue;
                 }
+                System.out.println("strs-->"+currentWx008Data.getPhoneStrsAw());
                 //保持屏幕常亮
                 AutoUtil.wake();
 
@@ -115,7 +118,7 @@ public class AutoOperatonThread extends BaseThread {
                 //所有事件操作loopNum次数为false，重新轮询一遍(只针对点击、输入事件)
                 ++loopNum;
                 System.out.println("loopNum--->"+loopNum);
-                if(wInfos.get(0).getNodeType()>0&&loopNum>2){//如果是点击界面&&loopNum>2
+                if(wInfos.get(wInfos.size()-1).getNodeType()>0&&loopNum>2){//如果是点击界面&&loopNum>2
                     for(Integer key:wInfoMap.keySet()){
                         List<WindowNodeInfo> wInfos1 = wInfoMap.get(key);
                         if(wInfos1.get(0).getNodeType()>0&&doActions(root,wInfos1)){
@@ -282,7 +285,7 @@ public class AutoOperatonThread extends BaseThread {
                     }
                     info.setInputText(account);
                 }else if("输入密码".equals(info.getActionDesc())){
-                    info.setInputText(currentWx008Data.getWxPwd());
+                    info.setInputText(TextUtils.isEmpty(currentWx008Data.getWxPwd())?"NULLNULL":currentWx008Data.getWxPwd());
                 }
             }
         }
@@ -419,14 +422,24 @@ public class AutoOperatonThread extends BaseThread {
         if(!root.getPackageName().toString().contains("008")){
             AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         }
+        if(AutoUtil.findNodeInfosByText(root,"免费续费")!=null){
+            AutoUtil.clickXY(550,650);
+            return false;
+        }
+
         AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
         if(list!=null){
             System.out.println("--list-getChildCount->"+list.getChildCount());
         }
         if(list!=null&&list.getChildCount()>90){
             AutoUtil.sleep(3000);
-            System.out.println("currentWx008Data---->"+JSON.toJSONString(currentWx008Data));
-            List<String> dataStrs =  JSON.parseArray(currentWx008Data.getDatas(),String.class);
+
+            List<String> dataStrs;
+            if("010".equals(currentWx008Data.getDataFlag())){
+                dataStrs = currentWx008Data.getSl008To008Datas(currentWx008Data.getPhoneStrsAw());
+            }else {
+                dataStrs =  JSON.parseArray(currentWx008Data.getDatas(),String.class);
+            }
             for(int i=1;i<91;i++){
                 if(list.getChild(i).isEditable()){
                     String data;
