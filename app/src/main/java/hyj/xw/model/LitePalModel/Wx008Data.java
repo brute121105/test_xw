@@ -6,8 +6,11 @@ import com.alibaba.fastjson.JSONObject;
 
 import org.litepal.crud.DataSupport;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
+import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.PhoneInfo;
 
 /**
@@ -31,7 +34,7 @@ public class Wx008Data  extends DataSupport{
     private String friends;//好友
     private Date createTime;
     private Date lastLoginTime;
-    private String dataFlag;//008  抓取008数据
+    private String dataFlag;//007 008 009  抓取008数据  010 转换神龙008数据
     private String nickName;
     private String replacePhone;
     private String wxid19;
@@ -50,6 +53,18 @@ public class Wx008Data  extends DataSupport{
 
 
 
+    public List<String> getSl008To008Datas(String phoneStrsAw){
+        NewPhoneInfo npi = JSONObject.parseObject(phoneStrsAw,NewPhoneInfo.class);
+        String[] arr = {"从网络获取数据","序列号",npi.getDeviceId(),"android_id",npi.getAndroidId(),"手机号码",npi.getLine1Number(),"手机卡序列号",npi.getSimSerialNumber(),
+                "IMSI",npi.getSubscriberId(),"手机卡国家","cn","运营商",npi.getSimOperator(),"运营商名字",npi.getSimOperatorName(),"国家iso代码","cn",
+                "网络运营商类型",npi.getNetworkOperator(),"网络类型名",npi.getNetworkOperatorName(),"网络类型",npi.getNetworkType()+"","手机类型",npi.getPhoneType()+"","手机卡状态",npi.getSimState()+"",
+                "mac地址",npi.getMacAddress(),"无线路由器名","","无线路由器地址","","系统版本",npi.getBuildRelease(),"系统版本值",npi.getBuildSdk(),
+                "系统架构（请保留下划线，下划线隔开的为两个数据）",npi.getBuildAbi()+"_"+npi.getBuildAbi2(),
+                "屏幕分辨率","1080x1920","固件版本",npi.getBuildRadioVersion(),"品牌",npi.getBuildBrand(),"型号",npi.getBuildModel(),"ID",npi.getBuildId(),"DISPLAY",npi.getDisplayId(),
+                "产品名",npi.getBuildProduct(),"制造商",npi.getBuildManufacturer(),"设备名",npi.getBuildDevice(),"cpu型号",npi.getCpuName(),"硬件",npi.getBuildHardware(),
+                "指纹",npi.getBuildFingerprint(),"串口序列号",npi.getSerialno(),"蓝牙地址",npi.getIpAddress(),"GPU","null","GPU厂商","null","内网ip（wifi可用）","null","位置模拟","基站定位（需要关闭gps）","gps定位(修改定位成功的gps数据)","gps定位(修改定位成功的gps数据)+禁用基站","禁用基站","系统默认","基站位置","3903310032579","设置","gps位置","null","设置","联网方式（vip可用）","wifi连接","数据流量","系统默认",null,null};
+        return Arrays.asList(arr);
+    }
     public void setPhoneInfo(String datas){
         String[] strs = JSONObject.parseObject(datas,String[].class);
         int i=0;
