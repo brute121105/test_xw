@@ -60,6 +60,7 @@ public class WindowNodeInfoConf {
        return infos;
    }
 
+    //排序，分组
     public static Map<Integer,List<WindowNodeInfo>> getWinfoMapByOperation(String operation){
         Map<Integer,List<WindowNodeInfo>> map  = new HashMap<Integer,List<WindowNodeInfo>>();
         List<WindowNodeInfo> infos = getWindowNodeInfo();
