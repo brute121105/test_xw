@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import hyj.xw.util.NodeActionUtil;
 import hyj.xw.util.ParseRootUtil;
 import hyj.xw.util.WindowOperationUtil;
 
+import static android.R.attr.borderlessButtonStyle;
 import static android.R.attr.label;
 
 /**
@@ -42,23 +44,28 @@ import static android.R.attr.label;
 public class AutoOperatonThread extends BaseThread {
     public  final String TAG = this.getClass().getSimpleName();
     private int countRootNull =0;
-    private int actionNo=0;
+    private int actionNo=0;//记录点击所处在位置
     private int loopNum =0;//标志循环到底部次数
-    private Map<Integer,List<WindowNodeInfo>> wInfoMap,exceptionWInfoMap;
-    private int loginIndex,endLoginIndex;//登录序号
+    private Map<Integer,List<WindowNodeInfo>> wInfoMap;
+    private int loginIndex,endLoginIndex;//开始、结束 登录序号
     private String isLoginSucessPause;//登录成功是否暂停
     private List<Wx008Data> wx008Datas;
-    private Wx008Data currentWx008Data;
+    private Wx008Data currentWx008Data;//当前运行wx数据
     private String extValue,isAirChangeIp,isLoginByPhone;
     private boolean isStartAirPlaneMode = false;
+    private List<String> loginSussDos=new ArrayList<String>();
+    private String operation;//操作,注册、养号...
     public AutoOperatonThread(AccessibilityService context, Map<String, String> record, AccessibilityParameters parameters){
         super(context,record,parameters);
         intiParam();
     }
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
-        wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation("养号");
-        exceptionWInfoMap = WindowNodeInfoConf.getWinfoMapByOperation("异常界面");
+        loginSussDos.add("养号");
+        loginSussDos.add("关手机号搜索");
+        loginSussDos.add("修改密码");
+        operation = loginSussDos.get(0);
+        wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation(operation);
         wx008Datas = DaoUtil.getWx008Datas();
         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
@@ -66,29 +73,28 @@ public class AutoOperatonThread extends BaseThread {
         isAirChangeIp = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_AIR_CHANGE_IP);
         isLoginByPhone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_BY_PHONE);
         currentWx008Data = wx008Datas.get(loginIndex);
+
     }
     @Override
     public Object call() {
         while (true){
             try {
                 AutoUtil.sleep(500);
-                LogUtil.d(TAG,Thread.currentThread().getName()+" actionNo:"+actionNo+" record:"+record);
-                if(parameters.getIsStop()==1){
-                    LogUtil.d(TAG,"暂停....");
-                    continue;
-                }
+                LogUtil.d(TAG,Thread.currentThread().getName()+" actionNo:"+actionNo+" record:"+record+" operation:"+operation);
                 System.out.println("strs-->"+currentWx008Data.getPhoneStrsAw());
                 //保持屏幕常亮
                 AutoUtil.wake();
-
                 AccessibilityNodeInfo root = context.getRootInActiveWindow();
                 //roor超过5次为空，启动wx
                 if(root==null){
                     continue;
                 }
                 if(NodeActionUtil.isContainsStrs(root,"数据...")||NodeActionUtil.isContainsStrs(root,"登录...")) continue;
-
                 ParseRootUtil.debugRoot(root);
+                if(parameters.getIsStop()==1){
+                    LogUtil.d(TAG,"暂停....");
+                    continue;
+                }
                 System.out.println("getPackageName--->"+root.getPackageName());
 
                 List<WindowNodeInfo> wInfos = wInfoMap.get(actionNo);//获取当前执行动作
@@ -112,26 +118,34 @@ public class AutoOperatonThread extends BaseThread {
                     initWInfoFlag(wInfoMap);
                     continue;
                 }
-                //c处理随机异常界面
-                if(doActions(root,exceptionWInfoMap.get(actionNo))){
-                    continue;
-                }
+
                 //所有事件操作loopNum次数为false，重新轮询一遍(只针对点击、输入事件)
                 ++loopNum;
                 System.out.println("loopNum--->"+loopNum);
+                boolean isBreakSucc = false;
                 if(wInfos.get(wInfos.size()-1).getNodeType()>0&&loopNum>2){//如果是点击界面&&loopNum>2
                     for(Integer key:wInfoMap.keySet()){
                         List<WindowNodeInfo> wInfos1 = wInfoMap.get(key);
                         if(wInfos1.get(0).getNodeType()>0&&doActions(root,wInfos1)){
                             String msg = getExpMsg(wInfos1);//捕获处理异常界面消息
                             System.out.println("key loopNum--->"+key+" msg:"+msg);
-                            if(key==wInfoMap.keySet().size()-1||!"success".equals(msg)){
+                            if(key==wInfoMap.keySet().size()-1||msg.contains("登录异常")){
                                 doLoginFinish(msg);
                             }else {
                                 actionNo = key+1;
                             }
+                            isBreakSucc = true;
                             break;
                         }
+                    }
+                }
+                if(isBreakSucc) continue;
+
+                //执行动作后返回初始界面
+                if(!operation.equals(loginSussDos.get(0))){
+                    if(AutoUtil.findNodeInfosByText(root,"我")!=null){
+                        WindowOperationUtil.performBack(context);
+                        System.out.println("performBack--->");
                     }
                 }
 
@@ -144,11 +158,18 @@ public class AutoOperatonThread extends BaseThread {
     private void doLoginFinish(String msg){
         actionNo=0;
         initWInfoFlag(wInfoMap);
-        doNextIndexAndRecord2DB();
-        currentWx008Data = wx008Datas.get(loginIndex);
-        int cn = DaoUtil.updateExpMsg(currentWx008Data,msg+"-"+AutoUtil.getCurrentDate());
-        System.out.println("excpMsg-->"+cn);
-        LogUtil.login(loginIndex+" msg:"+msg,currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
+        if(loginSussDos.indexOf(operation)==loginSussDos.size()-1){//登录成功没有其他operation，登录下一个
+            doNextIndexAndRecord2DB();
+            operation = loginSussDos.get(0);
+            wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation(operation);//重新养号或注册
+            currentWx008Data = wx008Datas.get(loginIndex);
+            int cn = DaoUtil.updateExpMsg(currentWx008Data,msg+"-"+AutoUtil.getCurrentDate());
+            System.out.println("excpMsg-->"+cn);
+            LogUtil.login(loginIndex+" msg:"+msg,currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
+        }else {
+            operation = loginSussDos.get(loginSussDos.indexOf(operation)+1);
+            wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation(operation);
+        }
     }
 
     public  boolean doActions(AccessibilityNodeInfo root,List<WindowNodeInfo> wInfos){
@@ -206,6 +227,8 @@ public class AutoOperatonThread extends BaseThread {
                     flag = WindowOperationUtil.performSetText(WindowOperationUtil.getNodeByInfo(root,info),info);
                 }else if(3==info.getNodeType()){//异常窗口
                     flag = NodeActionUtil.isWindowContainStr(root,info.getNodeText());
+                }else if(4==info.getNodeType()){//开关按钮
+                    flag = WindowOperationUtil.performClickByRect(WindowOperationUtil.getNodeByInfo(root,info),info);
                 }
             }
         }else if(CommonConstant.APPCONFIG_VPN.equals(info.getActionDesc())){

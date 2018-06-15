@@ -1,7 +1,9 @@
 package hyj.xw.util;
 
+import android.accessibilityservice.AccessibilityService;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -96,6 +98,31 @@ public class WindowOperationUtil {
         }
         return isClick;
     }
+
+    //ACTION_FOCUS
+    public static boolean performFocus(AccessibilityNodeInfo nodeInfo,WindowNodeInfo info) {
+        boolean isClick = false;
+        if(nodeInfo == null)  return false;
+        if(nodeInfo.isFocusable()) {
+            isClick = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+            sleep(info.getActionSleepMs());
+        } else {
+            isClick = performFocus(nodeInfo.getParent(),info);
+        }
+        return isClick;
+    }
+    public static boolean performClickByRect(AccessibilityNodeInfo nodeInfo,WindowNodeInfo info) {
+        boolean flag = false;
+        if(nodeInfo==null) return flag;
+        if("已关闭".equals(nodeInfo.getContentDescription())) return true;
+        if("已开启".equals(nodeInfo.getContentDescription())){
+            Rect rect = new Rect();
+            nodeInfo.getBoundsInScreen(rect);
+            AutoUtil.clickXY(rect.centerX(),rect.centerY());
+            flag = true;
+        }
+        return flag;
+    }
     public static boolean performClickTest(AccessibilityNodeInfo nodeInfo) {
         boolean isClick = false;
         if(nodeInfo == null)  return false;
@@ -105,6 +132,11 @@ public class WindowOperationUtil {
             isClick = performClickTest(nodeInfo.getParent());
         }
         return isClick;
+    }
+    //返回
+    public static void performBack(AccessibilityService service) {
+        if(service == null)  return;
+        service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
     }
 
     //休眠毫秒
@@ -124,7 +156,7 @@ public class WindowOperationUtil {
             node = findNodeInfosByText(root,info.getNodeText());
             info.setFindNodeResult("根据Text查找"+(node==null));
         }
-        if(node==null&&!TextUtils.isEmpty(info.getNodePath())){
+        if(node==null&&!TextUtils.isEmpty(info.getNodePath())){//nodePath不为空
             node = ParseRootUtil.getNodePath(root,info.getNodePath());
             info.setFindNodeResult("根据Path查找"+(node==null));
         }

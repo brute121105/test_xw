@@ -51,6 +51,16 @@ public class WindowNodeInfo {
         this.nodePath = nodePath;
         this.nodeText = nodeText;
     }
+    public WindowNodeInfo(String operation,String windowText,int nodeType,String actionGroupTag, String actionDesc,String nodeText,String nodePath,String nodeDesc) {
+        this.windowText = windowText;
+        this.operation = operation;
+        this.actionGroupTag = actionGroupTag;
+        this.actionDesc = actionDesc;
+        this.nodeType = nodeType;
+        this.nodePath = nodePath;
+        this.nodeText = nodeText;
+        this.nodeDesc = nodeDesc;
+    }
 
     public Wx008Data getCurrentWx008Data() {
         return currentWx008Data;
@@ -206,6 +216,6 @@ public class WindowNodeInfo {
     }
 
     public String getActionMsg(){
-        return (actionNo+actionDesc+"【"+nodeText+inputText+"】").replaceAll("null","").replaceAll("【】","");
+        return (actionNo+"-"+operation+"-"+actionDesc+"【"+nodeText+inputText+"】-").replaceAll("null","").replaceAll("【】","");
     }
 }

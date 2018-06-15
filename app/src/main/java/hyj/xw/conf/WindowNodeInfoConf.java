@@ -58,6 +58,13 @@ public class WindowNodeInfoConf {
        infos.add(new WindowNodeInfo("养号","窗口文本",3,"g","登录异常","长期未登录",""));
        infos.add(new WindowNodeInfo("养号","看看手机通讯录",1,"g","随机界面点击-否","否",""));
        infos.add(new WindowNodeInfo("养号","窗口文本",1,"g","随机界面点击-完成应急联系人","完成",""));
+       infos.add(new WindowNodeInfo("关手机号搜索","窗口文本",1,"a","点击我","我",""));
+       infos.add(new WindowNodeInfo("关手机号搜索","窗口文本",1,"b","点击设置","设置",""));
+       infos.add(new WindowNodeInfo("关手机号搜索","窗口文本",1,"c","点击隐私","隐私",""));
+       infos.add(new WindowNodeInfo("关手机号搜索","窗口文本",1,"d","点击添加我的方式","添加我的方式",""));
+       infos.add(new WindowNodeInfo("关手机号搜索","关闭后，其他用户将不能",4,"e","点击手机号","","00221","已开启"));
+       infos.add(new WindowNodeInfo("修改密码","窗口文本",1,"a","点击我","我",""));
+       infos.add(new WindowNodeInfo("修改密码","窗口文本",1,"b","点击设置","设置",""));
        return infos;
    }
 

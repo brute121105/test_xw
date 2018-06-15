@@ -1,8 +1,10 @@
 package hyj.xw;
 
 import android.accessibilityservice.AccessibilityService;
+import android.graphics.Rect;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,7 @@ import hyj.xw.flowWindow.MyWindowManager;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.LogUtil;
+import hyj.xw.util.ParseRootUtil;
 
 /**
  * Created by Administrator on 2017/12/14.
@@ -84,6 +87,17 @@ public class ActionService  extends AccessibilityService {
 
         LogUtil.d("AccessibilityService","accessibilityEvent:"+accessibilityEvent.getEventType());
         MyWindowManager.updateFlowMsg(getFlowMsg(record));
+        AccessibilityNodeInfo root = getRootInActiveWindow();
+        if(root!=null){
+            AccessibilityNodeInfo node = ParseRootUtil.getNodePath(root,"00221");
+            if(node!=null){
+                System.out.println("node--->"+node.getContentDescription());
+                /*Rect rect = new Rect();
+                node.getBoundsInScreen(rect);
+                System.out.println(" Rect node--->"+rect.centerX()+" y:"+rect.centerY());
+                AutoUtil.clickXY(rect.centerX(),rect.centerY());*/
+            }
+        }
 
     }
     private String getFlowMsg(Map<String,String> record){
