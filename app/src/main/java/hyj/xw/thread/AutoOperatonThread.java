@@ -95,9 +95,10 @@ public class AutoOperatonThread extends BaseThread {
                 //处理清除数据失败
                 setNodeInputText(wInfos,currentWx008Data);//设置输入框文本
                 if(doActions(root,wInfos)){
-                    if(CommonConstant.APPCONFIG_APM.equals(wInfos.get(0).getActionDesc())&&!waitAriplaneModeSuc(root)) continue;//飞行模式没完成，继续
+                    if(CommonConstant.APPCONFIG_APM.equals(wInfos.get(0).getActionDesc())&&!waitAriplaneModeSuc(root)) continue;//飞行模式后网络没恢复，返回继续等待
                     String msg = getExpMsg(wInfos);//捕获处理异常界面消息
-                    if(wInfoMap.keySet().size()-1==actionNo||!"success".equals(msg)){
+                    if(msg.contains("随机界面点击")) continue;//随机界面点击 actionNo不递增
+                    if(wInfoMap.keySet().size()-1==actionNo||msg.contains("登录异常")){
                         doLoginFinish(msg);
                     }else {
                         ++actionNo;
@@ -157,9 +158,8 @@ public class AutoOperatonThread extends BaseThread {
             for(int i=0,l=wInfos.size();i<l;i++){
                 flag = doAction(root,wInfos.get(i));
                 System.out.println("doActions-->:"+wInfos.get(i).getActionMsg()+flag);
-                if(flag){
-                    if("登录异常".equals(wInfos.get(i).getActionDesc())
-                            ||(i<wInfos.size()-1&&"登录异常".equals(wInfos.get(i+1).getActionDesc()))){
+                if(flag){//如果点击 点击为 true
+                    if("登录异常".equals(wInfos.get(i).getActionDesc()) ||(i<wInfos.size()-1&&"登录异常".equals(wInfos.get(i+1).getActionDesc()))){//如果是点击异常true 或 判断登录成功true 直接返回，不需继续执行
                         return flag;
                     }
                 }
@@ -327,8 +327,14 @@ public class AutoOperatonThread extends BaseThread {
         String expMsg = "success";
         if(wInfos!=null&&wInfos.size()>0){
             for(WindowNodeInfo wInfo:wInfos){
-                if("登录异常".equals(wInfo.getActionDesc())&&wInfo.isActionResultFlag()){
-                    expMsg = wInfo.getNodeText();
+                if(wInfo.isActionResultFlag()){//如果点击登录异常 和 随机界面为true
+                    if("登录异常".equals(wInfo.getActionDesc())){
+                        expMsg = "登录异常-"+wInfo.getNodeText();
+                        break;
+                    }else if("随机界面".equals(wInfo.getActionDesc())){
+                        expMsg="随机界面点击";
+                        break;
+                    }
                 }
             }
         }
