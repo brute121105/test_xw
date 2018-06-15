@@ -98,8 +98,13 @@ public class AutoOperatonThread extends BaseThread {
                 System.out.println("getPackageName--->"+root.getPackageName());
 
                 List<WindowNodeInfo> wInfos = wInfoMap.get(actionNo);//获取当前执行动作
+                System.out.println("wInfos--->"+JSON.toJSONString(wInfos));
                 //处理清除数据失败
-                setNodeInputText(wInfos,currentWx008Data);//设置输入框文本
+                if("养号".equals(operation)){
+                    setNodeInputText(wInfos,currentWx008Data);//设置输入框文本
+                }else if("修改密码".equals(operation)){
+                    setNodeInputTexChangePwd(wInfos,currentWx008Data);
+                }
                 if(doActions(root,wInfos)){
                     if(CommonConstant.APPCONFIG_APM.equals(wInfos.get(0).getActionDesc())&&!waitAriplaneModeSuc(root)) continue;//飞行模式后网络没恢复，返回继续等待
                     String msg = getExpMsg(wInfos);//捕获处理异常界面消息
@@ -142,8 +147,8 @@ public class AutoOperatonThread extends BaseThread {
                 if(isBreakSucc) continue;
 
                 //执行动作后返回初始界面
-                if(!operation.equals(loginSussDos.get(0))){
-                    if(AutoUtil.findNodeInfosByText(root,"我")!=null){
+                if(!operation.equals(loginSussDos.get(0))&&actionNo==0){
+                    if(AutoUtil.findNodeInfosByText(root,"我")==null){
                         WindowOperationUtil.performBack(context);
                         System.out.println("performBack--->");
                     }
@@ -158,14 +163,14 @@ public class AutoOperatonThread extends BaseThread {
     private void doLoginFinish(String msg){
         actionNo=0;
         initWInfoFlag(wInfoMap);
-        if(loginSussDos.indexOf(operation)==loginSussDos.size()-1){//登录成功没有其他operation，登录下一个
-            doNextIndexAndRecord2DB();
+        if(loginSussDos.indexOf(operation)==loginSussDos.size()-1||msg.contains("登录异常")){//登录成功没有其他operation，登录下一个
             operation = loginSussDos.get(0);
             wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation(operation);//重新养号或注册
-            currentWx008Data = wx008Datas.get(loginIndex);
             int cn = DaoUtil.updateExpMsg(currentWx008Data,msg+"-"+AutoUtil.getCurrentDate());
             System.out.println("excpMsg-->"+cn);
             LogUtil.login(loginIndex+" msg:"+msg,currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
+            doNextIndexAndRecord2DB();
+            currentWx008Data = wx008Datas.get(loginIndex);
         }else {
             operation = loginSussDos.get(loginSussDos.indexOf(operation)+1);
             wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation(operation);
@@ -229,6 +234,10 @@ public class AutoOperatonThread extends BaseThread {
                     flag = NodeActionUtil.isWindowContainStr(root,info.getNodeText());
                 }else if(4==info.getNodeType()){//开关按钮
                     flag = WindowOperationUtil.performClickByRect(WindowOperationUtil.getNodeByInfo(root,info),info);
+                }else if(5==info.getNodeType()){//文本，判断是否存在节点
+                    if(WindowOperationUtil.getNodeByInfo(root,info)!=null){
+                        flag = true;
+                    }
                 }
             }
         }else if(CommonConstant.APPCONFIG_VPN.equals(info.getActionDesc())){
@@ -295,7 +304,7 @@ public class AutoOperatonThread extends BaseThread {
 
     private void setNodeInputText(List<WindowNodeInfo> wInfos,Wx008Data currentWx008Data){
         for(WindowNodeInfo info:wInfos){
-            info.setCurrentWx008Data(currentWx008Data);
+            //info.setCurrentWx008Data(currentWx008Data);
             if(info.getNodeType()==2){
                 if("输入账号".equals(info.getActionDesc())){
                     String account = "";
@@ -309,6 +318,17 @@ public class AutoOperatonThread extends BaseThread {
                     info.setInputText(account);
                 }else if("输入密码".equals(info.getActionDesc())){
                     info.setInputText(TextUtils.isEmpty(currentWx008Data.getWxPwd())?"NULLNULL":currentWx008Data.getWxPwd());
+                }
+            }
+        }
+    }
+    private void setNodeInputTexChangePwd(List<WindowNodeInfo> wInfos,Wx008Data currentWx008Data){
+        for(WindowNodeInfo info:wInfos){
+            if(info.getNodeType()==2){
+                if("填写原密码".equals(info.getActionDesc())){
+                    info.setInputText(currentWx008Data.getWxPwd());
+                }else if("填写新密码".equals(info.getActionDesc())||"再次填写确认".equals(info.getActionDesc())){
+                    info.setInputText(getNewPwd(currentWx008Data.getPhone()));
                 }
             }
         }
@@ -357,11 +377,18 @@ public class AutoOperatonThread extends BaseThread {
                     }else if("随机界面".equals(wInfo.getActionDesc())){
                         expMsg="随机界面点击";
                         break;
+                    }else if("判断密码设置成功".equals(wInfo.getActionDesc())){//密码设置成功，数据修改
+                        String newPwd = getNewPwd(currentWx008Data.getPhone());
+                        int cn = DaoUtil.updatePwd(currentWx008Data,newPwd);
+                        System.out.println("SetPwdThread-->cn:"+ cn+" wInfo.getInputText():"+newPwd);
                     }
                 }
             }
         }
         return expMsg;
+    }
+    private String getNewPwd(String phone){
+        return "www23"+phone.substring(phone.length()-3);
     }
 
     private boolean doVPN(AccessibilityNodeInfo root){

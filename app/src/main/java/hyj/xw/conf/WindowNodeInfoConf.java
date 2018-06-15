@@ -65,6 +65,14 @@ public class WindowNodeInfoConf {
        infos.add(new WindowNodeInfo("关手机号搜索","关闭后，其他用户将不能",4,"e","点击手机号","","00221","已开启"));
        infos.add(new WindowNodeInfo("修改密码","窗口文本",1,"a","点击我","我",""));
        infos.add(new WindowNodeInfo("修改密码","窗口文本",1,"b","点击设置","设置",""));
+       infos.add(new WindowNodeInfo("修改密码","窗口文本",1,"c","点击帐号与安全","帐号与安全",""));
+       infos.add(new WindowNodeInfo("修改密码","窗口文本",1,"d","点击微信密码","微信密码",""));
+       infos.add(new WindowNodeInfo("修改密码","窗口文本",2,"e","填写原密码","","0034"));
+       infos.add(new WindowNodeInfo("修改密码","窗口文本",2,"e","填写新密码","","0036"));
+       infos.add(new WindowNodeInfo("修改密码","窗口文本",2,"e","再次填写确认","","0038"));
+       infos.add(new WindowNodeInfo("修改密码","窗口文本",1,"e","点击完成","完成",""));
+       infos.add(new WindowNodeInfo("修改密码","窗口文本",5,"f","判断密码设置成功","微信密码设置成功，以后可通过手机号+微信密码登录微信",""));
+
        return infos;
    }
 

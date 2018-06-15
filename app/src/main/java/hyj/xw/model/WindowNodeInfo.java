@@ -22,7 +22,7 @@ public class WindowNodeInfo {
     private String actionDesc;//点击行为动作描述
     private long actionSleepMs;//点击行为后休眠毫秒数
     private String actionGroupTag;//分组标签
-    private int nodeType;//节点类型，1 按钮 2 输入框 3 异常窗口
+    private int nodeType;//节点类型，1 按钮 2 输入框 3 异常窗口 4 开关按钮
     private String nodeId;//节点id
     private String nodePath;//节点路径
     private String nodeText;//节点文本
