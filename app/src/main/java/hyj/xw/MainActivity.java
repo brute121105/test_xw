@@ -242,18 +242,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
     public void testMethod()  {
-         List<String> phones = FileUtil.read008Data("/sdcard/brute9.txt");
+         List<String> phones = FileUtil.read008Data("/sdcard/onlineWx.txt");
+         int count=0;
           for(String phone:phones){
               phone = phone.substring(phone.indexOf("--")+2);
               System.out.println("wxid-->"+phone);
               Wx008Data  wd = DaoUtil.findByWxNumOrWxid(phone);
-              if(wd==null) continue;
-              wd.setDieFlag(888);
-              int cn = wd.updateAll("wxId=? or wxid19=?",phone,phone);
-              if(cn>0){
-                  System.out.println("cn-->"+cn+" wxid:"+phone);
+
+              if(wd!=null&&(!TextUtils.isEmpty(wd.getWxId())||!TextUtils.isEmpty(wd.getWxid19()))){
+                  wd.setDieFlag(991);
+                  int cn = wd.updateAll("wxId=? or wxid19=?",phone,phone);
+                  if("qwi565".equals(wd.getWxId())){
+                      System.out.println("qwi565 -->"+cn);
+                  }
+                  if(cn>0){
+                      count = count+1;
+                      System.out.println("cn-->"+cn+" wxid:"+phone);
+                  }
               }
           }
+        System.out.println("count cn-->"+count);
+    }
+    private void testMethod2(){
+        List<Wx008Data> datas = DaoUtil.findByDataBydataFlag();
+        List<String> phones = FileUtil.read008Data("/sdcard/onlineWx.txt");
+        for(Wx008Data data:datas){
+            System.out.println("data:"+data.getWxid19()+data.getWxId());
+            for(String wx:phones){
+                wx = wx.substring(wx.indexOf("--")+2);
+                if(wx.equals(data.getWxId())||wx.equals(data.getWxid19())){
+                    System.out.println("wx-->"+wx);
+                }
+            }
+        }
     }
 
     public void clearAppData(){
