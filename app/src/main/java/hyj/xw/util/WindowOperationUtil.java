@@ -98,6 +98,19 @@ public class WindowOperationUtil {
         }
         return isClick;
     }
+    //ACTION_LONG_CLICK
+    public static boolean performLongClick(AccessibilityNodeInfo nodeInfo,WindowNodeInfo info) {
+        boolean isClick = false;
+        if(nodeInfo == null)  return false;
+        if(nodeInfo.isLongClickable()) {
+            isClick = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
+            sleep(info.getActionSleepMs());
+        } else {
+            isClick = performLongClick(nodeInfo.getParent(),info);
+        }
+        return isClick;
+    }
+
 
     //ACTION_FOCUS
     public static boolean performFocus(AccessibilityNodeInfo nodeInfo,WindowNodeInfo info) {
