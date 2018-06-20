@@ -63,6 +63,7 @@ public class AutoOperatonThread extends BaseThread {
         AutoUtil.recordAndLog(record,"init");
         loginSussDos.add("养号");
         loginSussDos.add("关手机号搜索");
+        loginSussDos.add("发圈");
         loginSussDos.add("修改密码");
         operation = loginSussDos.get(0);
         wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation(operation);
@@ -80,8 +81,7 @@ public class AutoOperatonThread extends BaseThread {
         while (true){
             try {
                 AutoUtil.sleep(500);
-                LogUtil.d(TAG,Thread.currentThread().getName()+" actionNo:"+actionNo+" record:"+record+" operation:"+operation);
-                System.out.println("strs-->"+currentWx008Data.getPhoneStrsAw());
+                LogUtil.d(TAG,"loginIndex:"+loginIndex+Thread.currentThread().getName()+" actionNo:"+actionNo+" record:"+record+" operation:"+operation);
                 //保持屏幕常亮
                 AutoUtil.wake();
                 AccessibilityNodeInfo root = context.getRootInActiveWindow();
@@ -104,6 +104,8 @@ public class AutoOperatonThread extends BaseThread {
                     setNodeInputText(wInfos,currentWx008Data);//设置输入框文本
                 }else if("修改密码".equals(operation)){
                     setNodeInputTexChangePwd(wInfos,currentWx008Data);
+                }else if("发圈".equals(operation)){
+                    setSendFrContent(wInfos,currentWx008Data);
                 }
                 if(doActions(root,wInfos)){
                     if(CommonConstant.APPCONFIG_APM.equals(wInfos.get(0).getActionDesc())&&!waitAriplaneModeSuc(root)) continue;//飞行模式后网络没恢复，返回继续等待
@@ -234,8 +236,16 @@ public class AutoOperatonThread extends BaseThread {
                     flag = NodeActionUtil.isWindowContainStr(root,info.getNodeText());
                 }else if(4==info.getNodeType()){//开关按钮
                     flag = WindowOperationUtil.performClickByRect(WindowOperationUtil.getNodeByInfo(root,info),info);
-                }else if(5==info.getNodeType()){//文本，判断是否存在节点
+                }else if(5==info.getNodeType()){//文本，根据所给的文本内容，判断本窗口是否有该文本
                     if(WindowOperationUtil.getNodeByInfo(root,info)!=null){
+                        flag = true;
+                    }
+                }else if(6==info.getNodeType()){//按钮控件
+                    flag = WindowOperationUtil.performLongClick(WindowOperationUtil.getNodeByInfo(root,info),info);
+                }else if(7==info.getNodeType()){//获取指定路径节点文本，并存入inputText
+                    AccessibilityNodeInfo node = WindowOperationUtil.getNodeByInfo(root,info);
+                    if(node!=null&&!TextUtils.isEmpty(node.getText())){
+                        info.setInputText(node.getText()+"");
                         flag = true;
                     }
                 }
@@ -333,6 +343,15 @@ public class AutoOperatonThread extends BaseThread {
             }
         }
     }
+    private void setSendFrContent(List<WindowNodeInfo> wInfos,Wx008Data currentWx008Data){
+        for(WindowNodeInfo info:wInfos){
+            if(info.getNodeType()==2){
+                if("输入发圈内容".equals(info.getActionDesc())){
+                    info.setInputText(currentWx008Data.getPhone()+"tt");
+                }
+            }
+        }
+    }
     private void doNextIndexAndRecord2DB(){
         int endLoginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX));
         if(loginIndex==wx008Datas.size()-1||loginIndex==endLoginIndex){
@@ -381,6 +400,8 @@ public class AutoOperatonThread extends BaseThread {
                         String newPwd = getNewPwd(currentWx008Data.getPhone());
                         int cn = DaoUtil.updatePwd(currentWx008Data,newPwd);
                         System.out.println("SetPwdThread-->cn:"+ cn+" wInfo.getInputText():"+newPwd);
+                    }else if("获取nodeText".equals(wInfo.getActionDesc())){
+                        System.out.println("inputText--->"+wInfo.getInputText());
                     }
                 }
             }
