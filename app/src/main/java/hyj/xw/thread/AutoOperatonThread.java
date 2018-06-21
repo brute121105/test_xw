@@ -61,19 +61,25 @@ public class AutoOperatonThread extends BaseThread {
     }
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
-        loginSussDos.add("养号");
+        loginSussDos.add("注册");
+        /*loginSussDos.add("养号");
         loginSussDos.add("关手机号搜索");
         loginSussDos.add("发圈");
-        loginSussDos.add("修改密码");
+        loginSussDos.add("修改密码");*/
         operation = loginSussDos.get(0);
         wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation(operation);
+        System.out.println("wInfoMap-->"+JSON.toJSONString(wInfoMap));
         wx008Datas = DaoUtil.getWx008Datas();
         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         isLoginSucessPause = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE);
         extValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
         isAirChangeIp = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_AIR_CHANGE_IP);
         isLoginByPhone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_BY_PHONE);
-        currentWx008Data = wx008Datas.get(loginIndex);
+        if(loginSussDos.get(0).equals("注册")){
+            currentWx008Data = PhoneConf.createRegData();
+        }else {
+            currentWx008Data = wx008Datas.get(loginIndex);
+        }
 
     }
     @Override
@@ -106,7 +112,10 @@ public class AutoOperatonThread extends BaseThread {
                     setNodeInputTexChangePwd(wInfos,currentWx008Data);
                 }else if("发圈".equals(operation)){
                     setSendFrContent(wInfos,currentWx008Data);
+                }else if("注册".equals(operation)){
+                    setRegContent(wInfos,currentWx008Data);
                 }
+
                 if(doActions(root,wInfos)){
                     if(CommonConstant.APPCONFIG_APM.equals(wInfos.get(0).getActionDesc())&&!waitAriplaneModeSuc(root)) continue;//飞行模式后网络没恢复，返回继续等待
                     String msg = getExpMsg(wInfos);//捕获处理异常界面消息
@@ -118,6 +127,20 @@ public class AutoOperatonThread extends BaseThread {
                     }
                     loopNum = 0;
                     continue;
+                }else {
+                    ++loopNum;
+                    System.out.println("loopNum--->"+loopNum);
+                    if(loopNum>5&&actionNo>1&&wInfos.get(0).getNodeType()>0){
+                        List<WindowNodeInfo> tempWInfos = wInfoMap.get(actionNo-1);
+                        if(tempWInfos!=null){
+                            if(tempWInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_SWX)){
+                                actionNo = wInfoMap.keySet().size()-1;
+                            }else {
+                                actionNo = actionNo-1;//执行不成功，返回上一级动作
+                            }
+                            initWInfoFlag(wInfoMap);
+                        }
+                    }
                 }
                 //如果改机不成功,重新登录
                 if(!validExist008(wInfoMap)&&CommonConstant.APPCONFIG_VEVN.equals(wInfos.get(0).getActionDesc())){
@@ -127,10 +150,7 @@ public class AutoOperatonThread extends BaseThread {
                 }
 
                 //所有事件操作loopNum次数为false，重新轮询一遍(只针对点击、输入事件)
-                ++loopNum;
-                System.out.println("loopNum--->"+loopNum);
-                boolean isBreakSucc = false;
-                if(wInfos.get(wInfos.size()-1).getNodeType()>0&&loopNum>2){//如果是点击界面&&loopNum>2
+                /*if(loopNum>2){//如果是点击界面&&loopNum>2
                     for(Integer key:wInfoMap.keySet()){
                         List<WindowNodeInfo> wInfos1 = wInfoMap.get(key);
                         if(wInfos1.get(0).getNodeType()>0&&doActions(root,wInfos1)){
@@ -141,12 +161,9 @@ public class AutoOperatonThread extends BaseThread {
                             }else {
                                 actionNo = key+1;
                             }
-                            isBreakSucc = true;
-                            break;
                         }
                     }
-                }
-                if(isBreakSucc) continue;
+                }*/
 
                 //执行动作后返回初始界面
                 if(!operation.equals(loginSussDos.get(0))&&actionNo==0){
@@ -171,8 +188,12 @@ public class AutoOperatonThread extends BaseThread {
             int cn = DaoUtil.updateExpMsg(currentWx008Data,msg+"-"+AutoUtil.getCurrentDate());
             System.out.println("excpMsg-->"+cn);
             LogUtil.login(loginIndex+" msg:"+msg,currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
-            doNextIndexAndRecord2DB();
-            currentWx008Data = wx008Datas.get(loginIndex);
+            if(loginSussDos.get(0).equals("注册")){
+                currentWx008Data = PhoneConf.createRegData();
+            }else {
+                doNextIndexAndRecord2DB();
+                currentWx008Data = wx008Datas.get(loginIndex);
+            }
         }else {
             operation = loginSussDos.get(loginSussDos.indexOf(operation)+1);
             wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation(operation);
@@ -183,6 +204,7 @@ public class AutoOperatonThread extends BaseThread {
         boolean flag = false;
         if(wInfos!=null&&wInfos.size()>0){
             if(wInfos.get(0).getNodeType()>0&&root.getPackageName().toString().indexOf("miui")>-1) return flag;//点击事件，监听到不符合应用包
+            if(wInfos.get(wInfos.size()-1).isActionResultFlag()&&wInfos.get(wInfos.size()-1).getRetryFlag()==1) return true;//点击了一次不再点击
             for(int i=0,l=wInfos.size();i<l;i++){
                 flag = doAction(root,wInfos.get(i));
                 System.out.println("doActions-->:"+wInfos.get(i).getActionMsg()+flag);
@@ -348,6 +370,19 @@ public class AutoOperatonThread extends BaseThread {
             if(info.getNodeType()==2){
                 if("输入发圈内容".equals(info.getActionDesc())){
                     info.setInputText(currentWx008Data.getPhone()+"tt");
+                }
+            }
+        }
+    }
+    private void setRegContent(List<WindowNodeInfo> wInfos,Wx008Data currentWx008Data){
+        for(WindowNodeInfo info:wInfos){
+            if(info.getNodeType()==2){
+                if("输入昵称".equals(info.getActionDesc())){
+                    info.setInputText(currentWx008Data.getNickName());
+                }else if("输入手机号".equals(info.getActionDesc())){
+                    info.setInputText(currentWx008Data.getPhone());
+                }else if("输入密码".equals(info.getActionDesc())){
+                    info.setInputText(currentWx008Data.getWxPwd());
                 }
             }
         }
