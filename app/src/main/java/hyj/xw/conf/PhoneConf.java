@@ -13,7 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
+import hyj.xw.aw.util.BuildFileUtil;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.hook.newHook.NewPhoneInfo;
@@ -211,6 +213,7 @@ public class PhoneConf {
         return phoneInfo;
     }
 
+
     private static String[] getRandmoDevice(){
         List<String[]> devices = new ArrayList<String[]>();
         devices.add(new String[]{"SAMSUNG","GT-S6812C","smartisan/msm"+createNum(4)+"_32/msm"+createNum(4)+"_32:4.4.4/KTU84P:user/dev-keys"});
@@ -239,6 +242,19 @@ public class PhoneConf {
     public static Wx008Data createNew008Data(String phone,String pwd,String cnNum,String dataFlag,String phoneStrsAw){
         Wx008Data currentWx008Data = new Wx008Data();
         currentWx008Data.setGuid(AutoUtil.getUUID());
+        currentWx008Data.setPhone(phone);
+        currentWx008Data.setWxId(phone);
+        currentWx008Data.setWxPwd(pwd);
+        currentWx008Data.setCnNum(cnNum);
+        currentWx008Data.setCreateTime(new Date());
+        currentWx008Data.setDataFlag(dataFlag);
+        currentWx008Data.setPhoneStrsAw(phoneStrsAw);
+        return currentWx008Data;
+    }
+    public static Wx008Data createReg008Data(String nickName,String phone,String pwd,String cnNum,String dataFlag,String phoneStrsAw){
+        Wx008Data currentWx008Data = new Wx008Data();
+        currentWx008Data.setGuid(AutoUtil.getUUID());
+        currentWx008Data.setNickName(nickName);
         currentWx008Data.setPhone(phone);
         currentWx008Data.setWxId(phone);
         currentWx008Data.setWxPwd(pwd);
@@ -435,4 +451,28 @@ public class PhoneConf {
        npi.setBuildBoard("");
        return npi;
    }
+    public static Wx008Data createRegData(){
+        Random rand = new Random();
+        //String phone = "1539379"+rand.nextInt(10)+rand.nextInt(10)+rand.nextInt(10)+rand.nextInt(10);
+        //phone="18137447045";
+        String phone = getOnePhone();
+        NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);
+        Wx008Data data = createReg008Data("zs"+phone,phone,"www23456","86","011",JSON.toJSONString(npi));
+        System.out.println("createRegData--->"+JSON.toJSONString(data));
+        return data;
+    }
+    public static String getOnePhone(){
+        List<Wx008Data> datas = DaoUtil.findByDataBydataFlag();
+        String lastPhone = datas.get(datas.size()-1).getPhone();
+        String phone = "";
+        List<String> phones = FileUtil.read008Data("/sdcard/fj号码/xc.txt");
+        if(phones.indexOf(lastPhone)==-1){
+            phone = phones.get(0);
+        }else {
+            phone = phones.get(phones.indexOf(lastPhone)+1);
+        }
+        System.out.println("phones-->"+JSON.toJSONString(phones));
+        System.out.println("phone phones-->"+phone);
+        return phone;
+    }
 }

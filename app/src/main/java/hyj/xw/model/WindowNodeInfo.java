@@ -22,7 +22,7 @@ public class WindowNodeInfo {
     private String actionDesc;//点击行为动作描述
     private long actionSleepMs;//点击行为后休眠毫秒数
     private String actionGroupTag;//分组标签
-    private int nodeType;//节点类型，1 按钮 2 输入框 3 异常窗口 4 开关按钮
+    private int nodeType;//节点类型，1 按钮 2 输入框 3 异常窗口 4 开关按钮 5 文本，判断是否存在节点 6 长按按钮 7 获取指定路径节点文本，并存入inputText
     private String nodeId;//节点id
     private String nodePath;//节点路径
     private String nodeText;//节点文本
@@ -32,8 +32,16 @@ public class WindowNodeInfo {
     private String inputText;//输入文本
     private Wx008Data currentWx008Data;
     private boolean actionResultFlag;//执行结果标识
+    private String actionResultMsg;//执行结果标识
+    private int retryFlag;//再次出现界面  是否重复点击  0 重复点击，1 不重复点击
 
     public WindowNodeInfo() {
+    }
+    public WindowNodeInfo(String nodeId,String nodeText,String nodePath,String nodeDesc) {
+        this.nodeId = nodeId;
+        this.nodeText = nodeText;
+        this.nodePath = nodePath;
+        this.nodeDesc = nodeDesc;
     }
 
     public WindowNodeInfo(String operation, String actionGroupTag, String actionDesc) {
@@ -213,6 +221,22 @@ public class WindowNodeInfo {
 
     public void setFindNodeResult(String findNodeResult) {
         this.findNodeResult = findNodeResult;
+    }
+
+    public int getRetryFlag() {
+        return retryFlag;
+    }
+
+    public void setRetryFlag(int retryFlag) {
+        this.retryFlag = retryFlag;
+    }
+
+    public String getActionResultMsg() {
+        return actionResultMsg;
+    }
+
+    public void setActionResultMsg(String actionResultMsg) {
+        this.actionResultMsg = actionResultMsg;
     }
 
     public String getActionMsg(){

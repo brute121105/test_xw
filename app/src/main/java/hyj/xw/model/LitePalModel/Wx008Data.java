@@ -34,7 +34,7 @@ public class Wx008Data  extends DataSupport{
     private String friends;//好友
     private Date createTime;
     private Date lastLoginTime;
-    private String dataFlag;//007 008 009  抓取008数据  010 转换神龙008数据
+    private String dataFlag;//007 008 009  抓取008数据  010 转换神龙008数据 011最新注册
     private String nickName;
     private String replacePhone;
     private String wxid19;

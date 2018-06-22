@@ -29,27 +29,27 @@ import hyj.xw.util.LogUtil;
 public class GetPhoneInfoUtil {
     private static String tag = "GetPhoneInfoUtil";
 
-   public static void getHideInfo(){
-       PackageManager pm = GlobalApplication.getContext().getPackageManager();
-       List<ApplicationInfo> installs = pm.getInstalledApplications(0);
-       for(ApplicationInfo install :installs){
-           //System.out.println(tag+" getInstalledApplications--->"+ install.packageName);
-       }
+    public static void getHideInfo() {
+        PackageManager pm = GlobalApplication.getContext().getPackageManager();
+        List<ApplicationInfo> installs = pm.getInstalledApplications(0);
+        for (ApplicationInfo install : installs) {
+            //System.out.println(tag+" getInstalledApplications--->"+ install.packageName);
+        }
 
-       try {
-           String packageName = "com.tencent.mm";
-           PackageInfo pInfo =  pm.getPackageInfo(packageName,PackageManager.GET_PERMISSIONS);//没有此包名会报错 hook钱替换传入参数
-           System.out.println(tag+" getPackageInfo--->"+ JSON.toJSONString(pInfo));
-           //ApplicationInfo apInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-           //List<PackageInfo> installedPackages = pm.getInstalledPackages(0);
-           //System.out.println(tag+" getApplicationInfo--->"+ JSON.toJSONString(apInfo));
-           //System.out.println(tag+" getInstalledPackages--->"+ JSON.toJSONString(installedPackages));
-       } catch (PackageManager.NameNotFoundException e) {
-           LogUtil.logError(e);
-       }
-   }
+        try {
+            String packageName = "com.tencent.mm";
+            PackageInfo pInfo = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);//没有此包名会报错 hook钱替换传入参数
+            System.out.println(tag + " getPackageInfo--->" + JSON.toJSONString(pInfo));
+            //ApplicationInfo apInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            //List<PackageInfo> installedPackages = pm.getInstalledPackages(0);
+            //System.out.println(tag+" getApplicationInfo--->"+ JSON.toJSONString(apInfo));
+            //System.out.println(tag+" getInstalledPackages--->"+ JSON.toJSONString(installedPackages));
+        } catch (PackageManager.NameNotFoundException e) {
+            LogUtil.logError(e);
+        }
+    }
 
-    public static void getPhoneInfo(){
+    public static void getPhoneInfo() {
 
         //getHideInfo();
 
@@ -69,11 +69,11 @@ public class GetPhoneInfoUtil {
         int getSimState = phone.getSimState();//手机卡状态
         //getMacAddress
 
-        String systemVersion =  android.os.Build.VERSION.RELEASE;//系统版本 6.0.1
-        int sdk =  Build.VERSION.SDK_INT;//系统版本值
-        String sdk1 =  Build.VERSION.SDK;//系统版本值
+        String systemVersion = android.os.Build.VERSION.RELEASE;//系统版本 6.0.1
+        int sdk = Build.VERSION.SDK_INT;//系统版本值
+        String sdk1 = Build.VERSION.SDK;//系统版本值
         String getDeviceBrand = android.os.Build.BRAND;//品牌
-        String getSystemModel =  android.os.Build.MODEL;//型号
+        String getSystemModel = android.os.Build.MODEL;//型号
         String ID = android.os.Build.ID;//ID
         String DISPLAY = android.os.Build.DISPLAY;
         String PRODUCT = Build.PRODUCT;//产品名
@@ -89,35 +89,35 @@ public class GetPhoneInfoUtil {
                 GlobalApplication.getResolver(), Settings.Secure.ANDROID_ID);//android_id
         String macAddress = getLocalMac(GlobalApplication.getContext());//mac地址
 
-        System.out.println(tag+"--->macAddress->"+macAddress);
+        System.out.println(tag + "--->macAddress->" + macAddress);
 
-        System.out.println(tag+"--->序列号 deviceId->"+deviceId);
-        System.out.println(tag+"--->androidId->"+androidId);
-        System.out.println(tag+"--->手机号码 tel->"+tel);
-        System.out.println(tag+"--->手机号序列号 imei->"+imei);
-        System.out.println(tag+"--->imsi->"+imsi);
-        System.out.println(tag+"--->手机卡国家 getSimCountryIso->"+getSimCountryIso);
-        System.out.println(tag+"--->运营商 getSimOperator->"+getSimOperator);
-        System.out.println(tag+"--->运营商名字 getSimOperatorName->"+getSimOperatorName);
-        System.out.println(tag+"--->国家iso代码 getNetworkCountryIso->"+getNetworkCountryIso);
-        System.out.println(tag+"--->网络运营商类型 getNetworkOperator->"+getNetworkOperator);
-        System.out.println(tag+"--->网络类型名 getNetworkOperatorName->"+getNetworkOperatorName);
-        System.out.println(tag+"--->网络类型 getNetworkType->"+getNetworkType);
-        System.out.println(tag+"--->手机类型 getPhoneType->"+getPhoneType);
-        System.out.println(tag+"--->手机卡状态 getSimState->"+getSimState);
+        System.out.println(tag + "--->序列号 deviceId->" + deviceId);
+        System.out.println(tag + "--->androidId->" + androidId);
+        System.out.println(tag + "--->手机号码 tel->" + tel);
+        System.out.println(tag + "--->手机号序列号 imei->" + imei);
+        System.out.println(tag + "--->imsi->" + imsi);
+        System.out.println(tag + "--->手机卡国家 getSimCountryIso->" + getSimCountryIso);
+        System.out.println(tag + "--->运营商 getSimOperator->" + getSimOperator);
+        System.out.println(tag + "--->运营商名字 getSimOperatorName->" + getSimOperatorName);
+        System.out.println(tag + "--->国家iso代码 getNetworkCountryIso->" + getNetworkCountryIso);
+        System.out.println(tag + "--->网络运营商类型 getNetworkOperator->" + getNetworkOperator);
+        System.out.println(tag + "--->网络类型名 getNetworkOperatorName->" + getNetworkOperatorName);
+        System.out.println(tag + "--->网络类型 getNetworkType->" + getNetworkType);
+        System.out.println(tag + "--->手机类型 getPhoneType->" + getPhoneType);
+        System.out.println(tag + "--->手机卡状态 getSimState->" + getSimState);
 
-        System.out.println(tag+"--->系统版本 systemVersion->"+systemVersion);
-        System.out.println(tag+"--->系统版本值 sdk->"+sdk +" "+sdk1);
-        System.out.println(tag+"--->型号 getSystemModel->"+getSystemModel);
-        System.out.println(tag+"--->品牌 getDeviceBrand->"+getDeviceBrand);
-        System.out.println(tag+"--->ID->"+ID);
-        System.out.println(tag+"--->DISPLAY->"+DISPLAY);
-        System.out.println(tag+"--->产品名 PRODUCT->"+PRODUCT);
-        System.out.println(tag+"--->制造商 MANUFACTURER->"+MANUFACTURER);
-        System.out.println(tag+"--->设备名 DEVICE->"+DEVICE);
-        System.out.println(tag+"--->硬件 HARDWARE->"+HARDWARE);
-        System.out.println(tag+"--->指纹 FINGERPRINT->"+FINGERPRINT);
-        System.out.println(tag+"--->串口序列号 SERIAL->"+SERIAL);
+        System.out.println(tag + "--->系统版本 systemVersion->" + systemVersion);
+        System.out.println(tag + "--->系统版本值 sdk->" + sdk + " " + sdk1);
+        System.out.println(tag + "--->型号 getSystemModel->" + getSystemModel);
+        System.out.println(tag + "--->品牌 getDeviceBrand->" + getDeviceBrand);
+        System.out.println(tag + "--->ID->" + ID);
+        System.out.println(tag + "--->DISPLAY->" + DISPLAY);
+        System.out.println(tag + "--->产品名 PRODUCT->" + PRODUCT);
+        System.out.println(tag + "--->制造商 MANUFACTURER->" + MANUFACTURER);
+        System.out.println(tag + "--->设备名 DEVICE->" + DEVICE);
+        System.out.println(tag + "--->硬件 HARDWARE->" + HARDWARE);
+        System.out.println(tag + "--->指纹 FINGERPRINT->" + FINGERPRINT);
+        System.out.println(tag + "--->串口序列号 SERIAL->" + SERIAL);
 
         /*ConnectivityManager connectivity = (ConnectivityManager)GlobalApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         String subTypeName = connectivity.getActiveNetworkInfo().getSubtypeName();
@@ -135,7 +135,7 @@ public class GetPhoneInfoUtil {
         return info.getMacAddress();
     }
 
-    public static NewPhoneInfo getEnvironmentAwData(){
+    public static NewPhoneInfo getEnvironmentAwData() {
         TelephonyManager phone = (TelephonyManager) GlobalApplication.getContext().getSystemService(Context.TELEPHONY_SERVICE);
         NewPhoneInfo npi = new NewPhoneInfo();
         npi.setBuildAbi(Build.CPU_ABI);
@@ -156,7 +156,7 @@ public class GetPhoneInfoUtil {
         npi.setBuildProduct(Build.PRODUCT);
         npi.setBuildRadioVersion(Build.getRadioVersion());
         npi.setBuildRelease(Build.VERSION.RELEASE);
-        npi.setBuildSdk( Build.VERSION.SDK);
+        npi.setBuildSdk(Build.VERSION.SDK);
         npi.setSerialno(Build.SERIAL);
         npi.setBuildSerialno(Build.SERIAL);//漏掉
         npi.setBuildTags(Build.TAGS);
@@ -166,8 +166,8 @@ public class GetPhoneInfoUtil {
         String androidId = Settings.Secure.getString(
                 GlobalApplication.getResolver(), Settings.Secure.ANDROID_ID);//android_id
         String macAddress = getLocalMac(GlobalApplication.getContext());//mac地址
-        WifiManager wm=(WifiManager)GlobalApplication.getContext().getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wi=wm.getConnectionInfo();
+        WifiManager wm = (WifiManager) GlobalApplication.getContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wi = wm.getConnectionInfo();
         npi.setBSSID(wi.getBSSID());
         npi.setIpAddress("192.168.1.2");
         npi.setP2p0Mac(macAddress);
@@ -206,17 +206,17 @@ public class GetPhoneInfoUtil {
         npi.setSubscriberId(phone.getSubscriberId());
         npi.setRgTime(new Date().getTime());
 
-        System.out.println("getEnvironmentAwData--->"+JSON.toJSONString(npi));
+        System.out.println("getEnvironmentAwData--->" + JSON.toJSONString(npi));
         return npi;
     }
 
-    public static String getCpuName(){
+    public static String getCpuName() {
         String str1 = "/proc/cpuinfo";
         String str2 = "";
         try {
             FileReader fr = new FileReader(str1);
             BufferedReader localBufferedReader = new BufferedReader(fr);
-            while ((str2=localBufferedReader.readLine()) != null) {
+            while ((str2 = localBufferedReader.readLine()) != null) {
                 if (str2.contains("Hardware")) {
                     return str2.split(":")[1];
                 }

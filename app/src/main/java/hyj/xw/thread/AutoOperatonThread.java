@@ -31,6 +31,7 @@ import hyj.xw.util.DaoUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.NodeActionUtil;
+import hyj.xw.util.OkHttpUtil;
 import hyj.xw.util.ParseRootUtil;
 import hyj.xw.util.WindowOperationUtil;
 
@@ -44,6 +45,7 @@ import static android.R.attr.label;
 public class AutoOperatonThread extends BaseThread {
     public  final String TAG = this.getClass().getSimpleName();
     private int countRootNull =0;
+    private int countSendMsgNum =0;
     private int actionNo=0;//记录点击所处在位置
     private int loopNum =0;//标志循环到底部次数
     private Map<Integer,List<WindowNodeInfo>> wInfoMap;
@@ -55,16 +57,19 @@ public class AutoOperatonThread extends BaseThread {
     private boolean isStartAirPlaneMode = false;
     private List<String> loginSussDos=new ArrayList<String>();
     private String operation;//操作,注册、养号...
+    private String lastWindowText;//上次窗口文本
+    private int countSameCurrentWindowCum=0;//记录一直处在当前界面的次数
     public AutoOperatonThread(AccessibilityService context, Map<String, String> record, AccessibilityParameters parameters){
         super(context,record,parameters);
         intiParam();
     }
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
-        loginSussDos.add("注册");
-        /*loginSussDos.add("养号");
-        loginSussDos.add("关手机号搜索");
+        //loginSussDos.add("注册");
+        loginSussDos.add("养号");
         loginSussDos.add("发圈");
+        //loginSussDos.add("关手机号搜索");
+        /*
         loginSussDos.add("修改密码");*/
         operation = loginSussDos.get(0);
         wInfoMap = WindowNodeInfoConf.getWinfoMapByOperation(operation);
@@ -77,6 +82,7 @@ public class AutoOperatonThread extends BaseThread {
         isLoginByPhone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_BY_PHONE);
         if(loginSussDos.get(0).equals("注册")){
             currentWx008Data = PhoneConf.createRegData();
+            currentWx008Data.save();
         }else {
             currentWx008Data = wx008Datas.get(loginIndex);
         }
@@ -95,7 +101,19 @@ public class AutoOperatonThread extends BaseThread {
                 if(root==null){
                     continue;
                 }
-                if(NodeActionUtil.isContainsStrs(root,"数据...")||NodeActionUtil.isContainsStrs(root,"登录...")) continue;
+                //判断窗口静止时间
+                String newCurrentWindowText = ParseRootUtil.getCurrentViewAllTexts(root);
+                if(newCurrentWindowText.equals(lastWindowText)){
+                    countSameCurrentWindowCum = countSameCurrentWindowCum+1;
+                    System.out.println("countSameCurrentWindowCum--->"+countSameCurrentWindowCum);
+                }else {
+                    countSameCurrentWindowCum = 0;
+                    lastWindowText = newCurrentWindowText;
+                }
+
+                if(newCurrentWindowText.indexOf("载入数据...")>-1||newCurrentWindowText.indexOf("登录...")>-1
+                        ||newCurrentWindowText.indexOf("|progressBar|")>-1||newCurrentWindowText.indexOf("|加载中|")>-1) continue;
+                //if(NodeActionUtil.isContainsStrs(root,"数据...")||NodeActionUtil.isContainsStrs(root,"登录...")) continue;
                 ParseRootUtil.debugRoot(root);
                 if(parameters.getIsStop()==1){
                     LogUtil.d(TAG,"暂停....");
@@ -118,7 +136,7 @@ public class AutoOperatonThread extends BaseThread {
 
                 if(doActions(root,wInfos)){
                     if(CommonConstant.APPCONFIG_APM.equals(wInfos.get(0).getActionDesc())&&!waitAriplaneModeSuc(root)) continue;//飞行模式后网络没恢复，返回继续等待
-                    String msg = getExpMsg(wInfos);//捕获处理异常界面消息
+                    String msg = getExpMsg(wInfos,root);//捕获处理异常界面消息
                     if(msg.contains("随机界面点击")) continue;//随机界面点击 actionNo不递增
                     if(wInfoMap.keySet().size()-1==actionNo||msg.contains("登录异常")){
                         doLoginFinish(msg);
@@ -127,43 +145,34 @@ public class AutoOperatonThread extends BaseThread {
                     }
                     loopNum = 0;
                     continue;
-                }else {
-                    ++loopNum;
-                    System.out.println("loopNum--->"+loopNum);
-                    if(loopNum>5&&actionNo>1&&wInfos.get(0).getNodeType()>0){
-                        List<WindowNodeInfo> tempWInfos = wInfoMap.get(actionNo-1);
-                        if(tempWInfos!=null){
-                            if(tempWInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_SWX)){
-                                actionNo = wInfoMap.keySet().size()-1;
-                            }else {
-                                actionNo = actionNo-1;//执行不成功，返回上一级动作
-                            }
-                            initWInfoFlag(wInfoMap);
-                        }
-                    }
-                }
-                //如果改机不成功,重新登录
-                if(!validExist008(wInfoMap)&&CommonConstant.APPCONFIG_VEVN.equals(wInfos.get(0).getActionDesc())){
+                }else if(!validExist008(wInfoMap)&&CommonConstant.APPCONFIG_VEVN.equals(wInfos.get(0).getActionDesc())){//校验改机是否成功，008改机不校验
+                    //如果改机不成功, actionNo = 0 重新登
                     actionNo = 0;
                     initWInfoFlag(wInfoMap);
                     continue;
-                }
-
-                //所有事件操作loopNum次数为false，重新轮询一遍(只针对点击、输入事件)
-                /*if(loopNum>2){//如果是点击界面&&loopNum>2
-                    for(Integer key:wInfoMap.keySet()){
-                        List<WindowNodeInfo> wInfos1 = wInfoMap.get(key);
-                        if(wInfos1.get(0).getNodeType()>0&&doActions(root,wInfos1)){
-                            String msg = getExpMsg(wInfos1);//捕获处理异常界面消息
-                            System.out.println("key loopNum--->"+key+" msg:"+msg);
-                            if(key==wInfoMap.keySet().size()-1||msg.contains("登录异常")){
-                                doLoginFinish(msg);
+                }else {// 点击不成功，actionNo-1
+                    //if(wInfos.get(0).getNodeType()==0||wInfos.get(0).getNodeType()==5) continue;//只处理点击动作
+                    if(wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_CEVN)||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_APM)
+                            ||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_VPN)||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_SWX)) continue;
+                    ++loopNum;
+                    System.out.println("loopNum--->"+loopNum);
+                    if(loopNum>5&&actionNo>1){
+                        List<WindowNodeInfo> tempWInfos = wInfoMap.get(actionNo-1);
+                        while (tempWInfos!=null){
+                            if(tempWInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_SWX)){
+                                actionNo = wInfoMap.keySet().size()-1;
+                                break;
                             }else {
-                                actionNo = key+1;
+                                actionNo = actionNo-1;//执行不成功，返回上一级动作
+                                if(tempWInfos.get(0).getNodeType()>0&&!tempWInfos.get(0).getActionDesc().equals("点击已发送短信下一步")){
+                                    break;
+                                }else {
+                                    tempWInfos = wInfoMap.get(actionNo-1);
+                                }
                             }
                         }
                     }
-                }*/
+                }
 
                 //执行动作后返回初始界面
                 if(!operation.equals(loginSussDos.get(0))&&actionNo==0){
@@ -181,6 +190,7 @@ public class AutoOperatonThread extends BaseThread {
 
     private void doLoginFinish(String msg){
         actionNo=0;
+        countSendMsgNum=0;
         initWInfoFlag(wInfoMap);
         if(loginSussDos.indexOf(operation)==loginSussDos.size()-1||msg.contains("登录异常")){//登录成功没有其他operation，登录下一个
             operation = loginSussDos.get(0);
@@ -190,6 +200,7 @@ public class AutoOperatonThread extends BaseThread {
             LogUtil.login(loginIndex+" msg:"+msg,currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             if(loginSussDos.get(0).equals("注册")){
                 currentWx008Data = PhoneConf.createRegData();
+                currentWx008Data.save();
             }else {
                 doNextIndexAndRecord2DB();
                 currentWx008Data = wx008Datas.get(loginIndex);
@@ -203,13 +214,15 @@ public class AutoOperatonThread extends BaseThread {
     public  boolean doActions(AccessibilityNodeInfo root,List<WindowNodeInfo> wInfos){
         boolean flag = false;
         if(wInfos!=null&&wInfos.size()>0){
-            if(wInfos.get(0).getNodeType()>0&&root.getPackageName().toString().indexOf("miui")>-1) return flag;//点击事件，监听到不符合应用包
-            if(wInfos.get(wInfos.size()-1).isActionResultFlag()&&wInfos.get(wInfos.size()-1).getRetryFlag()==1) return true;//点击了一次不再点击
+            if(wInfos.get(0).getNodeType()>0&&root.getPackageName().toString().indexOf("miui")>-1) return false;//点击事件，监听到不符合应用包
+            if(wInfos.get(wInfos.size()-1).isActionResultFlag()&&wInfos.get(wInfos.size()-1).getRetryFlag()==1) return false;//点击了一次不再点击
             for(int i=0,l=wInfos.size();i<l;i++){
                 flag = doAction(root,wInfos.get(i));
                 System.out.println("doActions-->:"+wInfos.get(i).getActionMsg()+flag);
                 if(flag){//如果点击 点击为 true
-                    if("登录异常".equals(wInfos.get(i).getActionDesc()) ||(i<wInfos.size()-1&&"登录异常".equals(wInfos.get(i+1).getActionDesc()))){//如果是点击异常true 或 判断登录成功true 直接返回，不需继续执行
+                    if("登录异常".equals(wInfos.get(i).getActionDesc())
+                            ||(i<wInfos.size()-1&&("登录异常".equals(wInfos.get(i+1).getActionDesc())||wInfos.get(i+1).getActionDesc().contains("随机界面点击")))
+                    ){//如果是点击异常true 或 判断登录成功true 直接返回，不需继续执行
                         return flag;
                     }
                 }
@@ -235,9 +248,7 @@ public class AutoOperatonThread extends BaseThread {
                 flag = true;
             }
         }else if(CommonConstant.APPCONFIG_VEVN.equals(info.getActionDesc())){
-            if(validExist008(wInfoMap)){
-                flag = true;
-            }else if(validEnviroment()){//判断改机成功
+            if(info.isActionResultFlag()||validExist008(wInfoMap)||validEnviroment()){//判断改机成功 上校次校验为true不再校验，008不校验
                 flag = true;
             }
         }else if(CommonConstant.APPCONFIG_APM.equals(info.getActionDesc())){
@@ -245,7 +256,15 @@ public class AutoOperatonThread extends BaseThread {
                  AutoUtil.setAriplaneMode(1000);
              }
             flag = true;
-        }else if(info.getNodeType()>0){
+        }/*else if(CommonConstant.APPCONFIG_SENDMSG.equals(info.getActionDesc())){
+            if(NodeActionUtil.isContainsStrs(root,"发送短信后请回到本界面继续下一步")){
+                if(WindowOperationUtil.performClickTest(WindowOperationUtil.findNodeInfosByText(root,"发送短信"))){
+                    String resMsg = "";
+                    info.setActionResultMsg("发送失败");
+                    flag = true;
+                }
+            }
+        }*/else if(info.getNodeType()>0){
             //windowsText不为空，校验
             if(TextUtils.isEmpty(info.getWindowText())||"窗口文本".equals(info.getWindowText())
                     ||(!"窗口文本".equals(info.getWindowText())&&NodeActionUtil.isContainsStrs(root,info.getWindowText()))
@@ -296,7 +315,7 @@ public class AutoOperatonThread extends BaseThread {
 
     private boolean validLoginSucc(AccessibilityNodeInfo root){
         boolean flag = false;
-        if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")){
+        if(NodeActionUtil.isContainsStrs(root,"通讯录|发现|我")&&!NodeActionUtil.isContainsStrs(root,"Weixin Privacy Protection Guideline")){
             //登录成功&开启登录成功暂停 修改暂停标识为1
             if("1".equals(isLoginSucessPause)){
                 parameters.setIsStop(1);
@@ -306,11 +325,12 @@ public class AutoOperatonThread extends BaseThread {
         return flag;
     }
 
-    //判断改机是否成功
+    //判断改机是否成功 改机成功返回true
     private boolean validEnviroment(){
         String phoneTag = FileUtil.readAllUtf8(FilePathCommon.phoneTagPath);
-        System.out.println("phoneTag-->"+phoneTag);
-        if(!phoneTag.equals(TextUtils.isEmpty(currentWx008Data.getPhone())?currentWx008Data.getWxId():currentWx008Data.getPhone())){
+        String phoneTag008 = TextUtils.isEmpty(currentWx008Data.getPhone())?currentWx008Data.getWxId():currentWx008Data.getPhone();
+        System.out.println("phoneTag-->"+phoneTag+" phoneTag008:"+phoneTag008);
+        if(!phoneTag.equals(phoneTag008)){
             LogUtil.login(loginIndex+" exception change phone fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             return false;
         }else {
@@ -325,6 +345,9 @@ public class AutoOperatonThread extends BaseThread {
         NewPhoneInfo pi = null;
         if(!TextUtils.isEmpty(currentWx008Data.getPhoneStrsAw())){//aw数据
             pi = JSON.parseObject(currentWx008Data.getPhoneStrsAw(),NewPhoneInfo.class);
+            if(TextUtils.isEmpty(pi.getRgPhoneNo())){
+                pi.setRgPhoneNo(pi.getLine1Number());
+            }
         }else {
             pi = PhoneConf.xw2awData(currentWx008Data);
         }
@@ -420,7 +443,7 @@ public class AutoOperatonThread extends BaseThread {
         return false;
     }
     //捕获登录异常界面消息
-    private String getExpMsg(List<WindowNodeInfo> wInfos){
+    private String getExpMsg(List<WindowNodeInfo> wInfos,AccessibilityNodeInfo root){
         String expMsg = "success";
         if(wInfos!=null&&wInfos.size()>0){
             for(WindowNodeInfo wInfo:wInfos){
@@ -435,6 +458,21 @@ public class AutoOperatonThread extends BaseThread {
                         String newPwd = getNewPwd(currentWx008Data.getPhone());
                         int cn = DaoUtil.updatePwd(currentWx008Data,newPwd);
                         System.out.println("SetPwdThread-->cn:"+ cn+" wInfo.getInputText():"+newPwd);
+                    }else if("点击发送短信".equals(wInfo.getActionDesc())){//发送短信
+                        AutoUtil.sleep(3000);
+                        AutoUtil.startWx();
+                        System.out.println("doActions启动微信");
+                        String resMsg = sendPhoneMsg(root);
+                        if("发送失败".equals(resMsg)){
+                            expMsg = "登录异常-发送短信失败";
+                            break;
+                        }
+                    }else if("点击已发送短信下一步".equals(wInfo.getActionDesc())){//发送短信
+                        countSendMsgNum = countSendMsgNum + 1;
+                        if(countSendMsgNum>WindowNodeInfoConf.MaxSendMsgNum){
+                            expMsg = "登录异常-tx未收到短信";
+                            break;
+                        }
                     }else if("获取nodeText".equals(wInfo.getActionDesc())){
                         System.out.println("inputText--->"+wInfo.getInputText());
                     }
@@ -442,6 +480,28 @@ public class AutoOperatonThread extends BaseThread {
             }
         }
         return expMsg;
+    }
+    private String sendPhoneMsg(AccessibilityNodeInfo root){
+        String resMsg = "发送失败";
+        String callNumber=currentWx008Data.getPhone();
+        AccessibilityNodeInfo contentNode = WindowOperationUtil.getNodeByInfo(root,WindowNodeInfoConf.zcSendMsgContentWni);
+        AccessibilityNodeInfo phoneNode = WindowOperationUtil.getNodeByInfo(root,WindowNodeInfoConf.zcSendMsgCalledPhoneWni);
+        String content="";
+        String calledNumber="";
+        if(contentNode!=null&&phoneNode!=null&&contentNode.getText().toString().contains("发送 ")&&phoneNode.getText().toString().contains("到 ")){
+            String contentNodeValue = contentNode.getText().toString();
+            String phoneNodeValue = phoneNode.getText().toString();
+            content = contentNodeValue.substring(contentNodeValue.indexOf(" ")+1);
+            calledNumber = phoneNodeValue.substring(phoneNodeValue.indexOf(" ")+1);
+            String url = WindowNodeInfoConf.sendPhoneMsgUrl+"&callNumber="+callNumber+"&calledNumber="+calledNumber+"&content="+content;
+            System.out.println("doActions sendPhoneMsg url-->"+url);
+            String resBody = OkHttpUtil.okHttpGet(url);
+            System.out.println("doActions resBody sendPhoneMsg url-->"+resBody);
+            if(resBody.contains("提交成功")){
+                resMsg = "提交成功";
+            }
+        }
+        return resMsg;
     }
     private String getNewPwd(String phone){
         return "www23"+phone.substring(phone.length()-3);

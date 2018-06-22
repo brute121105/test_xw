@@ -48,6 +48,7 @@ public class CommonConstant {
     public static String APPCONFIG_APM= "开启飞行模式";
     public static String APPCONFIG_VPN= "连接VPN";
     public static String APPCONFIG_008= "设置008";
+    public static String APPCONFIG_SENDMSG= "发送短信";
 
     public static int index=0;
 }

@@ -105,7 +105,7 @@ public class ParseRootUtil {
         return attr;
     }
 
-    public static AccessibilityNodeInfo getNodePath(AccessibilityNodeInfo root,String path){
+    /*public static AccessibilityNodeInfo getNodePath(AccessibilityNodeInfo root,String path){
         if(path.length()<2){
             return null;
         }
@@ -118,7 +118,31 @@ public class ParseRootUtil {
             }
         }
         return root;
+    }*/
+    public static AccessibilityNodeInfo getNodePath(AccessibilityNodeInfo root,String path){
+        if(path.length()<2){
+            return null;
+        }
+        for(int i=1;i<path.length();i++){
+            String childStr = path.substring(i,i+1);
+            if(childStr.equals("-")){//处理 00000-224 情形
+                childStr = path.substring(i+1);
+                int childNo = Integer.parseInt(childStr);
+                if(root==null||childNo>=root.getChildCount()) return null;
+                root = root.getChild(childNo);
+                break;
+            }else {
+                int childNo = Integer.parseInt(childStr);
+                if(root==null||childNo>=root.getChildCount()){
+                    return null;
+                }else {
+                    root = root.getChild(childNo);
+                }
+            }
+        }
+        return root;
     }
+
 
     public static AccessibilityNodeInfo getNodeByPathAndText(AccessibilityNodeInfo root,String path,String text){
         if(path.length()<2){

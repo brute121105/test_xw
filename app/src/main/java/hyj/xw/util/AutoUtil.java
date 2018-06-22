@@ -453,6 +453,7 @@ public class AutoUtil {
 
     public static void clearAppData(){
         execShell("am force-stop com.tencent.mm" );
+        AutoUtil.sleep(2000);
         execShell("pm clear com.tencent.mm" );
         execShell("rm -r -f /data/data/com.tencent.mm/MicroMsg" );
         execShell("rm -r -f /data/data/com.tencent.mm/app_cache" );
