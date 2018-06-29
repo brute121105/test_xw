@@ -2,6 +2,9 @@ package hyj.xw;
 
 import org.junit.Test;
 
+import hyj.xw.util.DragImageUtil;
+import hyj.xw.util.FileUtil;
+
 import static org.junit.Assert.*;
 
 /**
@@ -12,6 +15,5 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
     }
 }

@@ -1,6 +1,8 @@
 package hyj.xw.thread;
 
 import android.accessibilityservice.AccessibilityService;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -9,6 +11,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +31,7 @@ import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.WindowNodeInfo;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
+import hyj.xw.util.DragImageUtil2;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.NodeActionUtil;
@@ -65,9 +69,10 @@ public class AutoOperatonThread extends BaseThread {
     }
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
-        //loginSussDos.add("注册");
-        loginSussDos.add("养号");
-        loginSussDos.add("发圈");
+        loginSussDos.add("注册");
+        //loginSussDos.add("养号");
+        //loginSussDos.add("提取wxid");
+        //loginSussDos.add("发圈");
         //loginSussDos.add("关手机号搜索");
         /*
         loginSussDos.add("修改密码");*/
@@ -86,7 +91,6 @@ public class AutoOperatonThread extends BaseThread {
         }else {
             currentWx008Data = wx008Datas.get(loginIndex);
         }
-
     }
     @Override
     public Object call() {
@@ -101,6 +105,8 @@ public class AutoOperatonThread extends BaseThread {
                 if(root==null){
                     continue;
                 }
+
+
                 //判断窗口静止时间
                 String newCurrentWindowText = ParseRootUtil.getCurrentViewAllTexts(root);
                 if(newCurrentWindowText.equals(lastWindowText)){
@@ -110,6 +116,7 @@ public class AutoOperatonThread extends BaseThread {
                     countSameCurrentWindowCum = 0;
                     lastWindowText = newCurrentWindowText;
                 }
+
 
                 if(newCurrentWindowText.indexOf("载入数据...")>-1||newCurrentWindowText.indexOf("登录...")>-1
                         ||newCurrentWindowText.indexOf("|progressBar|")>-1||newCurrentWindowText.indexOf("|加载中|")>-1) continue;
@@ -133,6 +140,7 @@ public class AutoOperatonThread extends BaseThread {
                 }else if("注册".equals(operation)){
                     setRegContent(wInfos,currentWx008Data);
                 }
+                //if(1==1) continue;
 
                 if(doActions(root,wInfos)){
                     if(CommonConstant.APPCONFIG_APM.equals(wInfos.get(0).getActionDesc())&&!waitAriplaneModeSuc(root)) continue;//飞行模式后网络没恢复，返回继续等待
@@ -152,8 +160,9 @@ public class AutoOperatonThread extends BaseThread {
                     continue;
                 }else {// 点击不成功，actionNo-1
                     //if(wInfos.get(0).getNodeType()==0||wInfos.get(0).getNodeType()==5) continue;//只处理点击动作
-                    if(wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_CEVN)||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_APM)
-                            ||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_VPN)||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_SWX)) continue;
+                    if(wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_CEVN)||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_APM)||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_008)
+                            ||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_VPN)||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_SWX)
+                            ||wInfos.get(0).getActionDesc().equals(CommonConstant.APPCONFIG_GHK)) continue;
                     ++loopNum;
                     System.out.println("loopNum--->"+loopNum);
                     if(loopNum>5&&actionNo>1){
@@ -175,7 +184,7 @@ public class AutoOperatonThread extends BaseThread {
                 }
 
                 //执行动作后返回初始界面
-                if(!operation.equals(loginSussDos.get(0))&&actionNo==0){
+                if(!operation.equals(loginSussDos.get(0))&&actionNo==0&&root.getPackageName().toString().contains("tencent")){
                     if(AutoUtil.findNodeInfosByText(root,"我")==null){
                         WindowOperationUtil.performBack(context);
                         System.out.println("performBack--->");
@@ -256,15 +265,7 @@ public class AutoOperatonThread extends BaseThread {
                  AutoUtil.setAriplaneMode(1000);
              }
             flag = true;
-        }/*else if(CommonConstant.APPCONFIG_SENDMSG.equals(info.getActionDesc())){
-            if(NodeActionUtil.isContainsStrs(root,"发送短信后请回到本界面继续下一步")){
-                if(WindowOperationUtil.performClickTest(WindowOperationUtil.findNodeInfosByText(root,"发送短信"))){
-                    String resMsg = "";
-                    info.setActionResultMsg("发送失败");
-                    flag = true;
-                }
-            }
-        }*/else if(info.getNodeType()>0){
+        }else if(info.getNodeType()>0){
             //windowsText不为空，校验
             if(TextUtils.isEmpty(info.getWindowText())||"窗口文本".equals(info.getWindowText())
                     ||(!"窗口文本".equals(info.getWindowText())&&NodeActionUtil.isContainsStrs(root,info.getWindowText()))
@@ -299,9 +300,43 @@ public class AutoOperatonThread extends BaseThread {
             if(!info.isActionResultFlag()&&set008Data(root)){
                 flag = true;
             }
+        }else if(CommonConstant.APPCONFIG_GHK.equals(info.getActionDesc())){
+            if(!info.isActionResultFlag()&&NodeActionUtil.isContainsStrs(root,"拖动下方滑块完成拼图")){
+                File pic = new File(FilePathCommon.fkScreenShotPath);
+                boolean isDelPicFlag = pic.delete();
+                while (pic==null||isDelPicFlag){//删除图片后等待jsdroid生成新截图
+                    AutoUtil.sleep(1000);
+                    System.out.println("doA--删除图片后等待jsdroid生成新截图 ");
+                    Bitmap bi = BitmapFactory.decodeFile(FilePathCommon.fkScreenShotPath);
+                    if(bi!=null){
+                        System.out.println("doA--生成新截图 ");
+                        int pic2X = DragImageUtil2.getPic2LocX(bi);
+                        String swipeParamsStr = createSwipeParams(235,pic2X,1029);
+                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,swipeParamsStr);
+                        System.out.println("doA--写入拖动距离："+swipeParamsStr);
+                        flag = true;
+                        AutoUtil.sleep(5000);
+                        break;
+                    }
+                }
+            }
         }
         info.setActionResultFlag(flag);//修改执行结果标识
         return flag;
+    }
+
+    /**
+     * @param startX 拖动起始startX位置
+     * @param endX 拖动到endX位置
+     * @param locY 拖动Y方向
+     * @return 方块拖动距离
+     */
+    private String createSwipeParams(int startX,int endX,int locY){
+        String swipeParamsStr = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append(startX+",");
+        sb.append(locY);
+        return swipeParamsStr;
     }
 
     //等待飞行模式开启成功
@@ -474,7 +509,13 @@ public class AutoOperatonThread extends BaseThread {
                             break;
                         }
                     }else if("获取nodeText".equals(wInfo.getActionDesc())){
-                        System.out.println("inputText--->"+wInfo.getInputText());
+                        String text = wInfo.getInputText();
+                        if(text.indexOf("wxid_")>-1){
+                            String wxid = text.substring(text.indexOf("wxid_"));
+                            currentWx008Data.setWxid19(wxid);
+                            System.out.println("wxid inputText--->"+wxid);
+                        }
+                        System.out.println("inputText--->"+text);
                     }
                 }
             }

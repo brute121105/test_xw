@@ -251,7 +251,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void testMethod() {
 
-         PhoneConf.getOnePhone();
+         //PhoneConf.getOnePhone();
+        //AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.xw.ExampleInstrumentedTest#testClickZc hyj.xw.test/android.support.test.runner.AndroidJUnitRunner");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AutoUtil.startWx();
+                AutoUtil.sleep(1000);
+                AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.autooperation.ExampleInstrumentedTest#useAppContext hyj.autooperation.test/android.support.test.runner.AndroidJUnitRunner");
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    AutoUtil.sleep(500);
+                    String tag = FileUtil.readAllUtf8(FilePathCommon.fkFilePath);
+                    System.out.println("tx runing-->"+tag);
+                    if("1".equals(tag)){
+                        AutoUtil.execShell("input keyevent 120");
+                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"0");
+                    }
+                }
+            }
+        }).start();
         /*List<String> phones = FileUtil.read008Data("/sdcard/brute9.txt");
         for (String phone : phones) {
             phone = phone.substring(phone.indexOf("--") + 2);
@@ -266,26 +290,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }*/
     }
 
-    public void clearAppData() {
-      /*  String con = FileUtil.readAllUtf8("/sdcard/A_hyj_json/a1/PhoneInfo.aw");
-        LogUtil.d("testMethod con",con);
-        NewPhoneInfo pi = JSON.parseObject(con,NewPhoneInfo.class);
-        CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);*/
 
+    public void clearAppData() {
         AutoUtil.clearAppData();
         Toast.makeText(MainActivity.this, "清除完成", Toast.LENGTH_LONG).show();
-
-       /* String phone = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGINACCOUNT);
-        Wx008Data wx008Data = DaoUtil.findByPhone(phone);
-        wx008Data.setPhoneInfo(wx008Data.getDatas());
-
-        //覆盖式写入文件
-        FileUtil.writeContent2FileForce("/sdcard/A_hyj_json/","phone.txt", JSON.toJSONString(wx008Data.getPhoneInfo()));*/
-        //读取文件
-      /*  String con = FileUtil.readAll("/sdcard/A_hyj_json/phone.txt");
-        System.out.println("phoneInfo---->"+con);*/
-
-
     }
 
 
@@ -333,9 +341,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.del_upload_file://其他操作
                 testMethod();
-                NewPhoneInfo npi = BuildFileUtil.createOneDevice("12345678901");
-                System.out.println("npi-->" + JSON.toJSONString(npi));
-                startActivity(new Intent(MainActivity.this, AppSettingActivity.class));
+                //startActivity(new Intent(MainActivity.this, AppSettingActivity.class));
                 break;
             case R.id.btn_yh_setting:
                 startActivity(new Intent(MainActivity.this, YhSettingActivity.class));

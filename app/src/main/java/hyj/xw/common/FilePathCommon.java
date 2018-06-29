@@ -17,6 +17,8 @@ public class FilePathCommon {
     public static final String importData008Path;
     public static final String sl008DataPath;
     public static final String sl008DataPwdPath;
+    public static final String fkFilePath;
+    public static final String fkScreenShotPath;
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
         baseAppPathAW= Environment.getExternalStorageDirectory().getAbsolutePath()+"/.money/";
@@ -27,6 +29,7 @@ public class FilePathCommon {
         sl008DataPath=baseAppPath+"/data008/下载机型/";
         sl008DataPwdPath=baseAppPath+"/data008/pwd.txt";
         phoneTagPath=baseAppPath+"/hk/phoneTag.txt";
-
+        fkFilePath = baseAppPath+"/fangkuai.txt";
+        fkScreenShotPath = baseAppPath+"/fangkuai.png";
     }
 }

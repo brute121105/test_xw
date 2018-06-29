@@ -47,8 +47,8 @@ public class WindowNodeInfoConf {
    public static List<WindowNodeInfo> getWindowNodeInfo(){
        List<WindowNodeInfo> infos = new ArrayList<WindowNodeInfo>();
        infos.add(new WindowNodeInfo("注册","a",CommonConstant.APPCONFIG_CEVN));//清除并准备改机环境
-       //infos.add(new WindowNodeInfo("注册","b",CommonConstant.APPCONFIG_APM));//飞行模式
-       infos.add(new WindowNodeInfo("注册","b",CommonConstant.APPCONFIG_VPN));//打开VPN界面
+       infos.add(new WindowNodeInfo("注册","b",CommonConstant.APPCONFIG_APM));//飞行模式
+       //infos.add(new WindowNodeInfo("注册","b",CommonConstant.APPCONFIG_VPN));//打开VPN界面
        infos.add(new WindowNodeInfo("注册","d", CommonConstant.APPCONFIG_SWX));//启动微信
        infos.add(new WindowNodeInfo("注册","注册|登录",1,"e","点击注册1","注册",""));
        infos.add(new WindowNodeInfo("注册","窗口文本",2,"f","输入昵称","","00211"));
@@ -61,6 +61,8 @@ public class WindowNodeInfoConf {
        infos.add(new WindowNodeInfo("注册","窗口文本",1,"g","点击下一步","","00000-225"));
        infos.add(new WindowNodeInfo("注册","安全校验",1,"h","点击开始安全校验","","000003"));
        infos.add(new WindowNodeInfo("注册","z",CommonConstant.APPCONFIG_VEVN));//判断改机成功
+       infos.add(new WindowNodeInfo("注册","b",CommonConstant.APPCONFIG_GHK));//过滑块
+
        infos.add(new WindowNodeInfo("注册","窗口文本",3,"i","登录异常","联系符合以下条件的微信用户",""));
        WindowNodeInfo wni2 =new WindowNodeInfo("注册","发送短信后请回到本界面继续下一步",1,"k","点击发送短信","发送短信","");
        wni2.setRetryFlag(1);
@@ -115,6 +117,9 @@ public class WindowNodeInfoConf {
        infos.add(new WindowNodeInfo("修改密码","窗口文本",2,"e","再次填写确认","","0038"));
        infos.add(new WindowNodeInfo("修改密码","窗口文本",1,"e","点击完成","完成",""));
        infos.add(new WindowNodeInfo("修改密码","窗口文本",5,"f","判断密码设置成功","微信密码设置成功，以后可通过手机号+微信密码登录微信",""));
+
+       infos.add(new WindowNodeInfo("提取wxid","窗口文本",1,"a","点击我","我",""));
+       infos.add(new WindowNodeInfo("提取wxid","微信号：wxid",7,"b","获取nodeText","","00610"));
 
        return infos;
    }
