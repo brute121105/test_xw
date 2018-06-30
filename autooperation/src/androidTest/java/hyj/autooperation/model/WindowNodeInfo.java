@@ -1,6 +1,9 @@
 package hyj.autooperation.model;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Administrator on 2018/6/10 0010.
  * 表格可增删改查，
@@ -9,96 +12,33 @@ package hyj.autooperation.model;
  * 表格数据克隆，可根据微信版本号克隆一份数据，克隆出来数据除wxVersion字段不一样，其他一样
  */
 public class WindowNodeInfo {
-    private String guid;
     private String wxVersion;//微信版本
-    private String operation;//操作;
-    private String windowText;//窗口文本
-    private double actionNo;//动作序号
-    private int actionChildNo;//动作子序号
-    private String actionDesc;//点击行为动作描述
-    private long actionSleepMs;//点击行为后休眠毫秒数
-    private String actionGroupTag;//分组标签
-    private int nodeType;//节点类型，1 按钮 2 输入框 3 异常窗口 4 开关按钮 5 文本，判断是否存在节点 6 长按按钮 7 获取指定路径节点文本，并存入inputText
-    private String nodeId;//节点id
-    private String nodePath;//节点路径
-    private String nodeText;//节点文本
-    private String nodeDesc;//节点描述
-    private String remark;//备注
-    private String findNodeResult;//节点查找结果
-    private String inputText;//输入文本
-    private boolean actionResultFlag;//执行结果标识
-    private String actionResultMsg;//执行结果标识
-    private int retryFlag;//再次出现界面  是否重复点击  0 重复点击，1 不重复点击
+    private String autoType;//自动操作类型，注册、养号;
+    private String mathWindowText;//匹配窗口文本，多个用| 隔开
+    private String operation;//最后点击行为动作描述
+    private long operationSleepMs;//点击行为后休眠毫秒数
+    private String windowOperationDesc;//窗口操作描述
+    private boolean isWindowOperatonSucc;//窗口动作是否成功
+    private String windowOperatonResultMsg;//执行结果标识
+    private String remark;//节点备注
+
+    private List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();//当前窗口需要操作节点
 
     public WindowNodeInfo() {
     }
-    public WindowNodeInfo(String nodeId, String nodeText, String nodePath, String nodeDesc) {
-        this.nodeId = nodeId;
-        this.nodeText = nodeText;
-        this.nodePath = nodePath;
-        this.nodeDesc = nodeDesc;
-    }
-
-    public WindowNodeInfo(String operation, String actionGroupTag, String actionDesc) {
+    public WindowNodeInfo(String wxVersion,String autoType,String mathWindowText,String operation){
+        this.wxVersion = wxVersion;
+        this.autoType = autoType;
+        this.mathWindowText = mathWindowText;
         this.operation = operation;
-        this.actionGroupTag = actionGroupTag;
-        this.actionDesc = actionDesc;
     }
 
-    public WindowNodeInfo(String operation, String windowText, int nodeType, String actionGroupTag, String actionDesc, String nodeText, String nodePath) {
-        this.windowText = windowText;
-        this.operation = operation;
-        this.actionGroupTag = actionGroupTag;
-        this.actionDesc = actionDesc;
-        this.nodeType = nodeType;
-        this.nodePath = nodePath;
-        this.nodeText = nodeText;
-    }
-    public WindowNodeInfo(String operation, String windowText, int nodeType, String actionGroupTag, String actionDesc, String nodeText, String nodePath, String nodeDesc) {
-        this.windowText = windowText;
-        this.operation = operation;
-        this.actionGroupTag = actionGroupTag;
-        this.actionDesc = actionDesc;
-        this.nodeType = nodeType;
-        this.nodePath = nodePath;
-        this.nodeText = nodeText;
-        this.nodeDesc = nodeDesc;
+    public String getWindowOperationDesc() {
+        return windowOperationDesc;
     }
 
-
-    public String getActionGroupTag() {
-        return actionGroupTag;
-    }
-
-    public void setActionGroupTag(String actionGroupTag) {
-        this.actionGroupTag = actionGroupTag;
-    }
-
-
-
-    public boolean isActionResultFlag() {
-        return actionResultFlag;
-    }
-
-    public void setActionResultFlag(boolean actionResultFlag) {
-        this.actionResultFlag = actionResultFlag;
-    }
-
-
-    public String getInputText() {
-        return inputText;
-    }
-
-    public void setInputText(String inputText) {
-        this.inputText = inputText;
-    }
-
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
+    public void setWindowOperationDesc(String windowOperationDesc) {
+        this.windowOperationDesc = windowOperationDesc;
     }
 
     public String getWxVersion() {
@@ -109,12 +49,20 @@ public class WindowNodeInfo {
         this.wxVersion = wxVersion;
     }
 
-    public String getWindowText() {
-        return windowText;
+    public String getAutoType() {
+        return autoType;
     }
 
-    public void setWindowText(String windowText) {
-        this.windowText = windowText;
+    public void setAutoType(String autoType) {
+        this.autoType = autoType;
+    }
+
+    public String getMathWindowText() {
+        return mathWindowText;
+    }
+
+    public void setMathWindowText(String mathWindowText) {
+        this.mathWindowText = mathWindowText;
     }
 
     public String getOperation() {
@@ -125,60 +73,28 @@ public class WindowNodeInfo {
         this.operation = operation;
     }
 
-    public double getActionNo() {
-        return actionNo;
+    public long getOperationSleepMs() {
+        return operationSleepMs;
     }
 
-    public void setActionNo(double actionNo) {
-        this.actionNo = actionNo;
+    public void setOperationSleepMs(long operationSleepMs) {
+        this.operationSleepMs = operationSleepMs;
     }
 
-    public String getActionDesc() {
-        return actionDesc;
+    public boolean isWindowOperatonSucc() {
+        return isWindowOperatonSucc;
     }
 
-    public void setActionDesc(String actionDesc) {
-        this.actionDesc = actionDesc;
+    public void setWindowOperatonSucc(boolean windowOperatonSucc) {
+        isWindowOperatonSucc = windowOperatonSucc;
     }
 
-    public int getNodeType() {
-        return nodeType;
+    public String getWindowOperatonResultMsg() {
+        return windowOperatonResultMsg;
     }
 
-    public void setNodeType(int nodeType) {
-        this.nodeType = nodeType;
-    }
-
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
-    }
-
-    public String getNodePath() {
-        return nodePath;
-    }
-
-    public void setNodePath(String nodePath) {
-        this.nodePath = nodePath;
-    }
-
-    public String getNodeText() {
-        return nodeText;
-    }
-
-    public void setNodeText(String nodeText) {
-        this.nodeText = nodeText;
-    }
-
-    public String getNodeDesc() {
-        return nodeDesc;
-    }
-
-    public void setNodeDesc(String nodeDesc) {
-        this.nodeDesc = nodeDesc;
+    public void setWindowOperatonResultMsg(String windowOperatonResultMsg) {
+        this.windowOperatonResultMsg = windowOperatonResultMsg;
     }
 
     public String getRemark() {
@@ -189,47 +105,23 @@ public class WindowNodeInfo {
         this.remark = remark;
     }
 
-    public int getActionChildNo() {
-        return actionChildNo;
+    public List<NodeInfo> getNodeInfoList() {
+        return nodeInfoList;
     }
 
-    public void setActionChildNo(int actionChildNo) {
-        this.actionChildNo = actionChildNo;
+    public void setNodeInfoList(List<NodeInfo> nodeInfoList) {
+        this.nodeInfoList = nodeInfoList;
     }
 
-    public long getActionSleepMs() {
-        return actionSleepMs;
+    public String toString(){
+        String nodesResult = autoType+"-"+windowOperationDesc;
+        boolean allNodeOpeSuccFlag = true;
+        for(NodeInfo nodeInfo:nodeInfoList){
+            allNodeOpeSuccFlag = allNodeOpeSuccFlag & nodeInfo.isOperationSucc();//只要有一个是false,最后的结果返回false
+            nodesResult = "-"+nodesResult+nodeInfo.toString();
+        }
+        this.isWindowOperatonSucc = allNodeOpeSuccFlag;
+        return nodesResult.replaceAll("null","");
     }
 
-    public void setActionSleepMs(long actionSleepMs) {
-        this.actionSleepMs = actionSleepMs;
-    }
-
-    public String getFindNodeResult() {
-        return findNodeResult;
-    }
-
-    public void setFindNodeResult(String findNodeResult) {
-        this.findNodeResult = findNodeResult;
-    }
-
-    public int getRetryFlag() {
-        return retryFlag;
-    }
-
-    public void setRetryFlag(int retryFlag) {
-        this.retryFlag = retryFlag;
-    }
-
-    public String getActionResultMsg() {
-        return actionResultMsg;
-    }
-
-    public void setActionResultMsg(String actionResultMsg) {
-        this.actionResultMsg = actionResultMsg;
-    }
-
-    public String getActionMsg(){
-        return (actionNo+"-"+operation+"-"+actionDesc+"【"+nodeText+inputText+"】-").replaceAll("null","").replaceAll("【】","");
-    }
 }

@@ -43,6 +43,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import hyj.autooperation.common.FilePathCommon;
+import hyj.autooperation.conf.WindowOperationConf;
+import hyj.autooperation.model.NodeInfo;
+import hyj.autooperation.model.WindowNodeInfo;
 import hyj.autooperation.thread.TemplateThread;
 import hyj.autooperation.util.AutoUtil;
 import hyj.autooperation.util.DragImageUtil2;
@@ -65,6 +68,124 @@ public class ExampleInstrumentedTest {
         appContext = InstrumentationRegistry.getTargetContext();
         mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     }
+
+    public void initAuto(){
+        killAndClearWxData();
+        startWx();
+    }
+
+    @Test
+    public void testAuto(){
+        initAuto();
+        Map<String,WindowNodeInfo> ops = WindowOperationConf.getOperations();
+        while (true){
+            String windowText = getAllWindowText();
+            System.out.println("running-->getAllWindowText："+windowText);
+            WindowNodeInfo wni = getWniByWindowText(ops,windowText);
+            if(wni==null){
+                System.out.println("windowText没有匹配ops动作");
+                continue;
+            }
+            System.out.println("running-->wni："+JSON.toJSONString(wni));
+            if(wni!=null){
+                doAction(wni);
+                continue;
+            }
+        }
+    }
+
+    //自定义、通用两种
+    public void doAction(WindowNodeInfo wni){
+        if(wni.getOperation().contains("自定义-")){
+            doCustomerAction(wni);
+        }else  if(wni.getOperation().contains("异常-")){
+            initAuto();
+        }else {
+            for(NodeInfo nodeInfo: wni.getNodeInfoList()){
+                switch (nodeInfo.getNodeType()){
+                    case 1:
+                        nodeInfo.setOperationSucc(doClick(nodeInfo));
+                        AutoUtil.sleep(nodeInfo.getNodeOperationSleepMs());
+                        break;
+                    case 2:
+                        break;
+                }
+            }
+            wni.setWindowOperatonSucc(validIsAllTrue(wni));//设置总成功标志
+        }
+        System.out.println("doAction-->"+wni.toString());
+    }
+    public boolean validIsAllTrue(WindowNodeInfo wni){
+        if(wni.getNodeInfoList().size()==0) return false;
+        for(NodeInfo nodeInfo:wni.getNodeInfoList()){
+            if(!nodeInfo.isOperationSucc()){
+                return false;
+            }
+        }
+        return true;
+    }
+    public void doCustomerAction(WindowNodeInfo wni){
+        String operationDesc="";
+        boolean isOperationsSucc = false;
+        if("自定义-点击注册2".equals(wni.getOperation())){
+            List<UiObject2> uos = findNodesByClaZZ(EditText.class);
+            if(uos!=null&&uos.size()==3){
+                uos.get(0).setText("1123");
+                uos.get(1).setText("136521598"+new Random().nextInt(10)+new Random().nextInt(10));
+                uos.get(2).setText("789lkjmnhikj");//密码
+                isOperationsSucc = clickUiObjectByText("注册");
+                operationDesc = "输入账号，输入密码，点击【注册】"+isOperationsSucc;
+            }
+        }else if("自定义-过滑块".equals(wni.getOperation())){
+            int dragEndX=0;
+            while (dragEndX==0){
+                cmdScrrenShot();//截图
+                Bitmap bi = waitAndGetBitmap();
+                dragEndX = DragImageUtil2.getPic2LocX(bi);
+                operationDesc="拖动dragEndX"+dragEndX;
+                Point[] points = getDargPoins(235,dragEndX+63,1029);
+                mDevice.swipe(points,100);
+            }
+        }
+        wni.setWindowOperationDesc(operationDesc);
+        wni.setWindowOperatonSucc(isOperationsSucc);
+    }
+
+    public boolean doClick(NodeInfo nodeInfo){
+        if(!TextUtils.isEmpty(nodeInfo.getNodeText())){
+            if(nodeInfo.getNodeText().contains("%")){
+                //clickUiObjectByText(nodeInfo.getNodeText());
+            }
+            return clickUiObjectByText(nodeInfo.getNodeText());
+        }else if(!TextUtils.isEmpty(nodeInfo.getNodeDesc())){
+            if(nodeInfo.getNodeDesc().contains("%")){
+                return clickNodeByDesContain(nodeInfo.getNodeDesc().replaceAll("%",""));
+            }
+            return clickUiObjectByDesc(nodeInfo.getNodeDesc());
+        }
+        return false;
+    }
+
+    public WindowNodeInfo getWniByWindowText(Map<String,WindowNodeInfo>  ops,String windowText){
+        for(String key:ops.keySet()){
+            if(key.contains("|")){
+                String[] arr = key.split("\\|");
+                boolean flag = true;
+                for(String str :arr){
+                    if(!windowText.contains(str)){
+                        flag = false;
+                        break;
+                    }
+                }
+                if(flag) return ops.get(key);
+                continue;
+            }else if(windowText.contains(key)){
+                return ops.get(key);
+            }
+        }
+        return null;
+    }
+
     @Test
     public void testGetContent() throws Exception {
         while (true){
@@ -108,7 +229,6 @@ public class ExampleInstrumentedTest {
         }catch (Exception e){
             e.printStackTrace();
         }
-        System.out.println("running-->getAllWindowText："+windowContent);
         return windowContent;
     }
     //获取非空文本
@@ -274,6 +394,7 @@ public class ExampleInstrumentedTest {
     }
 
     public void startWx(){
+        System.out.println("doAction-->启动微信");
         startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
         AutoUtil.sleep(800);
     }
@@ -289,6 +410,7 @@ public class ExampleInstrumentedTest {
         appContext.startActivity(intent);
     }
     public void killAndClearWxData(){
+        System.out.println("doAction-->关闭、清楚数据");
         List<String> cmds = getKillAndClearWxCmds();
         for(String cmd:cmds){
             exeShell(cmd);
@@ -361,7 +483,6 @@ public class ExampleInstrumentedTest {
     }
 
     public boolean clickUiObject(UiObject uo){
-        System.out.println("uo-->"+ JSON.toJSONString(uo));
         try {
             if(uo!=null&&uo.isClickable()){
                 return uo.clickAndWaitForNewWindow();
