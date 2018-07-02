@@ -26,6 +26,7 @@ public class DragImageUtil2 {
         //Bitmap bi = BitmapFactory.decodeFile(picName);;
         //方块1坐落 像素点
         List<PixPoint> ps =  getScanXPoints(bi);
+        if(ps==null||ps.size()==0) return 0;
         for(PixPoint p :ps) {
             System.out.println("ps_"+JSON.toJSONString(p));
         }

@@ -1,16 +1,22 @@
 package hyj.autooperation;
 
+import android.app.Instrumentation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
+import android.support.test.uiautomator.UiAutomatorTestCase;
+import android.support.test.uiautomator.UiCollection;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
@@ -18,6 +24,7 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -46,51 +53,130 @@ import hyj.autooperation.common.FilePathCommon;
 import hyj.autooperation.conf.WindowOperationConf;
 import hyj.autooperation.model.NodeInfo;
 import hyj.autooperation.model.WindowNodeInfo;
+import hyj.autooperation.model.Wx008Data;
 import hyj.autooperation.thread.TemplateThread;
 import hyj.autooperation.util.AutoUtil;
 import hyj.autooperation.util.DragImageUtil2;
 import hyj.autooperation.util.FileUtil;
+import hyj.autooperation.util.LogUtil;
 
+import static android.content.Context.CONNECTIVITY_SERVICE;
 import static org.junit.Assert.*;
 
 /**
  * Instrumentation test, which will execute on an Android device.
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ * bug 获取某些节点可能出现 android.support.test.uiautomator.StaleObjectException
+ * 如：uiObject2!=null ;
+ *    uiObject2.getText();
+ *
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
     private UiDevice mDevice;
     private Context appContext;
+    Instrumentation instrumentation;
 
     @Before
     public void init(){
         appContext = InstrumentationRegistry.getTargetContext();
-        mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        instrumentation = InstrumentationRegistry.getInstrumentation();
+        mDevice = UiDevice.getInstance(instrumentation);
     }
 
-    public void initAuto(){
+    public void initAuto(String tag){
         killAndClearWxData();
+        startAriPlaneMode(1000);
+        currentWx008Data = tellSetEnvirlmentAndGet008Data(tag);
         startWx();
     }
 
+    Wx008Data currentWx008Data;
+    String windowText;
+    String otherOperationName="";//当前额外动作
+    List<WindowNodeInfo> otherOperations = null;
+    int actionNo=0;//记录点击所处在位置
     @Test
-    public void testAuto(){
-        initAuto();
-        Map<String,WindowNodeInfo> ops = WindowOperationConf.getOperations();
+    public void useAppContext(){
+        mDevice.pressHome();
+        initAuto("retry");
+        //Map<String,WindowNodeInfo> ops = WindowOperationConf.getOperatioByAutoType("养号");
+        Map<String,WindowNodeInfo> ops = WindowOperationConf.getOperatioByAutoType("注册");
+        List<String> otherOperationNames = new ArrayList<String>();
+        otherOperationNames.add("发圈");
         while (true){
-            String windowText = getAllWindowText();
+            AutoUtil.sleep(1000);
+            System.out.println("running-->otherOperation："+otherOperationName+" actionNo:"+actionNo);
+            windowText = getAllWindowText("com.tencent.mm");
+            //String windowText =getAllWindowText1();
             System.out.println("running-->getAllWindowText："+windowText);
-            WindowNodeInfo wni = getWniByWindowText(ops,windowText);
-            if(wni==null){
-                System.out.println("windowText没有匹配ops动作");
-                continue;
-            }
-            System.out.println("running-->wni："+JSON.toJSONString(wni));
-            if(wni!=null){
+            if(windowText.contains("正在登录...")||windowText.contains("正在载入数据...")) continue;
+
+            if("".equals(otherOperationName)){
+                WindowNodeInfo wni = getWniByWindowText(ops,windowText);
+                if(wni==null){
+                    System.out.println("doAction-->windowText没有匹配ops动作");
+                    continue;
+                }
+                System.out.println("running-->wni："+JSON.toJSONString(wni));
                 doAction(wni);
+                if("自定义-登录异常".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
+                    initAuto("next");
+                }else if("自定义-判断登录成功".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
+                    if(otherOperationNames.size()==0){
+                        int i = 0;
+                        while (i<10){
+                            AutoUtil.sleep(1000);
+                            System.out.println("doAction-->登录成功等待秒数 "+i);
+                            ++i;
+                        }
+                        initAuto("next");//没有其他动作，下一个
+                    }else {
+                        otherOperationName = otherOperationNames.get(0);
+                        otherOperations = WindowOperationConf.getOtherOperationByAutoType(otherOperationName);
+                    }
+                }
                 continue;
+            }else {//成功执行其他动作
+                if(actionNo>otherOperations.size()-1){
+                    actionNo=0;
+                    if(otherOperationNames.indexOf(otherOperationName)+1<=otherOperationNames.size()-1){
+                        otherOperationName = otherOperationNames.get(otherOperationNames.indexOf(otherOperationName)+1);
+                        otherOperations = WindowOperationConf.getOtherOperationByAutoType(otherOperationName);
+                    }else {//执行完所有额外动作
+                        otherOperationName="";
+                        initAuto("next");//没有其他动作，下一个
+                        continue;
+                    }
+                }
+                WindowNodeInfo otherWni = otherOperations.get(actionNo);
+                doAction(otherWni);
+                if(otherWni.isWindowOperatonSucc()){
+                    actionNo = actionNo +1;
+                }
             }
+        }
+    }
+    @Test
+    public void test1(){
+        while (true){
+            windowText = getAllWindowText("com.tencent.mm");
+            //String windowText =getAllWindowText1();
+            System.out.println("doA-- running-->getAllWindowText："+windowText);
+
+            WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","发圈","这一刻的想法...","长按拍照分享");
+            NodeInfo nodeInfo31 = new NodeInfo(6,"","拍照分享","长按拍照分享");
+            windowNodeInfo3.getNodeInfoList().add(nodeInfo31);
+
+            break;
+
+          /* UiObject uiObject = findNodeByText("发现");
+            try {
+                uiObject.click();
+            } catch (UiObjectNotFoundException e) {
+                e.printStackTrace();
+            }*/
         }
     }
 
@@ -98,8 +184,6 @@ public class ExampleInstrumentedTest {
     public void doAction(WindowNodeInfo wni){
         if(wni.getOperation().contains("自定义-")){
             doCustomerAction(wni);
-        }else  if(wni.getOperation().contains("异常-")){
-            initAuto();
         }else {
             for(NodeInfo nodeInfo: wni.getNodeInfoList()){
                 switch (nodeInfo.getNodeType()){
@@ -107,7 +191,8 @@ public class ExampleInstrumentedTest {
                         nodeInfo.setOperationSucc(doClick(nodeInfo));
                         AutoUtil.sleep(nodeInfo.getNodeOperationSleepMs());
                         break;
-                    case 2:
+                    case 6:
+                        nodeInfo.setOperationSucc(doLongClick(nodeInfo));
                         break;
                 }
             }
@@ -134,21 +219,98 @@ public class ExampleInstrumentedTest {
                 uos.get(1).setText("136521598"+new Random().nextInt(10)+new Random().nextInt(10));
                 uos.get(2).setText("789lkjmnhikj");//密码
                 isOperationsSucc = clickUiObjectByText("注册");
-                operationDesc = "输入账号，输入密码，点击【注册】"+isOperationsSucc;
             }
+            operationDesc = "输入账号，输入密码，点击【注册】"+isOperationsSucc;
         }else if("自定义-过滑块".equals(wni.getOperation())){
             int dragEndX=0;
-            while (dragEndX==0){
-                cmdScrrenShot();//截图
-                Bitmap bi = waitAndGetBitmap();
-                dragEndX = DragImageUtil2.getPic2LocX(bi);
-                operationDesc="拖动dragEndX"+dragEndX;
-                Point[] points = getDargPoins(235,dragEndX+63,1029);
-                mDevice.swipe(points,100);
+            cmdScrrenShot();//截图
+            Bitmap bi = waitAndGetBitmap();
+            dragEndX = DragImageUtil2.getPic2LocX(bi);
+            operationDesc="拖动dragEndX"+dragEndX;
+            Point[] points = getDargPoins(235,dragEndX+63,1029);
+            boolean dragFlag = mDevice.swipe(points,100);
+            AutoUtil.sleep(3000);
+        }else if("自定义-输入账号密码".equals(wni.getOperation())){
+            if(validEnviroment()){
+                System.out.println("doAction--->改机成功");
+                List<UiObject2> uos = findNodesByClaZZ(EditText.class);
+                if(uos!=null&uos.size()==2){
+                    System.out.println("runn size："+uos.size());
+                    String wxid = currentWx008Data.getPhone();
+                    String pwd = currentWx008Data.getWxPwd();
+                    if(!TextUtils.isEmpty(currentWx008Data.getWxId())){
+                        wxid = currentWx008Data.getWxId();
+                    }else if(!TextUtils.isEmpty(currentWx008Data.getWxid19())){
+                        wxid = currentWx008Data.getWxid19();
+                    }
+                    uos.get(0).setText(wxid);
+                    uos.get(1).setText(TextUtils.isEmpty(pwd)?"nullnull":pwd);
+                    isOperationsSucc = clickUiObjectByText("登录");
+                    operationDesc = "输入账号["+wxid+"]密码["+pwd+"]点击登录"+isOperationsSucc;
+                    AutoUtil.sleep(5000);
+                }
+            }else {
+                operationDesc = "改机失败";
             }
+        }else if("自定义-登录下一步".equals(wni.getOperation())){
+            UiObject2 uiObject2 = mDevice.findObject(By.text("下一步"));
+            int y = uiObject2.getVisibleBounds().top-uiObject2.getVisibleBounds().height();
+            int x = uiObject2.getVisibleBounds().width()/2;
+            mDevice.click(x,y);
+            operationDesc = "点击用微信号/QQ号/邮箱登录 x:"+x+" y:"+y;
+        }else if("自定义-登录异常".equals(wni.getOperation())){
+            operationDesc = wni.getMathWindowText();
+            isOperationsSucc = true;
+        }else if("自定义-判断登录成功".equals(wni.getOperation())){
+            operationDesc = "登录成功";
+            isOperationsSucc = true;
+        }else if("自定义-点我知道了".equals(wni.getOperation())){
+            UiObject2 uiObject2 = mDevice.findObject(By.textContains(wni.getMathWindowText()));
+            int x = uiObject2.getVisibleBounds().centerX();
+            int y = uiObject2.getVisibleBounds().bottom+(uiObject2.getVisibleBounds().height()*2);
+            mDevice.click(x,y);
+            operationDesc = "点我知道了 x:"+x+" y:"+y;
+            isOperationsSucc = true;
+        }else if("自定义-输入发圈内容".equals(wni.getOperation())){
+            String inputText = "558 "+currentWx008Data.getPhone();
+            UiObject2 uiObject2 = mDevice.findObject(By.textContains(wni.getMathWindowText()));
+            uiObject2.setText(inputText);
+            mDevice.findObject(By.text("发表")).click();
+            operationDesc = "输入发圈内容："+inputText;
+            isOperationsSucc = true;
+            AutoUtil.sleep(5000);
         }
         wni.setWindowOperationDesc(operationDesc);
         wni.setWindowOperatonSucc(isOperationsSucc);
+    }
+
+    //判断改机是否成功 改机成功返回true
+    private boolean validEnviroment(){
+        String phoneTag = FileUtil.readAllUtf8(FilePathCommon.phoneTagPath);
+        String phoneTag008 = TextUtils.isEmpty(currentWx008Data.getPhone())?currentWx008Data.getWxId():currentWx008Data.getPhone();
+        System.out.println("phoneTag-->"+phoneTag+" phoneTag008:"+phoneTag008);
+        if(!phoneTag.equals(phoneTag008)){
+            LogUtil.login(" exception change phone fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd());
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    public boolean doInputText(NodeInfo nodeInfo){
+        if(!TextUtils.isEmpty(nodeInfo.getNodeText())){
+             return setUiObjectTextByText(nodeInfo.getNodeText(),"556");
+        }
+        return false;
+    }
+
+    public boolean doLongClick(NodeInfo nodeInfo){
+        if(!TextUtils.isEmpty(nodeInfo.getNodeDesc())){
+            return longClickUiObjectByDesc(nodeInfo.getNodeDesc());
+        }else if(!TextUtils.isEmpty(nodeInfo.getNodeText())){
+            return longClickUiObjectByText(nodeInfo.getNodeText());
+        }
+        return false;
     }
 
     public boolean doClick(NodeInfo nodeInfo){
@@ -189,41 +351,40 @@ public class ExampleInstrumentedTest {
     @Test
     public void testGetContent() throws Exception {
         while (true){
-            getAllWindowText();
+            getAllWindowText("com.tencent.mm");
         }
     }
     //获取当前窗口的所有文本，耗时200毫秒
-    public String getAllWindowText(){
+    public String getAllWindowText(String pkName){
+        System.out.println("debug--->start============getAllWindowText================");
         String windowContent = "";
         try {
-            List<UiObject2> edtObjs = mDevice.findObjects(By.clazz(EditText.class));
-            List<UiObject2> trObjs = mDevice.findObjects(By.clazz(TextView.class));
-            List<UiObject2> viewObjs = mDevice.findObjects(By.clazz(View.class));
-            List<UiObject2> cbObjs = mDevice.findObjects(By.clazz(CheckBox.class));
-            List<UiObject2> btnObjs = mDevice.findObjects(By.clazz(Button.class));
+            List<UiObject2> cbObjs = mDevice.findObjects(By.pkg(pkName));
             if(!cbObjs.isEmpty()){
                 for(UiObject2 obj:cbObjs){
-                    windowContent = windowContent +getNotNullComponentText(obj.getText(),obj.getContentDescription());
+                    windowContent = windowContent +getNotNullComponentText(obj);
                 }
             }
-            if(!btnObjs.isEmpty()){
-                for(UiObject2 obj:btnObjs){
-                    windowContent = windowContent +getNotNullComponentText(obj.getText(),obj.getContentDescription());
-                }
-            }
-            if(!viewObjs.isEmpty()){
-                for(UiObject2 obj:viewObjs){
-                    windowContent = windowContent +getNotNullComponentText(obj.getText(),obj.getContentDescription());
-                }
-            }
-            if(!edtObjs.isEmpty()){
-                for(UiObject2 obj:edtObjs){
-                    windowContent = windowContent +getNotNullComponentText(obj.getText(),obj.getContentDescription());
-                }
-            }
-            if(!trObjs.isEmpty()){
-                for(UiObject2 obj:trObjs){
-                    windowContent = windowContent +getNotNullComponentText(obj.getText(),obj.getContentDescription());
+        System.out.println("debug--->end============getAllWindowText================\n");
+        }catch (Exception e){
+            System.out.println("debug--->end StaleObjectException============getAllWindowText================\n");
+            e.printStackTrace();
+        }
+        return windowContent;
+    }
+
+    public String newGetAllTextByClass(){
+        String allText = getAllTextByClass(Button.class)+getAllTextByClass(EditText.class)+getAllTextByClass(View.class);
+        return allText;
+    }
+
+    public String getAllTextByClass(Class clazz){
+        String windowContent = "";
+        try {
+            List<UiObject2> cbObjs = mDevice.findObjects(By.clazz(clazz));
+            if (!cbObjs.isEmpty()) {
+                for (UiObject2 obj : cbObjs) {
+                    windowContent = windowContent + getNotNullComponentText(obj);
                 }
             }
         }catch (Exception e){
@@ -231,11 +392,60 @@ public class ExampleInstrumentedTest {
         }
         return windowContent;
     }
+    public String getAllWindowText1(){
+        System.out.println("debug--->start============getAllWindowText1================");
+        String windowContent = "";
+        try {
+
+            List<UiObject2> cbObjs = mDevice.findObjects(By.clazz(CheckBox.class));
+            if(!cbObjs.isEmpty()){
+                for(UiObject2 obj:cbObjs){
+                    windowContent = windowContent +getNotNullComponentText(obj);
+                }
+            }
+            List<UiObject2> edtObjs = mDevice.findObjects(By.clazz(EditText.class));
+            List<UiObject2> trObjs = mDevice.findObjects(By.clazz(TextView.class));
+            List<UiObject2> viewObjs = mDevice.findObjects(By.clazz(View.class));
+            List<UiObject2> btnObjs = mDevice.findObjects(By.clazz(Button.class));
+            if(!btnObjs.isEmpty()){
+                for(UiObject2 obj:btnObjs){
+                    windowContent = windowContent +getNotNullComponentText(obj);
+                }
+            }
+            if(!viewObjs.isEmpty()){
+                for(UiObject2 obj:viewObjs){
+                    windowContent = windowContent +getNotNullComponentText(obj);
+                }
+            }
+            if(!edtObjs.isEmpty()){
+                for(UiObject2 obj:edtObjs){
+                    windowContent = windowContent +getNotNullComponentText(obj);
+                }
+            }
+            if(!trObjs.isEmpty()){
+                for(UiObject2 obj:trObjs){
+                    windowContent = windowContent +getNotNullComponentText(obj);
+                }
+            }
+            System.out.println("debug--->end============getAllWindowText1================\n");
+        }catch (Exception e){
+            System.out.println("debug--->end StaleObjectException============getAllWindowText1================\n");
+            e.printStackTrace();
+        }
+        return windowContent;
+    }
     //获取非空文本
-    public String getNotNullComponentText(String text,String desc){
+    public String getNotNullComponentText(UiObject2 obj){
         String result = "";
-        if(!TextUtils.isEmpty(text)) result = result+text+"|";
-        if(!TextUtils.isEmpty(desc)) result = result+desc+"|";
+        try {
+            //System.out.println(" text:"+obj.getText()+" desc:"+obj.getContentDescription());
+            System.out.println("debug--->"+obj.getClassName()+" text:"+obj.getText()+" desc:"+obj.getContentDescription()+" pgName:"+obj.getApplicationPackage()+" resName:"+obj.getResourceName()+" childCount:"+obj.getChildCount()+" isclick:"+obj.isClickable());
+            if(!TextUtils.isEmpty(obj.getText())) result = result+obj.getText()+"|";
+            if(!TextUtils.isEmpty(obj.getContentDescription())) result = result+obj.getContentDescription()+"|";
+        }catch (Exception e){
+            System.out.println("debug--->end  getText StaleObjectException==============================\n");
+            e.printStackTrace();
+        }
         return result;
     }
     @Test
@@ -320,7 +530,7 @@ public class ExampleInstrumentedTest {
 
     String action="";
     @Test
-    public void useAppContext() {
+    public void useAppContext2() {
 
         killAndClearWxData();
         startWx();
@@ -356,7 +566,6 @@ public class ExampleInstrumentedTest {
                     mDevice.swipe(points,100);
                 }
             }
-
             UiObject2 qrWindow = mDevice.findObject(By.descContains("联系符合以下条件的"));
             if(qrWindow!=null){
                 killAndClearWxData();
@@ -393,8 +602,22 @@ public class ExampleInstrumentedTest {
         return points;
     }
 
+    public void startAriPlaneMode(long sleepMs){
+        System.out.println("doAction-->开启飞行模式");
+        exeShell("settings put global airplane_mode_on 1" );
+        exeShell("am broadcast -a android.intent.action.AIRPLANE_MODE --ez state true" );
+        AutoUtil.sleep(sleepMs);
+        exeShell("settings put global airplane_mode_on 0");
+        exeShell("am broadcast -a android.intent.action.AIRPLANE_MODE --ez state false");
+        AutoUtil.sleep(5000);
+        boolean flag = isConnectInternet();
+        while (!flag){
+            AutoUtil.sleep(800);
+            flag = isConnectInternet();
+            System.out.println("doAction-->开启飞行模式-等待网络恢复");
+        }
+    }
     public void startWx(){
-        System.out.println("doAction-->启动微信");
         startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
         AutoUtil.sleep(800);
     }
@@ -409,6 +632,22 @@ public class ExampleInstrumentedTest {
         System.out.println("running-->start app:"+packageName+" activity:"+activity);
         appContext.startActivity(intent);
     }
+    public Wx008Data tellSetEnvirlmentAndGet008Data(String tag){
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,tag);//next登录下一个，retry新登录,首次开启也是retry
+        AutoUtil.sleep(800);//等待对方处理写入文件
+        String str = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
+        System.out.println("doAction-->str0:"+str);
+        while (str.equals("next")||str.equals("retry")){//等待对方写入hook和008data，对方修改状态，循环不执行
+            str = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
+            System.out.println("doAction-->str1:"+str);
+            AutoUtil.sleep(500);
+        }
+        String wx008DataSstr = FileUtil.readAllUtf8(FilePathCommon.wx008DataFilePath);
+        Wx008Data currentWx008Data = JSON.parseObject(wx008DataSstr,Wx008Data.class);
+        System.out.println("doAction-->currentWx008Data:"+JSON.toJSONString(currentWx008Data));
+        return currentWx008Data;
+    }
+
     public void killAndClearWxData(){
         System.out.println("doAction-->关闭、清楚数据");
         List<String> cmds = getKillAndClearWxCmds();
@@ -484,8 +723,26 @@ public class ExampleInstrumentedTest {
 
     public boolean clickUiObject(UiObject uo){
         try {
-            if(uo!=null&&uo.isClickable()){
-                return uo.clickAndWaitForNewWindow();
+            if(uo!=null){
+                if(uo.isClickable()){
+                    return uo.clickAndWaitForNewWindow();
+                }else {
+                    System.out.println("doAction--->x:"+uo.getBounds().centerX()+" y:"+uo.getBounds().centerY());
+                    return mDevice.click(uo.getBounds().centerX(),uo.getBounds().centerY());
+                }
+            }
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean longClickUiObject(UiObject uo){
+        try {
+            if(uo!=null){
+                if(uo.isLongClickable()){
+                    return uo.longClick();
+                }
             }
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
@@ -507,6 +764,12 @@ public class ExampleInstrumentedTest {
     }
     public boolean clickUiObjectByDesc(String desc){
         return clickUiObject(findNodeByDesc(desc));
+    }
+    public boolean longClickUiObjectByDesc(String desc){
+        return longClickUiObject(findNodeByDesc(desc));
+    }
+    public boolean longClickUiObjectByText(String text){
+        return longClickUiObject(findNodeByText(text));
     }
     public boolean setUiObjectTextByDesc(String desc,String text){
         return setUiObjectText(findNodeByDesc(desc),text);
@@ -542,4 +805,89 @@ public class ExampleInstrumentedTest {
         }
         return false;
     }
+    //判断是否联网
+    public boolean isConnectInternet(){
+        ConnectivityManager connectivityManager = (ConnectivityManager)appContext.getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(networkInfo == null || !networkInfo.isAvailable()) {
+            //当前无可用网络
+            return false;
+        }else {
+            //当前有可用网络
+            return true;
+        }
+    }
+
+    @Test
+    public void testVpdpn()  {
+        doVpn();
+    }
+    public void doVpn(){
+        String lastAction="init";
+        while (true){
+            System.out.println("doAction----------------------------------------------------->action:"+lastAction);
+            UiObject t1 = mDevice.findObject(new UiSelector().text("失败"));
+            if(t1==null){
+                System.out.println("doAction--t1 is null");
+            }else {
+                System.out.println("doActiont1--exeit:"+t1.exists());
+                System.out.println("doAction--t1 is not null");
+            }
+            String pkg = mDevice.getCurrentPackageName();
+            String allText = getAllWindowText(pkg);
+            getAllWindowText1();
+            if(!"com.android.settings".equals(pkg)&&!"com.android.vpndialogs".equals(pkg)){
+                System.out.println("doAction-->打开vpn:"+pkg);
+                opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+                continue;
+            }
+
+            UiObject2 vpnObj1 =  mDevice.findObject(By.text("VPN"));
+            if(vpnObj1!=null&&!allText.contains("添加VPN")){
+                mDevice.click(vpnObj1.getVisibleCenter().x,vpnObj1.getVisibleCenter().y);
+                lastAction="点击VPN";
+                System.out.println("doAction-->点击VPN");
+                continue;
+            }
+
+            UiObject2 disConnectObj = mDevice.findObject(By.text("断开连接"));
+            if(disConnectObj!=null){
+                System.out.println("doAction-->点击断开连接");
+                lastAction="点击断开连接";
+                disConnectObj.click();
+                continue;
+            }
+
+
+            if(allText.contains("添加VPN")){
+                UiObject2 vpnObj =  mDevice.findObject(By.text("PPTP VPN"));
+                if(vpnObj!=null){
+                    int  x = vpnObj.getVisibleCenter().x;
+                    int  y = vpnObj.getVisibleCenter().y;
+                    System.out.println("vpnObj11-->x:"+x+" y:"+y);
+                    System.out.println("doAction-->点击PPTP VPN连接");
+                    mDevice.click(x,y);
+                    lastAction="点击PPTP VPN连接";
+                    continue;
+                }else if(mDevice.findObject(By.text("已连接"))!=null){
+                    if("点击PPTP VPN连接".equals(lastAction)){
+                        System.out.println("doAction-->连接成功，退出");
+                        break;
+                    }else if("init".equals(lastAction)||"点击断开连接".equals(lastAction)||"点击VPN".equals(lastAction)){
+                        System.out.println("doAction-->点击[已连接]，弹出窗口");
+                        mDevice.click(564,768);
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+
+    public void opentActivity(String acvityName){
+        Intent intent = new Intent(acvityName);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        appContext.startActivity(intent);
+    }
+
+
 }

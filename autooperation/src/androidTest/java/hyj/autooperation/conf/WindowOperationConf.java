@@ -1,6 +1,8 @@
 package hyj.autooperation.conf;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import hyj.autooperation.model.NodeInfo;
@@ -12,7 +14,7 @@ import hyj.autooperation.model.WindowNodeInfo;
 
 public class WindowOperationConf {
 
-    public static Map<String,WindowNodeInfo> getOperations(){
+    public static Map<String,WindowNodeInfo> getOperations1(){
         Map<String,WindowNodeInfo> ops = new HashMap<String,WindowNodeInfo>();
 
         WindowNodeInfo windowNodeInfo1 = new WindowNodeInfo("6.6.7","注册","注册|登录","点击注册1");
@@ -36,11 +38,86 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","注册","拖动下方滑块完成拼图","自定义-过滑块");
         setOps(ops,windowNodeInfo5,null);
 
-        WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","注册","联系符合以下条件的微信用户","异常-二维码出现");
+        WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","注册","联系符合以下条件的微信用户","注册异常-二维码出现");
+        setOps(ops,windowNodeInfo6,null);
+
+
+        return ops;
+    }
+    public static Map<String,WindowNodeInfo> getOperations(){
+        Map<String,WindowNodeInfo> ops = new HashMap<String,WindowNodeInfo>();
+
+        WindowNodeInfo windowNodeInfo1 = new WindowNodeInfo("6.6.7","养号","注册|登录","点击登录1");
+        NodeInfo nodeInfo11 = new NodeInfo(1,"登录","","点击登录1");
+        setOps(ops,windowNodeInfo1,nodeInfo11);
+
+        /*WindowNodeInfo windowNodeInfo2 = new WindowNodeInfo("6.6.7","养号","请填写手机号|下一步","点击用微信号/QQ号/邮箱登录");
+        NodeInfo nodeInfo21 = new NodeInfo(1,"用微信号/QQ号/邮箱登录","","点击用微信号/QQ号/邮箱登录");
+        setOps(ops,windowNodeInfo2,nodeInfo21);*/
+        WindowNodeInfo windowNodeInfo2 = new WindowNodeInfo("6.6.7","养号","请填写手机号|下一步","自定义-登录下一步");
+        setOps(ops,windowNodeInfo2,null);
+
+        WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","养号","用手机号登录|登录","自定义-输入账号密码");
+        setOps(ops,windowNodeInfo3,null);
+
+        WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","养号","帐号或密码错误","自定义-登录异常");
+        setOps(ops,windowNodeInfo4,null);
+
+        WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","养号","通讯录|发现","自定义-判断登录成功");
         setOps(ops,windowNodeInfo5,null);
 
 
         return ops;
+    }
+
+    public static List<WindowNodeInfo> getAllOtherOperation(){
+        List<WindowNodeInfo> ops = new ArrayList<WindowNodeInfo>();
+
+        WindowNodeInfo windowNodeInfo0 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","点击发现");
+        NodeInfo nodeInfo01 = new NodeInfo(1,"发现","","点击发现");
+        windowNodeInfo0.getNodeInfoList().add(nodeInfo01);
+        ops.add(windowNodeInfo0);
+
+        WindowNodeInfo windowNodeInfo1 = new WindowNodeInfo("6.6.7","发圈","附近的人|看一看","点击朋友圈");
+        NodeInfo nodeInfo11 = new NodeInfo(1,"朋友圈","","点击朋友圈");
+        windowNodeInfo1.getNodeInfoList().add(nodeInfo11);
+        ops.add(windowNodeInfo1);
+
+        WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","发圈","轻触更换主题照片|拍照分享","长按拍照分享");
+        NodeInfo nodeInfo31 = new NodeInfo(6,"","拍照分享","长按拍照分享");
+        windowNodeInfo3.getNodeInfoList().add(nodeInfo31);
+        ops.add(windowNodeInfo3);
+
+        WindowNodeInfo windowNodeInfo2 = new WindowNodeInfo("6.6.7","发圈","长按拍照按钮发文字，为内部体验功能","自定义-点我知道了");
+        ops.add(windowNodeInfo2);
+
+        WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","发圈","这一刻的想法...","自定义-输入发圈内容");
+        ops.add(windowNodeInfo4);
+
+        return ops;
+    }
+
+    public static List<WindowNodeInfo> getOtherOperationByAutoType(String autoType) {
+        List<WindowNodeInfo> result = new ArrayList<WindowNodeInfo>();
+        List<WindowNodeInfo> allOps = getAllOtherOperation();
+        for(WindowNodeInfo windowNodeInfo:allOps){
+            if(autoType.equals(windowNodeInfo.getAutoType())){
+                result.add(windowNodeInfo);
+            }
+        }
+        return result;
+    }
+
+    public static Map<String,WindowNodeInfo> getOperatioByAutoType(String autoType){
+        if("注册".equals(autoType)) return getOperations1();
+        Map<String,WindowNodeInfo> result = new HashMap<String,WindowNodeInfo>();
+        Map<String,WindowNodeInfo> allOpes = getOperations();
+        for(String key:allOpes.keySet()){
+            if(autoType.equals(allOpes.get(key).getAutoType())){
+                result.put(key,allOpes.get(key));
+            }
+        }
+        return result;
     }
 
     public static void setOps(Map<String,WindowNodeInfo> ops,WindowNodeInfo windowNodeInfo,NodeInfo nodeInfo){
