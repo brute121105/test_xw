@@ -35,10 +35,10 @@ public class WindowOperationConf {
         NodeInfo nodeInfo41 = new NodeInfo(1,"","开始","点击开始安全校验");
         setOps(ops,windowNodeInfo4,nodeInfo41);
 
-        WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","注册","拖动下方滑块完成拼图","自定义-过滑块");
-        setOps(ops,windowNodeInfo5,null);
+        //WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","注册","拖动下方滑块完成拼图","自定义-过滑块");
+        //setOps(ops,windowNodeInfo5,null);
 
-        WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","注册","联系符合以下条件的微信用户","注册异常-二维码出现");
+        WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","注册","联系符合以下条件的微信用户","自定义-注册异常二维码出现");
         setOps(ops,windowNodeInfo6,null);
 
 

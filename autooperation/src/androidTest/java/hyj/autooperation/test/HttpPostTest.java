@@ -76,6 +76,7 @@ public class HttpPostTest {
     @Test
     public void test2(){
         String url =host+"/commons/pic-loc";
+        System.out.println("OkHttpUtil-->OkHttpUtil");
         OkHttpUtil.uploadMultiFile(url,"/sdcard","fangkuai.png");
     }
 
@@ -83,7 +84,8 @@ public class HttpPostTest {
         String url =host+"/commons/pic-loc";
         System.out.println("OkHttpUtil url---->"+url);
         File file = new File("/sdcard/fangkuai.png");
-        OkHttpUtil.upload(url,file);
+        String up = OkHttpUtil.upload(url,file);
+        System.out.println("OkHttpUtil up-->"+up);
     }
 
     public void login(){

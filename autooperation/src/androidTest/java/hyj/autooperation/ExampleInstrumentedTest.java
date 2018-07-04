@@ -1,6 +1,7 @@
 package hyj.autooperation;
 
 import android.app.Instrumentation;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +32,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,7 +44,11 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +58,7 @@ import java.util.concurrent.Executors;
 
 import hyj.autooperation.common.FilePathCommon;
 import hyj.autooperation.conf.WindowOperationConf;
+import hyj.autooperation.httpModel.FkResponseBody;
 import hyj.autooperation.model.NodeInfo;
 import hyj.autooperation.model.WindowNodeInfo;
 import hyj.autooperation.model.Wx008Data;
@@ -59,7 +67,9 @@ import hyj.autooperation.util.AutoUtil;
 import hyj.autooperation.util.DragImageUtil2;
 import hyj.autooperation.util.FileUtil;
 import hyj.autooperation.util.LogUtil;
+import hyj.autooperation.util.OkHttpUtil;
 
+import static android.content.Context.BATTERY_SERVICE;
 import static android.content.Context.CONNECTIVITY_SERVICE;
 import static org.junit.Assert.*;
 
@@ -92,13 +102,16 @@ public class ExampleInstrumentedTest {
         startWx();
     }
 
+    String host = "http://192.168.1.5";
     Wx008Data currentWx008Data;
     String windowText;
     String otherOperationName="";//当前额外动作
+    String currentOperation = "init";
     List<WindowNodeInfo> otherOperations = null;
     int actionNo=0;//记录点击所处在位置
     @Test
     public void useAppContext(){
+
         mDevice.pressHome();
         initAuto("retry");
         //Map<String,WindowNodeInfo> ops = WindowOperationConf.getOperatioByAutoType("养号");
@@ -106,70 +119,84 @@ public class ExampleInstrumentedTest {
         List<String> otherOperationNames = new ArrayList<String>();
         otherOperationNames.add("发圈");
         while (true){
-            AutoUtil.sleep(1000);
-            System.out.println("running-->otherOperation："+otherOperationName+" actionNo:"+actionNo);
-            windowText = getAllWindowText("com.tencent.mm");
-            //String windowText =getAllWindowText1();
-            System.out.println("running-->getAllWindowText："+windowText);
-            if(windowText.contains("正在登录...")||windowText.contains("正在载入数据...")) continue;
+            try {
+                AutoUtil.sleep(1000);
+                System.out.println("running-->otherOperation："+otherOperationName+" actionNo:"+actionNo);
+                windowText = getAllWindowText("com.tencent.mm");
+                //String windowText =getAllWindowText1();
+                System.out.println("running-->getAllWindowText："+windowText);
+                if(windowText.contains("正在登录...")||windowText.contains("正在载入数据...")) continue;
 
-            if("".equals(otherOperationName)){
-                WindowNodeInfo wni = getWniByWindowText(ops,windowText);
-                if(wni==null){
-                    System.out.println("doAction-->windowText没有匹配ops动作");
-                    continue;
-                }
-                System.out.println("running-->wni："+JSON.toJSONString(wni));
-                doAction(wni);
-                if("自定义-登录异常".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
-                    initAuto("next");
-                }else if("自定义-判断登录成功".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
-                    if(otherOperationNames.size()==0){
-                        int i = 0;
-                        while (i<10){
-                            AutoUtil.sleep(1000);
-                            System.out.println("doAction-->登录成功等待秒数 "+i);
-                            ++i;
+                if("".equals(otherOperationName)){
+                    WindowNodeInfo wni = getWniByWindowText(ops,windowText);
+                    if(wni==null){
+                        System.out.println("doAction-->windowText没有匹配ops动作 currentOperation:"+currentOperation);
+                        if(windowText.contains("找不到网页")){
+                            System.out.println("doAction-->网络加载失败，重试");
+                            initAuto("retry");
                         }
-                        initAuto("next");//没有其他动作，下一个
-                    }else {
-                        otherOperationName = otherOperationNames.get(0);
-                        otherOperations = WindowOperationConf.getOtherOperationByAutoType(otherOperationName);
-                    }
-                }
-                continue;
-            }else {//成功执行其他动作
-                if(actionNo>otherOperations.size()-1){
-                    actionNo=0;
-                    if(otherOperationNames.indexOf(otherOperationName)+1<=otherOperationNames.size()-1){
-                        otherOperationName = otherOperationNames.get(otherOperationNames.indexOf(otherOperationName)+1);
-                        otherOperations = WindowOperationConf.getOtherOperationByAutoType(otherOperationName);
-                    }else {//执行完所有额外动作
-                        otherOperationName="";
-                        initAuto("next");//没有其他动作，下一个
                         continue;
                     }
+                    currentOperation = wni.getOperation();
+                    System.out.println("running-->wni："+JSON.toJSONString(wni));
+                    doAction(wni);
+                    if("自定义-登录异常".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
+                        initAuto("next");
+                    }else if("自定义-注册异常二维码出现".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
+                        initAuto("next");
+                    }else if("改机失败".equals(wni.getWindowOperationDesc())&&wni.isWindowOperatonSucc()){
+                        initAuto("next");
+                    }
+                    else if("自定义-判断登录成功".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
+                        if(otherOperationNames.size()==0){
+                            int i = 0;
+                            while (i<10){
+                                AutoUtil.sleep(1000);
+                                System.out.println("doAction-->登录成功等待秒数 "+i);
+                                ++i;
+                            }
+                            initAuto("next");//没有其他动作，下一个
+                        }else {
+                            otherOperationName = otherOperationNames.get(0);
+                            otherOperations = WindowOperationConf.getOtherOperationByAutoType(otherOperationName);
+                        }
+                    }
+                    continue;
+                }else {//成功执行其他动作
+                    if(actionNo>otherOperations.size()-1){
+                        actionNo=0;
+                        if(otherOperationNames.indexOf(otherOperationName)+1<=otherOperationNames.size()-1){
+                            otherOperationName = otherOperationNames.get(otherOperationNames.indexOf(otherOperationName)+1);
+                            otherOperations = WindowOperationConf.getOtherOperationByAutoType(otherOperationName);
+                        }else {//执行完所有额外动作
+                            otherOperationName="";
+                            initAuto("next");//没有其他动作，下一个
+                            continue;
+                        }
+                    }
+                    WindowNodeInfo otherWni = otherOperations.get(actionNo);
+                    doAction(otherWni);
+                    if(otherWni.isWindowOperatonSucc()){
+                        actionNo = actionNo +1;
+                    }
                 }
-                WindowNodeInfo otherWni = otherOperations.get(actionNo);
-                doAction(otherWni);
-                if(otherWni.isWindowOperatonSucc()){
-                    actionNo = actionNo +1;
-                }
+
+            }catch (Exception e){
+                System.out.println("doAction---->全局异常");
+                e.printStackTrace();
             }
         }
     }
     @Test
     public void test1(){
         while (true){
-            windowText = getAllWindowText("com.tencent.mm");
-            //String windowText =getAllWindowText1();
-            System.out.println("doA-- running-->getAllWindowText："+windowText);
+            AutoUtil.sleep(500);
+            System.out.println("isVpnConnected---->"+isVpnConnected());
+            /* windowText = getAllWindowText("com.android.settings");
+            getAllWindowText1();
+            System.out.println("doA-- running-->getAllWindowText："+windowText);*/
 
-            WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","发圈","这一刻的想法...","长按拍照分享");
-            NodeInfo nodeInfo31 = new NodeInfo(6,"","拍照分享","长按拍照分享");
-            windowNodeInfo3.getNodeInfoList().add(nodeInfo31);
 
-            break;
 
           /* UiObject uiObject = findNodeByText("发现");
             try {
@@ -215,21 +242,51 @@ public class ExampleInstrumentedTest {
         if("自定义-点击注册2".equals(wni.getOperation())){
             List<UiObject2> uos = findNodesByClaZZ(EditText.class);
             if(uos!=null&&uos.size()==3){
-                uos.get(0).setText("1123");
-                uos.get(1).setText("136521598"+new Random().nextInt(10)+new Random().nextInt(10));
-                uos.get(2).setText("789lkjmnhikj");//密码
+                uos.get(0).setText("dkek"+new Random().nextInt(10)+new Random().nextInt(10));
+                uos.get(1).setText(currentWx008Data.getPhone());
+                uos.get(2).setText(currentWx008Data.getWxPwd());//密码
                 isOperationsSucc = clickUiObjectByText("注册");
             }
-            operationDesc = "输入账号，输入密码，点击【注册】"+isOperationsSucc;
+            operationDesc = "输入账号"+currentWx008Data.getPhone()+"，输入密码"+currentWx008Data.getWxPwd()+"，点击【注册】"+isOperationsSucc+" uosSize:"+(uos==null?"null":uos.size());
         }else if("自定义-过滑块".equals(wni.getOperation())){
-            int dragEndX=0;
-            cmdScrrenShot();//截图
-            Bitmap bi = waitAndGetBitmap();
-            dragEndX = DragImageUtil2.getPic2LocX(bi);
-            operationDesc="拖动dragEndX"+dragEndX;
-            Point[] points = getDargPoins(235,dragEndX+63,1029);
-            boolean dragFlag = mDevice.swipe(points,100);
-            AutoUtil.sleep(3000);
+            if(validEnviroment()){
+                System.out.println("doAction--->改机成功");
+                int dragEndX=0;
+                cmdScrrenShot();//截图
+                /**
+                 * 服务器获取
+                 */
+            /*String res = FileUtil.readAllUtf8(FilePathCommon.fkFilePath);
+            System.out.println("doAction-->res:"+res);
+            while (!res.contains(",")){
+                System.out.println("doAction-->等待 res写入"+res);
+                AutoUtil.sleep(1000);
+                res = FileUtil.readAllUtf8(FilePathCommon.fkFilePath);
+            }
+
+            FkResponseBody frb = JSON.parseObject(res,FkResponseBody.class);
+            List<Point> pointList = new ArrayList<Point>();
+            int startX = 235,locY = 1029;
+            pointList.add(new Point(startX,locY));
+            for(int str:frb.getData().getPonits()){
+                pointList.add(new Point(str,locY));
+            }
+            Point[] pArr = new Point[frb.getData().getPonits().length+1];
+            mDevice.swipe(pointList.toArray(pArr),frb.getData().getTime());
+            FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
+            AutoUtil.sleep(3000);*/
+                /**
+                 * 本地计算
+                 */
+                Bitmap bi = waitAndGetBitmap();
+                dragEndX = DragImageUtil2.getPic2LocX(bi);
+                operationDesc="拖动dragEndX"+dragEndX;
+                Point[] points = getDargPoins(235,dragEndX+63,1029);
+                boolean dragFlag = mDevice.swipe(points,100);
+                AutoUtil.sleep(3000);
+            }else {
+                operationDesc="改机失败";
+            }
         }else if("自定义-输入账号密码".equals(wni.getOperation())){
             if(validEnviroment()){
                 System.out.println("doAction--->改机成功");
@@ -279,6 +336,9 @@ public class ExampleInstrumentedTest {
             operationDesc = "输入发圈内容："+inputText;
             isOperationsSucc = true;
             AutoUtil.sleep(5000);
+        }else if("注册异常-注册异常二维码出现".equals(wni.getOperation())){
+            operationDesc = wni.getOperation();
+            isOperationsSucc = true;
         }
         wni.setWindowOperationDesc(operationDesc);
         wni.setWindowOperatonSucc(isOperationsSucc);
@@ -439,7 +499,7 @@ public class ExampleInstrumentedTest {
         String result = "";
         try {
             //System.out.println(" text:"+obj.getText()+" desc:"+obj.getContentDescription());
-            System.out.println("debug--->"+obj.getClassName()+" text:"+obj.getText()+" desc:"+obj.getContentDescription()+" pgName:"+obj.getApplicationPackage()+" resName:"+obj.getResourceName()+" childCount:"+obj.getChildCount()+" isclick:"+obj.isClickable());
+            System.out.println("debug--->"+obj.getClassName()+" text:"+obj.getText()+" desc:"+obj.getContentDescription()+" pgName:"+obj.getApplicationPackage()+" resName:"+obj.getResourceName()+" childCount:"+obj.getChildCount()+" isclick:"+obj.isClickable()+" ischeked:"+obj.isChecked());
             if(!TextUtils.isEmpty(obj.getText())) result = result+obj.getText()+"|";
             if(!TextUtils.isEmpty(obj.getContentDescription())) result = result+obj.getContentDescription()+"|";
         }catch (Exception e){
@@ -588,8 +648,11 @@ public class ExampleInstrumentedTest {
             }
             System.out.println("running-->等待图片生成:");
         }
+
         return bi;
     }
+
+
 
     public Point[] getDargPoins(int startX,int endY,int locY){
         Point point0 = new Point();
@@ -609,15 +672,17 @@ public class ExampleInstrumentedTest {
         AutoUtil.sleep(sleepMs);
         exeShell("settings put global airplane_mode_on 0");
         exeShell("am broadcast -a android.intent.action.AIRPLANE_MODE --ez state false");
-        AutoUtil.sleep(5000);
         boolean flag = isConnectInternet();
+        int i = 1;
         while (!flag){
             AutoUtil.sleep(800);
+            ++i;
             flag = isConnectInternet();
-            System.out.println("doAction-->开启飞行模式-等待网络恢复");
+            System.out.println("doAction-->开启飞行模式-等待网络恢复"+i);
         }
     }
     public void startWx(){
+        System.out.println("doAction-->启动微信");
         startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
         AutoUtil.sleep(800);
     }
@@ -636,10 +701,10 @@ public class ExampleInstrumentedTest {
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,tag);//next登录下一个，retry新登录,首次开启也是retry
         AutoUtil.sleep(800);//等待对方处理写入文件
         String str = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
-        System.out.println("doAction-->str0:"+str);
+        System.out.println("doAction-->监听当前标志："+str);
         while (str.equals("next")||str.equals("retry")){//等待对方写入hook和008data，对方修改状态，循环不执行
             str = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
-            System.out.println("doAction-->str1:"+str);
+            System.out.println("doAction-->等待对方完成done，当前标志："+str);
             AutoUtil.sleep(500);
         }
         String wx008DataSstr = FileUtil.readAllUtf8(FilePathCommon.wx008DataFilePath);
@@ -656,7 +721,11 @@ public class ExampleInstrumentedTest {
         }
     }
     public void cmdScrrenShot(){
+        System.out.println("doAction-->开始截图");
+        ///boolean flag = mDevice.takeScreenshot(new File("/sdcard/azy/fangkuai.png"));
+        //exeShell("screencap -p /sdcard/azy/fangkuai.png");
         exeShell("input keyevent 120");
+        System.out.println("doAction-->结束截图");
         AutoUtil.sleep(1000);
     }
     public String exeShell(String cmd){
@@ -817,6 +886,33 @@ public class ExampleInstrumentedTest {
             return true;
         }
     }
+    public boolean waitVpnConn(int seconds){
+        int i = 0;
+        while (i<seconds){
+            if(isVpnConnected()) return true;
+            AutoUtil.sleep(1000);
+            ++i;
+        }
+        return false;
+    }
+    public boolean isVpnConnected() {
+        try {
+            Enumeration<NetworkInterface> niList = NetworkInterface.getNetworkInterfaces();
+            if(niList != null) {
+                for (NetworkInterface intf : Collections.list(niList)) {
+                    if(!intf.isUp() || intf.getInterfaceAddresses().size() == 0) {
+                        continue;
+                    }
+                    if ("tun0".equals(intf.getName()) || "ppp0".equals(intf.getName())){
+                        return true;
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     @Test
     public void testVpdpn()  {
@@ -825,69 +921,51 @@ public class ExampleInstrumentedTest {
     public void doVpn(){
         String lastAction="init";
         while (true){
+            //AutoUtil.sleep(1000);
             System.out.println("doAction----------------------------------------------------->action:"+lastAction);
-            UiObject t1 = mDevice.findObject(new UiSelector().text("失败"));
-            if(t1==null){
-                System.out.println("doAction--t1 is null");
-            }else {
-                System.out.println("doActiont1--exeit:"+t1.exists());
-                System.out.println("doAction--t1 is not null");
+            if("点击开启VPN".equals(lastAction)&&waitVpnConn(10)){
+                System.out.println("doAction--->vpn连接成功");
+                return;
             }
             String pkg = mDevice.getCurrentPackageName();
             String allText = getAllWindowText(pkg);
-            getAllWindowText1();
+            //getAllWindowText1();
             if(!"com.android.settings".equals(pkg)&&!"com.android.vpndialogs".equals(pkg)){
                 System.out.println("doAction-->打开vpn:"+pkg);
                 opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+                lastAction = "打开vpn界面";
                 continue;
-            }
-
-            UiObject2 vpnObj1 =  mDevice.findObject(By.text("VPN"));
-            if(vpnObj1!=null&&!allText.contains("添加VPN")){
-                mDevice.click(vpnObj1.getVisibleCenter().x,vpnObj1.getVisibleCenter().y);
-                lastAction="点击VPN";
-                System.out.println("doAction-->点击VPN");
-                continue;
-            }
-
-            UiObject2 disConnectObj = mDevice.findObject(By.text("断开连接"));
-            if(disConnectObj!=null){
-                System.out.println("doAction-->点击断开连接");
-                lastAction="点击断开连接";
-                disConnectObj.click();
-                continue;
-            }
-
-
-            if(allText.contains("添加VPN")){
-                UiObject2 vpnObj =  mDevice.findObject(By.text("PPTP VPN"));
-                if(vpnObj!=null){
-                    int  x = vpnObj.getVisibleCenter().x;
-                    int  y = vpnObj.getVisibleCenter().y;
-                    System.out.println("vpnObj11-->x:"+x+" y:"+y);
-                    System.out.println("doAction-->点击PPTP VPN连接");
-                    mDevice.click(x,y);
-                    lastAction="点击PPTP VPN连接";
-                    continue;
-                }else if(mDevice.findObject(By.text("已连接"))!=null){
-                    if("点击PPTP VPN连接".equals(lastAction)){
-                        System.out.println("doAction-->连接成功，退出");
-                        break;
-                    }else if("init".equals(lastAction)||"点击断开连接".equals(lastAction)||"点击VPN".equals(lastAction)){
-                        System.out.println("doAction-->点击[已连接]，弹出窗口");
-                        mDevice.click(564,768);
-                        continue;
+            }else if(allText.contains("网络共享")||allText.contains("与显示设备无线连接")){
+                boolean flag = mDevice.click(584,410);
+                lastAction = "点击VPN";
+                System.out.println("doAction-->点击VPN"+flag);
+            }else if(allText.contains("添加VPN")){
+                List<UiObject2> chs = mDevice.findObjects(By.res("android:id/checkbox"));
+                if(chs!=null&&chs.size()>1){
+                    lastAction = "点击开启VPN";
+                    System.out.println("doAction-->点击开启VPN");
+                    if(chs.get(1).isChecked()){
+                        chs.get(1).click();
+                        AutoUtil.sleep(800);
+                        chs.get(1).click();
+                    }else {
+                        chs.get(1).click();
                     }
+                }else {
+                    System.out.println("doAction-->chs is null");
                 }
             }
         }
     }
 
     public void opentActivity(String acvityName){
-        Intent intent = new Intent(acvityName);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        appContext.startActivity(intent);
+        try {
+            Intent intent = new Intent(acvityName);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            appContext.startActivity(intent);
+        }catch (ActivityNotFoundException e){
+            e.printStackTrace();
+            System.out.println("doAction---ActivityNotFoundException");
+        }
     }
-
-
 }
