@@ -49,6 +49,7 @@ import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
+import hyj.xw.model.StartRunningConfig;
 import hyj.xw.modelHttp.FkResponseBody;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.util.AutoUtil;
@@ -261,7 +262,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void testMethod() {
-
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"");
+        delAllFile();
+        final StartRunningConfig srConfig = new StartRunningConfig();
+        srConfig.setConnNetType(1);
+        srConfig.setZcOryh("注册");
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath,JSON.toJSONString(srConfig));
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -272,17 +279,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 FkResponseBody frb = JSON.parseObject(res,FkResponseBody.class);
                 System.out.println("res-->frb "+JSON.toJSONString(frb));*/
                 System.out.println("main start========");
-                FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
-                FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"");
-                delAllFile();
-
                 AutoUtil.execShell("am force-stop hyj.autooperation");
                 AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.autooperation.ExampleInstrumentedTest#useAppContext hyj.autooperation.test/android.support.test.runner.AndroidJUnitRunner");
             }
         }).start();
 
         new Thread(new Runnable() {
-            String zcOrYh ="zc";
             int loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
             @Override
             public void run() {
@@ -297,9 +299,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String tag = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
                     System.out.println("main runing监听环境设置标志:"+tag);
                     if("next".equals(tag)||"retry".equals(tag)){
-                        if("zc".equals(zcOrYh)){
+                        if("注册".equals(srConfig.getZcOryh())){
                             currentWx008Data = PhoneConf.createRegData();
-                        }else if("yh".equals(zcOrYh)) {
+                            currentWx008Data.save();
+                        }else if("养号".equals(srConfig.getZcOryh())) {
                             if(tag.equals("next")){
                                 doNextIndexAndRecord2DB();
                             }
