@@ -14,6 +14,8 @@ import hyj.autooperation.model.WindowNodeInfo;
 
 public class WindowOperationConf {
 
+    public static final String sendPhoneMsgUrl = "http://112.124.31.14:8060/SendSms?token=87BBCED60A9A4801AE8E270E030DCF93289E02C6BAACCD94&requestid=fujiantest";
+
     public static Map<String,WindowNodeInfo> getOperations1(){
         Map<String,WindowNodeInfo> ops = new HashMap<String,WindowNodeInfo>();
 
@@ -41,6 +43,18 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","注册","联系符合以下条件的微信用户","自定义-注册异常二维码出现");
         setOps(ops,windowNodeInfo6,null);
 
+        WindowNodeInfo windowNodeInfo7 = new WindowNodeInfo("6.6.7","注册","发送短信后请回到本界面继续下一步","自定义-发送短信");
+        setOps(ops,windowNodeInfo7,null);
+
+        WindowNodeInfo windowNodeInfo8 = new WindowNodeInfo("6.6.7","注册","尚未收到你发送的短信验证码","自定义-尚未收到短信");
+        setOps(ops,windowNodeInfo8,null);
+
+        WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","注册","通讯录|发现","自定义-提取wxid");
+        //NodeInfo nodeInfo91 = new NodeInfo(1,"我","","点击我");
+        setOps(ops,windowNodeInfo9,null);
+
+        /*WindowNodeInfo windowNodeInfo10 = new WindowNodeInfo("6.6.7","注册","微信号：wxid_","自定义-提取wxid");
+        setOps(ops,windowNodeInfo10,null);*/
 
         return ops;
     }

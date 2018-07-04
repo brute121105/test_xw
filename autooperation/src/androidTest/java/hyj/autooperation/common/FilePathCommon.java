@@ -21,6 +21,7 @@ public class FilePathCommon {
     public static final String fkScreenShotPath;
     public static final String setEnviromentFilePath;//next登录下一个，retry新登录,首次开启也是retry,done写入完成
     public static final String wx008DataFilePath;
+    public static final String startRunninConfigTxtPath;
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
         baseAppPathAW= Environment.getExternalStorageDirectory().getAbsolutePath()+"/.money/";
@@ -35,5 +36,6 @@ public class FilePathCommon {
         fkScreenShotPath = baseAppPath+"/fangkuai.png";
         setEnviromentFilePath = baseAppPath+"/enviroment.txt";
         wx008DataFilePath = baseAppPath+"/wx008Data.txt";
+        startRunninConfigTxtPath = baseAppPath+"/startRunningConfig.txt";
     }
 }

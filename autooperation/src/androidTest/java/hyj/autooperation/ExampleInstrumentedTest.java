@@ -60,6 +60,7 @@ import hyj.autooperation.common.FilePathCommon;
 import hyj.autooperation.conf.WindowOperationConf;
 import hyj.autooperation.httpModel.FkResponseBody;
 import hyj.autooperation.model.NodeInfo;
+import hyj.autooperation.model.StartRunningConfig;
 import hyj.autooperation.model.WindowNodeInfo;
 import hyj.autooperation.model.Wx008Data;
 import hyj.autooperation.thread.TemplateThread;
@@ -87,19 +88,29 @@ public class ExampleInstrumentedTest {
     private UiDevice mDevice;
     private Context appContext;
     Instrumentation instrumentation;
+    StartRunningConfig srConfig;
+
 
     @Before
     public void init(){
         appContext = InstrumentationRegistry.getTargetContext();
         instrumentation = InstrumentationRegistry.getInstrumentation();
         mDevice = UiDevice.getInstance(instrumentation);
+        String srConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
+        srConfig = JSONObject.parseObject(srConfigStr,StartRunningConfig.class);
+        System.out.println("doAction--->srConfig:"+JSON.toJSONString(srConfig));
     }
+
 
     public void initAuto(String tag){
         killAndClearWxData();
-        startAriPlaneMode(1000);
+        if(srConfig.getConnNetType()==1){
+            doVpn();
+        }else if(srConfig.getConnNetType()==2){
+            startAriPlaneMode(1000);
+        }
         currentWx008Data = tellSetEnvirlmentAndGet008Data(tag);
-        startWx();
+        startWxConfirmClear();
     }
 
     String host = "http://192.168.1.5";
@@ -115,7 +126,7 @@ public class ExampleInstrumentedTest {
         mDevice.pressHome();
         initAuto("retry");
         //Map<String,WindowNodeInfo> ops = WindowOperationConf.getOperatioByAutoType("养号");
-        Map<String,WindowNodeInfo> ops = WindowOperationConf.getOperatioByAutoType("注册");
+        Map<String,WindowNodeInfo> ops = WindowOperationConf.getOperatioByAutoType(srConfig.getZcOryh());
         List<String> otherOperationNames = new ArrayList<String>();
         otherOperationNames.add("发圈");
         while (true){
@@ -145,6 +156,8 @@ public class ExampleInstrumentedTest {
                     }else if("自定义-注册异常二维码出现".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
                         initAuto("next");
                     }else if("改机失败".equals(wni.getWindowOperationDesc())&&wni.isWindowOperatonSucc()){
+                        initAuto("next");
+                    }else if(wni.getWindowOperationDesc().contains("发送短信失败或超过最大尝试次数")&&wni.isWindowOperatonSucc()){
                         initAuto("next");
                     }
                     else if("自定义-判断登录成功".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
@@ -192,6 +205,8 @@ public class ExampleInstrumentedTest {
         while (true){
             AutoUtil.sleep(500);
             System.out.println("isVpnConnected---->"+isVpnConnected());
+            mDevice.pressKeyCode(120);
+            break;
             /* windowText = getAllWindowText("com.android.settings");
             getAllWindowText1();
             System.out.println("doA-- running-->getAllWindowText："+windowText);*/
@@ -339,9 +354,67 @@ public class ExampleInstrumentedTest {
         }else if("注册异常-注册异常二维码出现".equals(wni.getOperation())){
             operationDesc = wni.getOperation();
             isOperationsSucc = true;
+        }else if("自定义-发送短信".equals(wni.getOperation())){
+            mDevice.findObject(By.text("发送短信")).click();
+            AutoUtil.sleep(1000);
+            if(!mDevice.getCurrentPackageName().contains("tencent")) mDevice.pressBack();
+            UiObject2 sendContentUiObj = mDevice.findObject(By.textStartsWith("发送 zc"));
+            UiObject2 receiveUiObj = mDevice.findObject(By.textStartsWith("到 "));
+            String res = sendPhoneMsg(sendContentUiObj,receiveUiObj);
+            UiObject2 nextUiObj = mDevice.findObject(By.text("已发送短信，下一步"));
+            int i = 0;
+            if("提交成功".equals(res)){
+                while (sendContentUiObj!=null&&i<4){
+                    System.out.println("doAction--->点击已发送短信，下一步"+i);
+                    nextUiObj.click();
+                    sendContentUiObj = mDevice.findObject(By.textStartsWith("发送 zc"));
+                    nextUiObj = mDevice.findObject(By.text("已发送短信，下一步"));
+                    AutoUtil.sleep(15000);
+                    ++i;
+                }
+            }
+            operationDesc = "发送短信验证"+sendContentUiObj.getText()+receiveUiObj.getText()+" "+nextUiObj.getText()+" api返回结果："+res;
+            if(!"提交成功".equals(res)||i>=4){
+                operationDesc = "发送短信失败或超过最大尝试次数"+i;
+            }
+            isOperationsSucc = true;
+
+        }else if("自定义-尚未收到短信".equals(wni.getOperation())){
+            operationDesc = "尚未收到短信,返回:"+mDevice.pressBack();
+            isOperationsSucc = true;
+        }else if("自定义-提取wxid".equals(wni.getOperation())){
+            UiObject2 uiObject2 = mDevice.findObject(By.textStartsWith("微信号：wxid"));
+            while (uiObject2==null){
+                System.out.println("doAction--->向左滑动");
+                mDevice.swipe(800,800,200,800,5);
+                uiObject2 = mDevice.findObject(By.textStartsWith("微信号：wxid"));
+            }
+            String text = uiObject2.getText();
+            String wxid = text.substring(text.indexOf("：")+1);
+            operationDesc = "获取wxid："+wxid;
+            isOperationsSucc = true;
         }
         wni.setWindowOperationDesc(operationDesc);
         wni.setWindowOperatonSucc(isOperationsSucc);
+    }
+
+    private String sendPhoneMsg(UiObject2 sendContentUiObj,UiObject2 receiveUiObj){
+        String resMsg = "发送失败";
+        String content=sendContentUiObj.getText();
+        String calledNumber=receiveUiObj.getText();
+        if(content.contains("发送 ")&&calledNumber.contains("到 ")){
+            String callNumber=currentWx008Data.getPhone();
+            content = content.substring(content.indexOf(" ")+1);
+            calledNumber = calledNumber.substring(calledNumber.indexOf(" ")+1);
+            String url = WindowOperationConf.sendPhoneMsgUrl+"&callNumber="+callNumber+"&calledNumber="+calledNumber+"&content="+content;
+            System.out.println("doAction---> sendPhoneMsg url-->"+url);
+            String resBody = OkHttpUtil.okHttpGet(url);
+            System.out.println("doAction--->resBody sendPhoneMsg url-->"+resBody);
+            if(resBody.contains("提交成功")){
+                resMsg = "提交成功";
+            }
+        }
+        return resMsg;
     }
 
     //判断改机是否成功 改机成功返回true
@@ -686,6 +759,24 @@ public class ExampleInstrumentedTest {
         startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
         AutoUtil.sleep(800);
     }
+    public void startWxConfirmClear(){
+        System.out.println("doAction-->启动微信");
+        startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+        AutoUtil.sleep(800);
+        while (!mDevice.getCurrentPackageName().contains("tencent")||mDevice.findObject(By.text("注册"))==null){
+            System.out.println("doAction-->等待微信启动成功");
+            AutoUtil.sleep(400);
+            if(!mDevice.getCurrentPackageName().contains("tencent")){
+                continue;
+            }else if(mDevice.findObject(By.text("注册"))==null){
+                System.out.println("doAction-->上次清楚失败，继续清除");
+                killAndClearWxData();
+                startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+                AutoUtil.sleep(1000);
+            }
+        }
+
+    }
 
     public  void startAppByPackName(String packageName,String activity){
         Intent intent = new Intent();
@@ -724,7 +815,8 @@ public class ExampleInstrumentedTest {
         System.out.println("doAction-->开始截图");
         ///boolean flag = mDevice.takeScreenshot(new File("/sdcard/azy/fangkuai.png"));
         //exeShell("screencap -p /sdcard/azy/fangkuai.png");
-        exeShell("input keyevent 120");
+        //exeShell("input keyevent 120");
+        mDevice.pressKeyCode(120);
         System.out.println("doAction-->结束截图");
         AutoUtil.sleep(1000);
     }
@@ -890,6 +982,7 @@ public class ExampleInstrumentedTest {
         int i = 0;
         while (i<seconds){
             if(isVpnConnected()) return true;
+            System.out.println("doAction--->等待vpn连接"+i);
             AutoUtil.sleep(1000);
             ++i;
         }
@@ -925,6 +1018,8 @@ public class ExampleInstrumentedTest {
             System.out.println("doAction----------------------------------------------------->action:"+lastAction);
             if("点击开启VPN".equals(lastAction)&&waitVpnConn(10)){
                 System.out.println("doAction--->vpn连接成功");
+                mDevice.pressBack();
+                mDevice.pressHome();
                 return;
             }
             String pkg = mDevice.getCurrentPackageName();
@@ -939,7 +1034,7 @@ public class ExampleInstrumentedTest {
                 boolean flag = mDevice.click(584,410);
                 lastAction = "点击VPN";
                 System.out.println("doAction-->点击VPN"+flag);
-            }else if(allText.contains("添加VPN")){
+            }else if(allText.contains("添加VPN")||allText.contains("开启VPN")){
                 List<UiObject2> chs = mDevice.findObjects(By.res("android:id/checkbox"));
                 if(chs!=null&&chs.size()>1){
                     lastAction = "点击开启VPN";
@@ -952,6 +1047,7 @@ public class ExampleInstrumentedTest {
                         chs.get(1).click();
                     }
                 }else {
+                    mDevice.pressBack();
                     System.out.println("doAction-->chs is null");
                 }
             }
