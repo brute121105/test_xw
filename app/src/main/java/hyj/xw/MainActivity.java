@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -20,10 +21,12 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -34,6 +37,7 @@ import hyj.xw.activity.AppSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.activity.DataImpExpActivity;
 import hyj.xw.activity.YhSettingActivity;
+import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
 import hyj.xw.aw.util.BuildFileUtil;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
@@ -45,6 +49,7 @@ import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
+import hyj.xw.modelHttp.FkResponseBody;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
@@ -53,6 +58,12 @@ import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.OkHttpUtil;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -251,30 +262,107 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void testMethod() {
 
-         //PhoneConf.getOnePhone();
-        //AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.xw.ExampleInstrumentedTest#testClickZc hyj.xw.test/android.support.test.runner.AndroidJUnitRunner");
         new Thread(new Runnable() {
             @Override
             public void run() {
-                AutoUtil.startWx();
-                AutoUtil.sleep(1000);
+               /* String url = "http://192.168.1.5/commons/pic-loc";
+                File file = new File("/sdcard/fangkuai.png");
+                String res = OkHttpUtil.upload(url,file);
+                System.out.println("res-->"+res);
+                FkResponseBody frb = JSON.parseObject(res,FkResponseBody.class);
+                System.out.println("res-->frb "+JSON.toJSONString(frb));*/
+                System.out.println("main start========");
+                FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
+                FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"");
+                delAllFile();
+
+                AutoUtil.execShell("am force-stop hyj.autooperation");
                 AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.autooperation.ExampleInstrumentedTest#useAppContext hyj.autooperation.test/android.support.test.runner.AndroidJUnitRunner");
             }
         }).start();
 
         new Thread(new Runnable() {
+            String zcOrYh ="zc";
+            int loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
             @Override
             public void run() {
+                List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
+                Wx008Data currentWx008Data=null;//当前运行wx数据
                 while (true){
-                    AutoUtil.sleep(500);
-                    String tag = FileUtil.readAllUtf8(FilePathCommon.fkFilePath);
-                    System.out.println("tx runing-->"+tag);
-                    if("1".equals(tag)){
-                        AutoUtil.execShell("input keyevent 120");
-                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"0");
+                    System.out.println("main activity......");
+                    AutoUtil.sleep(1000);
+                    /**
+                     * 环境设置标志
+                     */
+                    String tag = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
+                    System.out.println("main runing监听环境设置标志:"+tag);
+                    if("next".equals(tag)||"retry".equals(tag)){
+                        if("zc".equals(zcOrYh)){
+                            currentWx008Data = PhoneConf.createRegData();
+                        }else if("yh".equals(zcOrYh)) {
+                            if(tag.equals("next")){
+                                doNextIndexAndRecord2DB();
+                            }
+                            currentWx008Data = wx008Datas.get(loginIndex);
+                        }
+                        setEnviroment(currentWx008Data);//修改hook文件
+                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.wx008DataFilePath,JSON.toJSONString(currentWx008Data));//写入008j数据，供对方用
+                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"done");
+                        System.out.println("doAction--->mainActivity环境和currentData已准备，写入done标志完成");
                     }
+                    /**
+                     * 上传图片
+                     */
+                      //File file = new File(FilePathCommon.fkScreenShotPath);
+                    /*File file = waitAndGetFile();
+                    if(file!=null){
+                          System.out.println("doA main res-->fileName:"+file.getName()+" length:"+file.length());
+                          String host = "http://192.168.1.5";
+                          String url =host+"/commons/pic-loc";
+                          String res = OkHttpUtil.upload(url,file);
+                          System.out.println("doA main OkHttpUtil res-->"+res);
+                          if(res.contains("data")){
+                              FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath, res);
+                              boolean flag = file.delete();
+                              System.out.println("main res 删除："+flag);
+                          }
+                      }else {
+                          System.out.println("doA main res-->file is null");
+                      }*/
                 }
             }
+
+            private File waitAndGetFile(){
+                String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
+                File picFile = null;
+                File[] files = new File(path).listFiles();
+                if(files!=null&&files.length>0){
+                    picFile = files[files.length-1];
+                }
+                return picFile;
+            }
+
+            private void doNextIndexAndRecord2DB(){
+                int endLoginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX));
+                System.out.println("errRecord loginIndex-->"+loginIndex);
+                loginIndex = loginIndex+1;
+                AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
+            }
+            private void setEnviroment(Wx008Data currentWx008Data){
+                NewPhoneInfo pi = null;
+                if(!TextUtils.isEmpty(currentWx008Data.getPhoneStrsAw())){//aw数据
+                    pi = JSON.parseObject(currentWx008Data.getPhoneStrsAw(),NewPhoneInfo.class);
+                    if(TextUtils.isEmpty(pi.getRgPhoneNo())){
+                        pi.setRgPhoneNo(pi.getLine1Number());
+                    }
+                }else {
+                    pi = PhoneConf.xw2awData(currentWx008Data);
+                }
+                pi.setCpuName(pi.getCpuName().trim().toLowerCase());
+                CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
+                FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
+            }
+
         }).start();
         /*List<String> phones = FileUtil.read008Data("/sdcard/brute9.txt");
         for (String phone : phones) {
@@ -289,9 +377,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }*/
     }
+    private void delAllFile(){
+       /* File file = new File(FilePathCommon.fkScreenShotPath);
+        if(file.exists()){
+            file.delete();
+        }*/
+        String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
+        File[] files = new File(path).listFiles();
+        if(files!=null&&files.length>0){
+            for(File file:files){
+                System.out.println("main-->删除文件："+file.getName()+" "+file.delete());
+            }
+        }
+    }
 
 
     public void clearAppData() {
+        AutoUtil.execShell("am force-stop hyj.autooperation");
         AutoUtil.clearAppData();
         Toast.makeText(MainActivity.this, "清除完成", Toast.LENGTH_LONG).show();
     }
@@ -409,24 +511,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return false;
     }
 
-    String xw = "{\"applicationInfo\":{\"banner\":0,\"baseCodePath\":\"/data/app/hyj.xw-1/base.apk\",\"baseResourcePath\":\"/data/app/hyj.xw-1/base.apk\",\"className\":\"hyj.xw.GlobalApplication\",\"codePath\":\"/data/app/hyj.xw-1\",\"compatibleWidthLimitDp\":0,\"dataDir\":\"/data/data/hyj.xw\",\"descriptionRes\":0,\"enabled\":true,\"enabledSetting\":0,\"flags\":13155910,\"flagsEx\":0,\"icon\":2130903040,\"installLocation\":-1,\"labelRes\":2131165218,\"largestWidthLimitDp\":0,\"logo\":0,\"nativeLibraryDir\":\"/data/app/hyj.xw-1/lib/arm64\",\"nativeLibraryRootDir\":\"/data/app/hyj.xw-1/lib\",\"nativeLibraryRootRequiresIsa\":true,\"packageName\":\"hyj.xw\",\"processName\":\"hyj.xw\",\"publicSourceDir\":\"/data/app/hyj.xw-1/base.apk\",\"requiresSmallestWidthDp\":0,\"resourcePath\":\"/data/app/hyj.xw-1\",\"scanPublicSourceDir\":\"/data/app/hyj.xw-1\",\"scanSourceDir\":\"/data/app/hyj.xw-1\",\"seinfo\":\"default\",\"showUserIcon\":-10000,\"sourceDir\":\"/data/app/hyj.xw-1/base.apk\",\"targetSdkVersion\":25,\"taskAffinity\":\"hyj.xw\",\"theme\":2131296420,\"uiOptions\":0,\"uid\":10134,\"versionCode\":1},\"coreApp\":false,\"firstInstallTime\":1521727262902,\"installLocation\":-1,\"lastUpdateTime\":1521729450721,\"packageName\":\"hyj.xw\",\"requiredForAllUsers\":false,\"sharedUserLabel\":0,\"versionCode\":1,\"versionName\":\"1.0\"}";
+    //上次图片
+    public static String uploadImage(String url,File file){
+        String reponseData = "";
+        OkHttpClient mOkHttpClient = new OkHttpClient();
+        RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), file);
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file","head_image",fileBody)
+                .addFormDataPart("name","file");
 
-    private void getSysLanguage() {
-        System.out.println("versionCode-->22");
-        int versionCode = 0;
+        RequestBody requestBody = builder.build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("token","eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwibmlja25hbWUiOiLnrqHnkIblkZgiLCJhdmF0YXIiOiIyMDE4MDcwMjA0NTAyMy5wbmciLCJpYXQiOjE1MzA0NzgyMzMsImV4cCI6MTUzODI1NDIzM30.2Ji5dmWTpKKZAW15vli7Of4ggjgzvB5zPFq7PlpsP1GkTG-F0U6Joqsu_HkSEbl5iIwpqT3hY-J5fpuPgOwOAA")
+                .post(requestBody)
+                .build();
         try {
-            //获取软件版本号，对应AndroidManifest.xml下android:versionCode
-            PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
-            System.out.println("versionCode-->" + JSON.toJSONString(pi));
-            versionCode = pi.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
+            Response response = mOkHttpClient.newCall(request).execute();
+            reponseData = response.body().string();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("versionCode-->" + versionCode);
-        PackageInfo newPi = JSON.parseObject(xw, PackageInfo.class);
-        System.out.println("new versionCode-->" + newPi.versionName);
-        System.out.println("new versionCode-->" + JSON.toJSONString(newPi));
-
+        return  reponseData;
 
     }
 }
