@@ -34,7 +34,7 @@ public class WindowNodeInfo {
     }
 
     public String getWindowOperationDesc() {
-        return windowOperationDesc;
+        return windowOperationDesc==null?"":windowOperationDesc;
     }
 
     public void setWindowOperationDesc(String windowOperationDesc) {
@@ -90,7 +90,7 @@ public class WindowNodeInfo {
     }
 
     public String getWindowOperatonResultMsg() {
-        return windowOperatonResultMsg;
+        return windowOperatonResultMsg==null?"":windowOperatonResultMsg;
     }
 
     public void setWindowOperatonResultMsg(String windowOperatonResultMsg) {

@@ -16,8 +16,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
-import android.support.test.uiautomator.UiAutomatorTestCase;
-import android.support.test.uiautomator.UiCollection;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
@@ -25,54 +23,41 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import hyj.autooperation.common.FilePathCommon;
 import hyj.autooperation.conf.WindowOperationConf;
-import hyj.autooperation.httpModel.FkResponseBody;
 import hyj.autooperation.model.NodeInfo;
 import hyj.autooperation.model.StartRunningConfig;
 import hyj.autooperation.model.WindowNodeInfo;
 import hyj.autooperation.model.Wx008Data;
-import hyj.autooperation.thread.TemplateThread;
 import hyj.autooperation.util.AutoUtil;
 import hyj.autooperation.util.DragImageUtil2;
 import hyj.autooperation.util.FileUtil;
 import hyj.autooperation.util.LogUtil;
 import hyj.autooperation.util.OkHttpUtil;
 
-import static android.content.Context.BATTERY_SERVICE;
 import static android.content.Context.CONNECTIVITY_SERVICE;
-import static org.junit.Assert.*;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -107,14 +92,15 @@ public class ExampleInstrumentedTest {
         autoType = otherAutoTypes.get(0);
         ops = WindowOperationConf.getOperatioByAutoType(autoType);
 
-        killAndClearWxData();
+        //killAndClearWxData();
         if(srConfig.getConnNetType()==1){
-            doVpn();
+            //doVpn();
         }else if(srConfig.getConnNetType()==2){
             startAriPlaneMode(1000);
         }
         currentWx008Data = tellSetEnvirlmentAndGet008Data(tag);
-        startWxConfirmClear();
+        //startWxConfirmClear();
+        startWx();
     }
 
     String host = "http://192.168.1.5";
@@ -138,6 +124,7 @@ public class ExampleInstrumentedTest {
                 if(windowText.contains("正在登录...")||windowText.contains("正在载入数据...")) continue;
 
 
+                System.out.println("ops-->"+JSON.toJSONString(ops));
                 WindowNodeInfo wni = getWniByWindowText(ops,windowText);
                 if(wni==null){
                     System.out.println("doAction-->windowText没有匹配ops动作 currentOperation:"+currentOperation);
@@ -160,6 +147,12 @@ public class ExampleInstrumentedTest {
                     initAuto("next");
                 }
                 else if(wni.getOperation().contains("-结束")&&wni.isWindowOperatonSucc()){
+                    if(wni.getOperation().contains("判断登录成功")){
+                        srConfig = getStartRunningConfig();
+                        srConfig.setLoginResult("success");
+                        saveStartRunningConfig(srConfig);
+                        System.out.println("doAction--->写入登录success标志");
+                    }
                     if(otherAutoTypes.size()==1){//等于1，登录成功没有其他动作
                         int i = 0;
                         while (i<10){
@@ -215,6 +208,15 @@ public class ExampleInstrumentedTest {
         }
     }
 
+    public  StartRunningConfig getStartRunningConfig(){
+        String srConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
+        StartRunningConfig srConfig = JSONObject.parseObject(srConfigStr,StartRunningConfig.class);
+        return srConfig;
+    }
+    public  void saveStartRunningConfig(StartRunningConfig srConfig){
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath, JSON.toJSONString(srConfig));
+    }
+
     //自定义、通用两种
     public void doAction(WindowNodeInfo wni){
         if(wni.getOperation().contains("自定义-")){
@@ -254,6 +256,8 @@ public class ExampleInstrumentedTest {
                 uos.get(1).setText(currentWx008Data.getPhone());
                 uos.get(2).setText(currentWx008Data.getWxPwd());//密码
                 isOperationsSucc = clickUiObjectByText("注册");
+            }else {
+                mDevice.pressBack();
             }
             operationDesc = "输入账号"+currentWx008Data.getPhone()+"，输入密码"+currentWx008Data.getWxPwd()+"，点击【注册】"+isOperationsSucc+" uosSize:"+(uos==null?"null":uos.size());
         }else if("自定义-过滑块".equals(wni.getOperation())){
@@ -467,6 +471,7 @@ public class ExampleInstrumentedTest {
     }
 
     public WindowNodeInfo getWniByWindowText(Map<String,WindowNodeInfo>  ops,String windowText){
+        List<WindowNodeInfo> wins = new ArrayList<WindowNodeInfo>();
         for(String key:ops.keySet()){
             String comKey = key.substring(key.indexOf("-")+1);//养号-注册|登录  去掉-前面
             if(comKey.contains("|")){
@@ -478,10 +483,23 @@ public class ExampleInstrumentedTest {
                         break;
                     }
                 }
-                if(flag) return ops.get(key);
-                continue;
+                if(flag){
+                    wins.add(ops.get(key));
+                }
             }else if(windowText.contains(comKey)){
-                return ops.get(key);
+                wins.add(ops.get(key));
+            }
+        }
+
+        if(wins.size()==1){
+            return wins.get(0);
+        }else if(wins.size()==0){
+            return null;
+        }else if(wins.size()==2){//size=2，MathWindowText可能同时匹配的有 通讯录|发现 和 朋友圈，优先取 通讯录|发现 以外
+            for(WindowNodeInfo windowNodeInfo:wins){
+                if(!windowNodeInfo.getMathWindowText().contains("通讯录|发现")){
+                    return  windowNodeInfo;
+                }
             }
         }
         return null;

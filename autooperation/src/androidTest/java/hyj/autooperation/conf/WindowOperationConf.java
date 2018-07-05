@@ -49,8 +49,15 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo8 = new WindowNodeInfo("6.6.7","注册","尚未收到你发送的短信验证码","自定义-尚未收到短信");
         setOps(ops,windowNodeInfo8,null);
 
-        WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","注册","通讯录|发现","自定义-提取wxid-结束");
+        WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","注册","通讯录|发现","自定义-判断登录成功-结束");
         setOps(ops,windowNodeInfo9,null);
+
+        WindowNodeInfo windowNodeInfo10 = new WindowNodeInfo("6.6.7","注册","该手机号已经绑定以上微信帐号","点击不是我的，继续注册");
+        NodeInfo nodeInfo101 = new NodeInfo(1,"不是我的，继续注册","","点击不是我的，继续注册");
+        setOps(ops,windowNodeInfo10,nodeInfo101);
+
+        /*WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","注册","通讯录|发现","自定义-提取wxid-结束");
+        setOps(ops,windowNodeInfo9,null);*/
 
         return ops;
     }
@@ -78,7 +85,7 @@ public class WindowOperationConf {
         NodeInfo nodeInfo61 = new NodeInfo(1,"发现","","点击发现");
         setOps(ops,windowNodeInfo6,nodeInfo61);
 
-        WindowNodeInfo windowNodeInfo7 = new WindowNodeInfo("6.6.7","发圈","附近的人|看一看","点击朋友圈");
+        WindowNodeInfo windowNodeInfo7 = new WindowNodeInfo("6.6.7","发圈","附近的人|朋友圈","点击朋友圈");
         NodeInfo nodeInfo71 = new NodeInfo(1,"朋友圈","","点击朋友圈");
         setOps(ops,windowNodeInfo7,nodeInfo71);
 
@@ -105,7 +112,7 @@ public class WindowOperationConf {
         windowNodeInfo0.getNodeInfoList().add(nodeInfo01);
         ops.add(windowNodeInfo0);
 
-        WindowNodeInfo windowNodeInfo1 = new WindowNodeInfo("6.6.7","发圈","附近的人|看一看","点击朋友圈");
+        WindowNodeInfo windowNodeInfo1 = new WindowNodeInfo("6.6.7","发圈","附近的人|朋友圈","点击朋友圈");
         NodeInfo nodeInfo11 = new NodeInfo(1,"朋友圈","","点击朋友圈");
         windowNodeInfo1.getNodeInfoList().add(nodeInfo11);
         ops.add(windowNodeInfo1);
