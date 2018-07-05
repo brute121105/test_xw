@@ -28,6 +28,7 @@ import org.litepal.crud.DataSupport;
 import java.io.File;
 import java.io.IOException;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -267,7 +268,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         delAllFile();
         final StartRunningConfig srConfig = new StartRunningConfig();
         srConfig.setConnNetType(1);
-        srConfig.setZcOryh("注册");
+        //srConfig.setZcOryh("注册");
+        //srConfig.setZcOryh("养号");
+        final List<String> otherOperationNames = new ArrayList<String>();
+        //otherOperationNames.add("注册");
+        otherOperationNames.add("养号");
+        otherOperationNames.add("发圈");
+        otherOperationNames.add("提取wxid");
+        srConfig.setOtherOperationNames(otherOperationNames);
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath,JSON.toJSONString(srConfig));
         new Thread(new Runnable() {
             @Override
@@ -299,10 +307,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String tag = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
                     System.out.println("main runing监听环境设置标志:"+tag);
                     if("next".equals(tag)||"retry".equals(tag)){
-                        if("注册".equals(srConfig.getZcOryh())){
+                        if("注册".equals(otherOperationNames.get(0))){
                             currentWx008Data = PhoneConf.createRegData();
                             currentWx008Data.save();
-                        }else if("养号".equals(srConfig.getZcOryh())) {
+                        }else if("养号".equals(otherOperationNames.get(0))) {
                             if(tag.equals("next")){
                                 doNextIndexAndRecord2DB();
                             }
