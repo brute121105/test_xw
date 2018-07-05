@@ -333,9 +333,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                          currentWx008Data.setExpMsg(currentSrc.getLoginResult());
                          int cn = DaoUtil.updateExpMsg(currentWx008Data,currentWx008Data.getExpMsg()+"-"+AutoUtil.getCurrentDate());
                          System.out.println("main-->updateExpMsg:"+currentSrc.getLoginResult()+" cn:"+cn);
-                         currentWx008Data.setExpMsg("");//重置
+                         currentSrc.setLoginResult("");
                          saveStartRunningConfig(currentSrc);
-                         System.out.println("main-->插入后检查"+JSON.toJSONString(getStartRunningConfig()));
                      }
                     /**
                      * 上传图片
