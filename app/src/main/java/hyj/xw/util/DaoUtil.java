@@ -36,7 +36,7 @@ public class DaoUtil {
         //List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and dieFlag!=? and (expMsg not like '%帐号%' or expMsg is null)  and wxPwd is not null","007","008","009","999").order("createTime asc").find(Wx008Data.class);
 
         //sl数据
-        List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=? or dataFlag=?) and dieFlag=0","007","008","009","010").order("createTime asc").find(Wx008Data.class);
+         //List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=? or dataFlag=?) and dieFlag=0","007","008","009","010").order("createTime asc").find(Wx008Data.class);
 
         //List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and expMsg like '登录成功%'","007","008","009").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and expMsg like 'success2%'","007","008","009").order("createTime asc").find(Wx008Data.class);
@@ -44,7 +44,7 @@ public class DaoUtil {
 
         //微移注册
         //List<Wx008Data> wx008Datas = DataSupport.where("dataFlag=? and expMsg like 'succ%'","011").order("createTime asc").find(Wx008Data.class);
-        //List<Wx008Data> wx008Datas = DataSupport.where("dataFlag=?","011").order("createTime asc").find(Wx008Data.class);
+        List<Wx008Data> wx008Datas = DataSupport.where("dataFlag=?","011").order("createTime asc").find(Wx008Data.class);
 
         return wx008Datas;
     }

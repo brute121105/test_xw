@@ -3,8 +3,6 @@ package hyj.xw;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -39,19 +37,16 @@ import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.activity.DataImpExpActivity;
 import hyj.xw.activity.YhSettingActivity;
 import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
-import hyj.xw.aw.util.BuildFileUtil;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
-import hyj.xw.hook.createDevice.GenerateDeviceUtil;
 import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.StartRunningConfig;
-import hyj.xw.modelHttp.FkResponseBody;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
@@ -258,25 +253,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
+        System.out.println("main--am force-stop hyj.autooperation");
+        AutoUtil.execShell("am force-stop hyj.autooperation");
         save();
         super.onDestroy();
+    }
+
+    public  StartRunningConfig getStartRunningConfig(){
+        String srConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
+        StartRunningConfig srConfig = JSONObject.parseObject(srConfigStr,StartRunningConfig.class);
+        return srConfig;
+    }
+    public  void saveStartRunningConfig(StartRunningConfig srConfig){
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath, JSON.toJSONString(srConfig));
     }
 
     public void testMethod() {
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"");
         delAllFile();
-        final StartRunningConfig srConfig = new StartRunningConfig();
+        StartRunningConfig srConfig = new StartRunningConfig();
         srConfig.setConnNetType(1);
-        //srConfig.setZcOryh("注册");
-        //srConfig.setZcOryh("养号");
-        final List<String> otherOperationNames = new ArrayList<String>();
-        //otherOperationNames.add("注册");
-        otherOperationNames.add("养号");
+        List<String> otherOperationNames = new ArrayList<String>();
+        otherOperationNames.add("注册");
+        //otherOperationNames.add("养号");
         otherOperationNames.add("发圈");
         otherOperationNames.add("提取wxid");
         srConfig.setOtherOperationNames(otherOperationNames);
-        FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath,JSON.toJSONString(srConfig));
+        saveStartRunningConfig(srConfig);
+        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath,JSON.toJSONString(srConfig));
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -286,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 System.out.println("res-->"+res);
                 FkResponseBody frb = JSON.parseObject(res,FkResponseBody.class);
                 System.out.println("res-->frb "+JSON.toJSONString(frb));*/
-                System.out.println("main start========");
+                System.out.println("main-->start========");
                 AutoUtil.execShell("am force-stop hyj.autooperation");
                 AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.autooperation.ExampleInstrumentedTest#useAppContext hyj.autooperation.test/android.support.test.runner.AndroidJUnitRunner");
             }
@@ -294,33 +299,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         new Thread(new Runnable() {
             int loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
+            StartRunningConfig currentSrc = getStartRunningConfig();
             @Override
             public void run() {
                 List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
                 Wx008Data currentWx008Data=null;//当前运行wx数据
                 while (true){
-                    System.out.println("main activity......");
                     AutoUtil.sleep(1000);
+                    String tag = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
+                    System.out.println("main-->currentSrc:"+JSON.toJSONString(currentSrc)+" 监听环境设置标志:"+tag);
                     /**
                      * 环境设置标志
                      */
-                    String tag = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
-                    System.out.println("main runing监听环境设置标志:"+tag);
                     if("next".equals(tag)||"retry".equals(tag)){
-                        if("注册".equals(otherOperationNames.get(0))){
+                        if("注册".equals(currentSrc.getOtherOperationNames().get(0))){
                             currentWx008Data = PhoneConf.createRegData();
                             currentWx008Data.save();
-                        }else if("养号".equals(otherOperationNames.get(0))) {
+                            System.out.println("main-->doAction--->获取一份新改机wxData并保存");
+                        }else if("养号".equals(currentSrc.getOtherOperationNames().get(0))) {
                             if(tag.equals("next")){
                                 doNextIndexAndRecord2DB();
+                                System.out.println("main-->doAction--->loginIndex+1 获取下一个");
                             }
                             currentWx008Data = wx008Datas.get(loginIndex);
                         }
                         setEnviroment(currentWx008Data);//修改hook文件
                         FileUtil.writeContent2FileForceUtf8(FilePathCommon.wx008DataFilePath,JSON.toJSONString(currentWx008Data));//写入008j数据，供对方用
                         FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"done");
-                        System.out.println("doAction--->mainActivity环境和currentData已准备，写入done标志完成");
+                        System.out.println("main-->doAction--->mainActivity环境和currentData已准备，写入done标志完成");
                     }
+                     currentSrc = getStartRunningConfig();
+                     if(!TextUtils.isEmpty(currentSrc.getLoginResult())){
+                         currentWx008Data.setExpMsg(currentSrc.getLoginResult());
+                         int cn = DaoUtil.updateExpMsg(currentWx008Data,currentWx008Data.getExpMsg()+"-"+AutoUtil.getCurrentDate());
+                         System.out.println("main-->updateExpMsg:"+currentSrc.getLoginResult()+" cn:"+cn);
+                         currentWx008Data.setExpMsg("");//重置
+                         saveStartRunningConfig(currentSrc);
+                         System.out.println("main-->插入后检查"+JSON.toJSONString(getStartRunningConfig()));
+                     }
                     /**
                      * 上传图片
                      */
@@ -447,17 +463,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 DeviceInfo deviceInfo = DeviceParamUtil.getDeviceInfo();
                 System.out.println("deviceInfo-->" + JSON.toJSONString(deviceInfo));
                 createData();
-                /*DaoUtil.updatePwd("bfn347","www23347");
-                DaoUtil.updatePwd("tfk385","www23385");*/
-                //new IpNetThread().start();
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
                 break;
             case R.id.del_upload_file://其他操作
-                testMethod();
-                //startActivity(new Intent(MainActivity.this, AppSettingActivity.class));
+                startActivity(new Intent(MainActivity.this, AppSettingActivity.class));
                 break;
             case R.id.btn_yh_setting:
-                startActivity(new Intent(MainActivity.this, YhSettingActivity.class));
+                testMethod();
+                //startActivity(new Intent(MainActivity.this, YhSettingActivity.class));
                 break;
             case R.id.btn_data_impExp:
                 startActivity(new Intent(MainActivity.this, DataImpExpActivity.class));

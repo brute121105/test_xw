@@ -126,6 +126,23 @@ public class FileUtil {
             Log.e("TestFile", "Error on write File:" + e);
         }
     }
+    //内容写入文件
+    public static void writeContent2FileUtf8(String filePathName,String fileName,String strcontent){
+        createFile2Path(filePathName,fileName);
+        String strFilePath = filePathName+fileName;
+        // 每次写入时，换行
+        String strContent = strcontent + "\r\n";
+
+        try {
+            File file = new File(strFilePath);
+            RandomAccessFile raf = new RandomAccessFile(file, "rwd");
+            raf.seek(file.length());
+            raf.write(strContent.getBytes("utf-8"));
+            raf.close();
+        } catch (Exception e) {
+            Log.e("TestFile", "Error on write File:" + e);
+        }
+    }
     public static List<String[]> readConfFile(String path) {
         List<String[]> list = new ArrayList<String[]>();
         try {
