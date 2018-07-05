@@ -103,6 +103,10 @@ public class ExampleInstrumentedTest {
 
 
     public void initAuto(String tag){
+        otherAutoTypes = srConfig.getOtherOperationNames();
+        autoType = otherAutoTypes.get(0);
+        ops = WindowOperationConf.getOperatioByAutoType(autoType);
+
         killAndClearWxData();
         if(srConfig.getConnNetType()==1){
             doVpn();
@@ -116,81 +120,70 @@ public class ExampleInstrumentedTest {
     String host = "http://192.168.1.5";
     Wx008Data currentWx008Data;
     String windowText;
-    String otherOperationName="";//当前额外动作
-    String currentOperation = "init";
-    List<WindowNodeInfo> otherOperations = null;
-    int actionNo=0;//记录点击所处在位置
+    String autoType="";//当前动作
+    String currentOperation = "init";//当前点击动作
+    List<String> otherAutoTypes;
+    Map<String,WindowNodeInfo> ops;
     @Test
     public void useAppContext(){
-
         mDevice.pressHome();
         initAuto("retry");
-        //Map<String,WindowNodeInfo> ops = WindowOperationConf.getOperatioByAutoType("养号");
-        Map<String,WindowNodeInfo> ops = WindowOperationConf.getOperatioByAutoType(srConfig.getZcOryh());
-        List<String> otherOperationNames = new ArrayList<String>();
-        otherOperationNames.add("发圈");
         while (true){
             try {
                 AutoUtil.sleep(1000);
-                System.out.println("running-->otherOperation："+otherOperationName+" actionNo:"+actionNo);
+                System.out.println("running-->autoType："+autoType);
                 windowText = getAllWindowText("com.tencent.mm");
                 //String windowText =getAllWindowText1();
                 System.out.println("running-->getAllWindowText："+windowText);
                 if(windowText.contains("正在登录...")||windowText.contains("正在载入数据...")) continue;
 
-                if("".equals(otherOperationName)){
-                    WindowNodeInfo wni = getWniByWindowText(ops,windowText);
-                    if(wni==null){
-                        System.out.println("doAction-->windowText没有匹配ops动作 currentOperation:"+currentOperation);
-                        if(windowText.contains("找不到网页")){
-                            System.out.println("doAction-->网络加载失败，重试");
-                            initAuto("retry");
-                        }
-                        continue;
-                    }
-                    currentOperation = wni.getOperation();
-                    System.out.println("running-->wni："+JSON.toJSONString(wni));
-                    doAction(wni);
-                    if("自定义-登录异常".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
-                        initAuto("next");
-                    }else if("自定义-注册异常二维码出现".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
-                        initAuto("next");
-                    }else if("改机失败".equals(wni.getWindowOperationDesc())&&wni.isWindowOperatonSucc()){
-                        initAuto("next");
-                    }else if(wni.getWindowOperationDesc().contains("发送短信失败或超过最大尝试次数")&&wni.isWindowOperatonSucc()){
-                        initAuto("next");
-                    }
-                    else if("自定义-判断登录成功".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
-                        if(otherOperationNames.size()==0){
-                            int i = 0;
-                            while (i<10){
-                                AutoUtil.sleep(1000);
-                                System.out.println("doAction-->登录成功等待秒数 "+i);
-                                ++i;
-                            }
-                            initAuto("next");//没有其他动作，下一个
-                        }else {
-                            otherOperationName = otherOperationNames.get(0);
-                            otherOperations = WindowOperationConf.getOtherOperationByAutoType(otherOperationName);
-                        }
+
+                WindowNodeInfo wni = getWniByWindowText(ops,windowText);
+                if(wni==null){
+                    System.out.println("doAction-->windowText没有匹配ops动作 currentOperation:"+currentOperation);
+                    if(windowText.contains("找不到网页")){
+                        System.out.println("doAction-->网络加载失败，重试");
+                        initAuto("retry");
                     }
                     continue;
-                }else {//成功执行其他动作
-                    if(actionNo>otherOperations.size()-1){
-                        actionNo=0;
-                        if(otherOperationNames.indexOf(otherOperationName)+1<=otherOperationNames.size()-1){
-                            otherOperationName = otherOperationNames.get(otherOperationNames.indexOf(otherOperationName)+1);
-                            otherOperations = WindowOperationConf.getOtherOperationByAutoType(otherOperationName);
-                        }else {//执行完所有额外动作
-                            otherOperationName="";
-                            initAuto("next");//没有其他动作，下一个
-                            continue;
+                }
+                currentOperation = wni.getOperation();
+                System.out.println("running-->wni："+JSON.toJSONString(wni));
+                doAction(wni);
+                if("自定义-登录异常".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
+                    initAuto("next");
+                }else if("自定义-注册异常二维码出现".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
+                    initAuto("next");
+                }else if("改机失败".equals(wni.getWindowOperationDesc())&&wni.isWindowOperatonSucc()){
+                    initAuto("next");
+                }else if(wni.getWindowOperationDesc().contains("发送短信失败或超过最大尝试次数")&&wni.isWindowOperatonSucc()){
+                    initAuto("next");
+                }
+                else if(wni.getOperation().contains("-结束")&&wni.isWindowOperatonSucc()){
+                    if(otherAutoTypes.size()==1){//等于1，登录成功没有其他动作
+                        int i = 0;
+                        while (i<10){
+                            AutoUtil.sleep(1000);
+                            System.out.println("doAction-->登录成功等待秒数 "+i);
+                            ++i;
                         }
-                    }
-                    WindowNodeInfo otherWni = otherOperations.get(actionNo);
-                    doAction(otherWni);
-                    if(otherWni.isWindowOperatonSucc()){
-                        actionNo = actionNo +1;
+                        initAuto("next");//没有其他动作，下一个
+                    }else {
+                        if(otherAutoTypes.indexOf(autoType)<otherAutoTypes.size()-1){
+                            autoType = otherAutoTypes.get(otherAutoTypes.indexOf(autoType)+1);
+                            ops = WindowOperationConf.getOperatioByAutoType(autoType);
+                            //返回主界面
+                            while (mDevice.findObject(By.text("发现"))==null){
+                                if(mDevice.getCurrentPackageName().contains("tencent")){
+                                    mDevice.pressBack();
+                                }else {
+                                    startWx();
+                                }
+                                AutoUtil.sleep(1000);
+                            }
+                        }else {
+                            initAuto("next");//执行完所有动作，下一个
+                        }
                     }
                 }
 
@@ -333,18 +326,22 @@ public class ExampleInstrumentedTest {
         }else if("自定义-登录异常".equals(wni.getOperation())){
             operationDesc = wni.getMathWindowText();
             isOperationsSucc = true;
-        }else if("自定义-判断登录成功".equals(wni.getOperation())){
+        }else if("自定义-判断登录成功-结束".equals(wni.getOperation())){
             operationDesc = "登录成功";
             isOperationsSucc = true;
         }else if("自定义-点我知道了".equals(wni.getOperation())){
             UiObject2 uiObject2 = mDevice.findObject(By.textContains(wni.getMathWindowText()));
-            int x = uiObject2.getVisibleBounds().centerX();
-            int y = uiObject2.getVisibleBounds().bottom+(uiObject2.getVisibleBounds().height()*2);
-            mDevice.click(x,y);
-            operationDesc = "点我知道了 x:"+x+" y:"+y;
+            if(uiObject2!=null){
+                int x = uiObject2.getVisibleBounds().centerX();
+                int y = uiObject2.getVisibleBounds().bottom+(uiObject2.getVisibleBounds().height()*2);
+                mDevice.click(x,y);
+                operationDesc = "点我知道了 x:"+x+" y:"+y;
+            }else {
+                operationDesc="点我知道了 uiObject2 is null";
+            }
             isOperationsSucc = true;
-        }else if("自定义-输入发圈内容".equals(wni.getOperation())){
-            String inputText = "558 "+currentWx008Data.getPhone();
+        }else if("自定义-输入发圈内容-结束".equals(wni.getOperation())){
+            String inputText = "634 "+currentWx008Data.getPhone();
             UiObject2 uiObject2 = mDevice.findObject(By.textContains(wni.getMathWindowText()));
             uiObject2.setText(inputText);
             mDevice.findObject(By.text("发表")).click();
@@ -382,7 +379,7 @@ public class ExampleInstrumentedTest {
         }else if("自定义-尚未收到短信".equals(wni.getOperation())){
             operationDesc = "尚未收到短信,返回:"+mDevice.pressBack();
             isOperationsSucc = true;
-        }else if("自定义-提取wxid".equals(wni.getOperation())){
+        }else if("自定义-提取wxid-结束".equals(wni.getOperation())){
             UiObject2 uiObject2 = mDevice.findObject(By.textStartsWith("微信号：wxid"));
             while (uiObject2==null){
                 System.out.println("doAction--->向左滑动");
@@ -393,6 +390,14 @@ public class ExampleInstrumentedTest {
             String wxid = text.substring(text.indexOf("：")+1);
             operationDesc = "获取wxid："+wxid;
             isOperationsSucc = true;
+        }else if("自定义-长按拍照分享".equals(wni.getOperation())){
+            mDevice.findObject(By.desc("拍照分享")).longClick();
+            AutoUtil.sleep(800);
+            isOperationsSucc = true;
+            while (mDevice.findObject(By.text("拍摄"))!=null){
+                mDevice.pressBack();
+                isOperationsSucc = false;
+            }
         }
         wni.setWindowOperationDesc(operationDesc);
         wni.setWindowOperatonSucc(isOperationsSucc);
@@ -463,8 +468,9 @@ public class ExampleInstrumentedTest {
 
     public WindowNodeInfo getWniByWindowText(Map<String,WindowNodeInfo>  ops,String windowText){
         for(String key:ops.keySet()){
-            if(key.contains("|")){
-                String[] arr = key.split("\\|");
+            String comKey = key.substring(key.indexOf("-")+1);//养号-注册|登录  去掉-前面
+            if(comKey.contains("|")){
+                String[] arr = comKey.split("\\|");
                 boolean flag = true;
                 for(String str :arr){
                     if(!windowText.contains(str)){
@@ -474,7 +480,7 @@ public class ExampleInstrumentedTest {
                 }
                 if(flag) return ops.get(key);
                 continue;
-            }else if(windowText.contains(key)){
+            }else if(windowText.contains(comKey)){
                 return ops.get(key);
             }
         }
@@ -762,10 +768,10 @@ public class ExampleInstrumentedTest {
     public void startWxConfirmClear(){
         System.out.println("doAction-->启动微信");
         startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
-        AutoUtil.sleep(800);
+        AutoUtil.sleep(1000);
         while (!mDevice.getCurrentPackageName().contains("tencent")||mDevice.findObject(By.text("注册"))==null){
             System.out.println("doAction-->等待微信启动成功");
-            AutoUtil.sleep(400);
+            AutoUtil.sleep(800);
             if(!mDevice.getCurrentPackageName().contains("tencent")){
                 continue;
             }else if(mDevice.findObject(By.text("注册"))==null){
