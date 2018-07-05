@@ -92,15 +92,15 @@ public class ExampleInstrumentedTest {
         autoType = otherAutoTypes.get(0);
         ops = WindowOperationConf.getOperatioByAutoType(autoType);
 
-        //killAndClearWxData();
+        killAndClearWxData();
         if(srConfig.getConnNetType()==1){
-            //doVpn();
+            doVpn();
         }else if(srConfig.getConnNetType()==2){
             startAriPlaneMode(1000);
         }
         currentWx008Data = tellSetEnvirlmentAndGet008Data(tag);
-        //startWxConfirmClear();
-        startWx();
+        startWxConfirmClear();
+        //startWx();
     }
 
     String host = "http://192.168.1.5";
@@ -121,7 +121,7 @@ public class ExampleInstrumentedTest {
                 windowText = getAllWindowText("com.tencent.mm");
                 //String windowText =getAllWindowText1();
                 System.out.println("running-->getAllWindowText："+windowText);
-                if(windowText.contains("正在登录...")||windowText.contains("正在载入数据...")) continue;
+                if(windowText.contains("正在登录...")||windowText.contains("正在载入数据...")||windowText.contains("progressBar")) continue;
 
 
                 System.out.println("ops-->"+JSON.toJSONString(ops));
