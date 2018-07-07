@@ -7,6 +7,8 @@ package hyj.xw.common;
 public class CommonConstant {
     public static String AUTOLOGINTHREAD = "autoLogin";
     public static String APPCONFIG_LOGIN_ACCOUNT = "loginAccount";
+    public static String APPCONFIG_HOST = "host";//服务器地址
+    public static String APPCONFIG_DEVICE = "deviceNum";//服务器地址
     public static String APPCONFIG_EXT = "ext"; //008提取008数据 001自动切换登录  601设置微信号 602修改密码  603扫描登录pc 604微信号搜索昵称
     //6051 换绑手机（重新登录获取接码平台token）6050 换绑手机（本地数据库获取token） 606扫码加群 607发朋友圈  608筷子挂机test开发模式 609微信号搜索添加指定好友  611自动通过好友添加请求
     //610取关公总号  612获取昵称
@@ -16,6 +18,7 @@ public class CommonConstant {
     public static String APPCONFIG_END_LOGINACCOUNT = "endLoginAccount";//开始登陆号码
 
     public static String APPCONFIG_IS_FEED = "isfeed";//养号
+    public static String APPCONFIG_IS_LOCAL_SETTING = "isLocal";//读取本地配置
     public static String APPCONFIG_IS_AF_BY_WXID = "isAfByWxid";//添加好友
     public static String APPCONFIG_IS_SEND_FR = "isSendFr";//发圈
     public static String APPCONFIG_IS_RC_FRIEND = "isRcFriend";//自动通过好友

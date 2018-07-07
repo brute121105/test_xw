@@ -17,6 +17,7 @@ import java.util.Random;
 
 import hyj.xw.aw.util.BuildFileUtil;
 import hyj.xw.common.CommonConstant;
+import hyj.xw.common.WxNickNameConstant;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.LitePalModel.Wx008Data;
@@ -453,23 +454,28 @@ public class PhoneConf {
    }
     public static Wx008Data createRegData(){
         Random rand = new Random();
-        //String phone = "1"+getNum(10);
+        String phone = "1"+getNum(10);
         //phone="18137447045";
-        String phone = getOnePhone();
+        //String phone = getOnePhone();
         NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);
-        Wx008Data data = createReg008Data("zs"+phone,phone,"www23456","86","011",JSON.toJSONString(npi));
+        Wx008Data data = createReg008Data(WxNickNameConstant.getName1(),phone,"www23456","86","011",JSON.toJSONString(npi));
         System.out.println("createRegData--->"+JSON.toJSONString(data));
         return data;
     }
     public static String getOnePhone(){
         List<Wx008Data> datas = DaoUtil.findByDataBydataFlag();
-        String lastPhone = datas.get(datas.size()-1).getPhone();
+        String lastPhone="";
+        if(datas!=null&&datas.size()>0){
+             lastPhone = datas.get(datas.size()-1).getPhone();
+        }
         String phone = "";
         List<String> phones = FileUtil.read008Data("/sdcard/fj号码/xc.txt");
-        if(phones.indexOf(lastPhone)==-1){
-            phone = phones.get(0);
-        }else {
-            phone = phones.get(phones.indexOf(lastPhone)+1);
+        if(phones!=null&&phones.size()>0){
+            if(phones.indexOf(lastPhone)==-1){
+                phone = phones.get(0);
+            }else {
+                phone = phones.get(phones.indexOf(lastPhone)+1);
+            }
         }
         System.out.println("phones-->"+JSON.toJSONString(phones));
         System.out.println("phone phones-->"+phone);

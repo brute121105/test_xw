@@ -43,7 +43,7 @@ public class WxNickNameConstant {
         while(s==null||s.length()<3) {
             s = getName();
         }
-        String head = (String.valueOf(c[new Random().nextInt(25)])+String.valueOf(c[new Random().nextInt(25)])).toUpperCase();
+        String head = (String.valueOf(c[new Random().nextInt(25)])+String.valueOf(c[new Random().nextInt(25)])+String.valueOf(c[new Random().nextInt(25)])).toUpperCase();
         s = head+s;
         return s;
 

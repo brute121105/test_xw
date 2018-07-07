@@ -17,11 +17,13 @@ import okhttp3.Response;
  */
 
 public class OkHttpUtil {
+    static String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwibmlja25hbWUiOiLnrqHnkIblkZgiLCJhdmF0YXIiOiIyMDE4MDcwMjA0NTAyMy5wbmciLCJpYXQiOjE1MzA0NzgyMzMsImV4cCI6MTUzODI1NDIzM30.2Ji5dmWTpKKZAW15vli7Of4ggjgzvB5zPFq7PlpsP1GkTG-F0U6Joqsu_HkSEbl5iIwpqT3hY-J5fpuPgOwOAA";
     //http get请求
     public static String okHttpGet(String url){
         String reponseData = "";
         OkHttpClient mOkHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
+                .addHeader("token",token)
                 .url(url)
                 .build();
         try {
@@ -55,6 +57,28 @@ public class OkHttpUtil {
         }
         return  reponseData;
 
+    }
+
+    //http post请求
+    public static String okHttpPostBody(String url,String postBody){
+        String reponseData = "";
+        OkHttpClient mOkHttpClient = new OkHttpClient();
+        FormBody.Builder builder = new FormBody.Builder();
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+        RequestBody requestBody = RequestBody.create(JSON, postBody);
+        Request request = new Request.Builder()
+                .addHeader("token",token)
+                .url(url)
+                .post(requestBody)
+                .build();
+        try {
+            Response response = mOkHttpClient.newCall(request).execute();
+            reponseData = response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  reponseData;
     }
 
     //上次图片

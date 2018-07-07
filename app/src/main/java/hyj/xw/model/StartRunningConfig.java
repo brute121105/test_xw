@@ -17,6 +17,7 @@ public class StartRunningConfig {
     private int connNetType;//连接网络类型 1 vpn 2 流量 3 不切换网络
     private List<String> otherOperationNames;//登录成功后执行什么动作，注册 养号
     private String loginResult;
+    private int isStop;//1 暂停
 
     public String getLoginResult() {
         return loginResult;
@@ -47,5 +48,13 @@ public class StartRunningConfig {
 
     public void setOtherOperationNames(List<String> otherOperationNames) {
         this.otherOperationNames = otherOperationNames;
+    }
+
+    public int getIsStop() {
+        return isStop;
+    }
+
+    public void setIsStop(int isStop) {
+        this.isStop = isStop;
     }
 }

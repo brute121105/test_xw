@@ -19,6 +19,7 @@ import hyj.xw.model.PhoneInfo;
 
 public class Wx008Data  extends DataSupport{
     private PhoneInfo phoneInfo = new PhoneInfo();
+    private long id;
     private String phoneStrs;
     private String phoneStrsAw;//aw数据
     private String rgWxStatus;//aw状态
@@ -42,6 +43,14 @@ public class Wx008Data  extends DataSupport{
 
     public String getDataType() {
         return dataType;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setDataType(String dataType) {

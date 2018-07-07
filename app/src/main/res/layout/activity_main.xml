@@ -8,27 +8,35 @@
     android:theme="@android:style/Theme.Black.NoTitleBar"
     tools:context="hyj.xw.MainActivity">
 
+    <TextView
+        android:visibility="gone"
+        android:text="服务器地址"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#2E2E2E"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/host"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/deviceNum"
+        android:hint="设备编号"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <CheckBox
-            android:visibility="gone"
-            android:id="@+id/isFeed"
-            android:textColor="#2E2E2E"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="feed"
-            android:textSize="18sp"
-            />
         <CheckBox
             android:id="@+id/isAirChangeIp"
             android:textColor="#2E2E2E"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="飞行模式换ip"
+            android:text="飞行模式"
             android:textSize="18sp"
             />
         <CheckBox
@@ -37,7 +45,51 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="登录成功暂停"
+            android:text="登录暂停"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/isLocalSetting"
+            android:textColor="#2E2E2E"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="本地配置"
+            android:textSize="18sp"
+            />
+        <CheckBox
+            android:id="@+id/isFeed"
+            android:textColor="#2E2E2E"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="数据维护"
+            android:textSize="18sp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/test_conn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="测试连接"
+            android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/start_uiAuto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="开始运行"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -121,6 +173,7 @@
 
 
     <TextView
+        android:visibility="gone"
         android:text="综合参数"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -128,6 +181,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <EditText
+        android:visibility="gone"
         android:id="@+id/ext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
