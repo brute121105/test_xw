@@ -36,8 +36,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.NetworkInterface;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -47,8 +51,8 @@ import java.util.Random;
 
 import hyj.autooperation.common.FilePathCommon;
 import hyj.autooperation.conf.WindowOperationConf;
+import hyj.autooperation.httpModel.Device;
 import hyj.autooperation.model.NodeInfo;
-import hyj.autooperation.model.StartRunningConfig;
 import hyj.autooperation.model.WindowNodeInfo;
 import hyj.autooperation.model.Wx008Data;
 import hyj.autooperation.util.AutoUtil;
@@ -73,7 +77,7 @@ public class ExampleInstrumentedTest {
     private UiDevice mDevice;
     private Context appContext;
     Instrumentation instrumentation;
-    StartRunningConfig srConfig;
+    Device deviceConfig;
 
 
     @Before
@@ -81,21 +85,28 @@ public class ExampleInstrumentedTest {
         appContext = InstrumentationRegistry.getTargetContext();
         instrumentation = InstrumentationRegistry.getInstrumentation();
         mDevice = UiDevice.getInstance(instrumentation);
-        String srConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
-        srConfig = JSONObject.parseObject(srConfigStr,StartRunningConfig.class);
-        System.out.println("doAction--->srConfig:"+JSON.toJSONString(srConfig));
+        String deviceConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
+        deviceConfig = JSONObject.parseObject(deviceConfigStr,Device.class);
+        System.out.println("doAction--->srConfig:"+JSON.toJSONString(deviceConfig));
     }
 
+    public List<String> getAutoTypes(Device device){
+        List<String> autoTypes = new ArrayList<String>();
+        autoTypes.add(device.getRunType()==1?"注册":"养号");
+        autoTypes.add("发圈");
+        autoTypes.add("提取wxid");
+        return autoTypes;
+    }
 
     public void initAuto(String tag){
-        otherAutoTypes = srConfig.getOtherOperationNames();
+        otherAutoTypes = getAutoTypes(deviceConfig);
         autoType = otherAutoTypes.get(0);
         ops = WindowOperationConf.getOperatioByAutoType(autoType);
 
         killAndClearWxData();
-        if(srConfig.getConnNetType()==1){
+        if(deviceConfig.getChangeIpMode()==1){
             doVpn();
-        }else if(srConfig.getConnNetType()==2){
+        }else if(deviceConfig.getChangeIpMode()==2){
             startAriPlaneMode(1000);
         }
         currentWx008Data = tellSetEnvirlmentAndGet008Data(tag);
@@ -107,34 +118,75 @@ public class ExampleInstrumentedTest {
     Wx008Data currentWx008Data;
     String windowText;
     String autoType="";//当前动作
-    String currentOperation = "init";//当前点击动作
+    //String currentOperation = "init";//当前点击动作
+    WindowNodeInfo currentWindowNodeInfo = new WindowNodeInfo();
     List<String> otherAutoTypes;
+    long lastSameOperationTime,lastNotNullTime;
     Map<String,WindowNodeInfo> ops;
     @Test
     public void useAppContext(){
+        currentWindowNodeInfo.setOperation("init");
         mDevice.pressHome();
         initAuto("retry");
+        //new MonitorStatusThread().start();
+
         while (true){
             try {
-                AutoUtil.sleep(1000);
-                System.out.println("running-->autoType："+autoType);
+                AutoUtil.sleep(800);
+                deviceConfig = getDeviceConfig();
+                System.out.println("running-->autoType："+autoType+" currentOperation:"+currentWindowNodeInfo.getOperation());
+                if(!mDevice.isScreenOn()){
+                    mDevice.wakeUp();
+                    System.out.println("doAction-->亮屏幕");
+                }
                 windowText = getAllWindowText("com.tencent.mm");
-                //String windowText =getAllWindowText1();
+                if(TextUtils.isEmpty(windowText)){
+                    windowText =getAllWindowText1();
+                }
                 System.out.println("running-->getAllWindowText："+windowText);
-                if(windowText.contains("正在登录...")||windowText.contains("正在载入数据...")||windowText.contains("progressBar")) continue;
-
+                if(deviceConfig.getRunState()==2){
+                    System.out.println("doAction-->暂停运行...");
+                    continue;
+                }
 
                 System.out.println("ops-->"+JSON.toJSONString(ops));
                 WindowNodeInfo wni = getWniByWindowText(ops,windowText);
                 if(wni==null){
-                    System.out.println("doAction-->windowText没有匹配ops动作 currentOperation:"+currentOperation);
+                    /**
+                     * 处理微信不在当前窗口
+                     */
+                    long waitMs = System.currentTimeMillis()-lastNotNullTime;
+                    if(waitMs>90000){
+                        System.out.println("doAction--->匹配null等待超过90秒，重试");
+                        initAuto("retry");
+                    }
+                    if(isMathOperation(currentWindowNodeInfo.getOperation())){
+                        System.out.println("doAction-->处理微信不在当前窗口");
+                        startWx();
+                    }
+                    System.out.println("doAction-->windowText没有匹配ops动作 currentOperation:"+currentWindowNodeInfo.getOperation());
+                    System.out.println("doAction-->匹配null持续时间："+waitMs);
                     if(windowText.contains("找不到网页")){
                         System.out.println("doAction-->网络加载失败，重试");
                         initAuto("retry");
                     }
                     continue;
+                }else {
+                    lastNotNullTime= System.currentTimeMillis();
                 }
-                currentOperation = wni.getOperation();
+                if(currentWindowNodeInfo.getOperation().equals(wni.getOperation())){
+                    long waitMs = System.currentTimeMillis()-lastNotNullTime;
+                    if(waitMs>90000){
+                        System.out.println("doAction--->静止等待超过90秒，重试");
+                        initAuto("retry");
+                        continue;
+                    }
+                    System.out.println("doAction-->静止停留时间："+waitMs);
+                }else {
+                    lastSameOperationTime = System.currentTimeMillis();
+                }
+                if(windowText.contains("正在登录...")||windowText.contains("正在载入数据...")||windowText.contains("progressBar")) continue;
+                currentWindowNodeInfo = wni;
                 System.out.println("running-->wni："+JSON.toJSONString(wni));
                 doAction(wni);
                 if("自定义-登录异常".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
@@ -142,15 +194,15 @@ public class ExampleInstrumentedTest {
                 }else if("自定义-注册异常二维码出现".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
                     initAuto("next");
                 }else if("改机失败".equals(wni.getWindowOperationDesc())&&wni.isWindowOperatonSucc()){
-                    initAuto("next");
+                    initAuto("retry");
                 }else if(wni.getWindowOperationDesc().contains("发送短信失败或超过最大尝试次数")&&wni.isWindowOperatonSucc()){
                     initAuto("next");
                 }
                 else if(wni.getOperation().contains("-结束")&&wni.isWindowOperatonSucc()){
                     if(wni.getOperation().contains("判断登录成功")){
-                        srConfig = getStartRunningConfig();
-                        srConfig.setLoginResult("success");
-                        saveStartRunningConfig(srConfig);
+                        deviceConfig = getDeviceConfig();
+                        deviceConfig.setLoginResult("success");
+                        saveDeviceConfig(deviceConfig);
                         System.out.println("doAction--->写入登录success标志");
                     }
                     if(otherAutoTypes.size()==1){//等于1，登录成功没有其他动作
@@ -186,6 +238,20 @@ public class ExampleInstrumentedTest {
             }
         }
     }
+    public boolean isMathOperation(String operation){
+        boolean flag = false;
+        List<String> operations = new ArrayList<String>();
+        operations.add("自定义-输入账号密码");
+        operations.add("点击发现");
+        operations.add("点击朋友圈");
+        operations.add("自定义-发送短信");
+        operations.add("自定义-判断登录成功-结束");
+        for(String op:operations){
+            if(op.equals(operation))
+                return true;
+        }
+        return flag;
+    }
     @Test
     public void test1(){
         while (true){
@@ -208,13 +274,13 @@ public class ExampleInstrumentedTest {
         }
     }
 
-    public  StartRunningConfig getStartRunningConfig(){
+    public  Device getDeviceConfig(){
         String srConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
-        StartRunningConfig srConfig = JSONObject.parseObject(srConfigStr,StartRunningConfig.class);
+        Device srConfig = JSONObject.parseObject(srConfigStr,Device.class);
         return srConfig;
     }
-    public  void saveStartRunningConfig(StartRunningConfig srConfig){
-        FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath, JSON.toJSONString(srConfig));
+    public  void saveDeviceConfig(Device device){
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath, JSON.toJSONString(device));
     }
 
     //自定义、通用两种
@@ -252,7 +318,7 @@ public class ExampleInstrumentedTest {
         if("自定义-点击注册2".equals(wni.getOperation())){
             List<UiObject2> uos = findNodesByClaZZ(EditText.class);
             if(uos!=null&&uos.size()==3){
-                uos.get(0).setText("dkek"+new Random().nextInt(10)+new Random().nextInt(10));
+                uos.get(0).setText(currentWx008Data.getNickName());
                 uos.get(1).setText(currentWx008Data.getPhone());
                 uos.get(2).setText(currentWx008Data.getWxPwd());//密码
                 isOperationsSucc = clickUiObjectByText("注册");
@@ -262,9 +328,9 @@ public class ExampleInstrumentedTest {
             operationDesc = "输入账号"+currentWx008Data.getPhone()+"，输入密码"+currentWx008Data.getWxPwd()+"，点击【注册】"+isOperationsSucc+" uosSize:"+(uos==null?"null":uos.size());
         }else if("自定义-过滑块".equals(wni.getOperation())){
             if(validEnviroment()){
+                //delAllFile();
+                AutoUtil.sleep(2000);
                 System.out.println("doAction--->改机成功");
-                int dragEndX=0;
-                cmdScrrenShot();//截图
                 /**
                  * 服务器获取
                  */
@@ -290,12 +356,22 @@ public class ExampleInstrumentedTest {
                 /**
                  * 本地计算
                  */
-                Bitmap bi = waitAndGetBitmap();
-                dragEndX = DragImageUtil2.getPic2LocX(bi);
-                operationDesc="拖动dragEndX"+dragEndX;
-                Point[] points = getDargPoins(235,dragEndX+63,1029);
-                boolean dragFlag = mDevice.swipe(points,100);
-                AutoUtil.sleep(3000);
+                cmdScrrenShot();//截图
+                Bitmap bi = newWaitAndBitmap();
+                Integer[] dragEndX = DragImageUtil2.getPic2LocXAndDrapX(bi);
+                if(dragEndX[1]>300){
+                    Point[] points = getSwipePoints(dragEndX[0],dragEndX[1]+63,50,100,70,5,10,1000,1050);//63为方块半宽度 dragEndX[0] 为拖动点x起始位置  dragEndX[1] 为方块二边沿起始位置
+                    System.out.println("doAction--->拖动滑块开始1");
+                    mDevice.swipe(points,15);
+                    System.out.println("doAction--->拖动滑块结束1");
+                }else {
+                    /*Point[] points2 = getDargPoins(dragEndX[0],dragEndX[1]+66,1029);
+                    mDevice.swipe(points2,50);*/
+                }
+                AutoUtil.sleep(4000);
+                operationDesc="new 拖动dragEndX"+JSON.toJSONString(dragEndX);
+
+
             }else {
                 operationDesc="改机失败";
             }
@@ -392,6 +468,11 @@ public class ExampleInstrumentedTest {
             }
             String text = uiObject2.getText();
             String wxid = text.substring(text.indexOf("：")+1);
+
+            deviceConfig = getDeviceConfig();
+            deviceConfig.setWxid(wxid);
+            saveDeviceConfig(deviceConfig);
+
             operationDesc = "获取wxid："+wxid;
             isOperationsSucc = true;
         }else if("自定义-长按拍照分享".equals(wni.getOperation())){
@@ -652,14 +733,23 @@ public class ExampleInstrumentedTest {
         }
         return picFile;
     }
-    private File delAllFiles(String path){
+    private void delAllFile(){
+        String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
+        File[] files = new File(path).listFiles();
+        if(files!=null&&files.length>0){
+            for(File file:files){
+                System.out.println("doAction-->删除文件："+file.getName()+" "+file.delete());
+            }
+        }
+    }
+   /* private File delAllFiles(String path){
         File picFile = null;
         File[] files = new File(path).listFiles();
         for(File f:files){
             f.delete();
         }
         return picFile;
-    }
+    }*/
 
     public void testScreenShot(UiDevice mUIDevice) {
         //UiDevice mUIDevice =  UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -685,7 +775,7 @@ public class ExampleInstrumentedTest {
         }
     }
 
-    String action="";
+   /* String action="";
     @Test
     public void useAppContext2() {
 
@@ -718,9 +808,14 @@ public class ExampleInstrumentedTest {
                     cmdScrrenShot();//截图
                     Bitmap bi = waitAndGetBitmap();
                     dragEndX = DragImageUtil2.getPic2LocX(bi);
-                    System.out.println("running-->dragEndX:"+dragEndX);
-                    Point[] points = getDargPoins(235,dragEndX+63,1029);
-                    mDevice.swipe(points,100);
+                    System.out.println("doAction-->new dragEndX:"+dragEndX);
+                    if(dragEndX>300){
+                        Point[] points = getSwipePoints(235,dragEndX+63,50,80,70,5,10,1000,1050);
+                        mDevice.swipe(points,10);
+                    }else {//无效距离
+                        Point[] points2 = getDargPoins(235,dragEndX+63,1029);
+                        mDevice.swipe(points2,10);
+                    }
                 }
             }
             UiObject2 qrWindow = mDevice.findObject(By.descContains("联系符合以下条件的"));
@@ -729,35 +824,141 @@ public class ExampleInstrumentedTest {
                 startWx();
             }
         }
-    }
+    }*/
 
     public Bitmap waitAndGetBitmap(){
         String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
         File file = waitAndGetFile(path);
         Bitmap bi = null;
         while (file==null||bi==null){
-            AutoUtil.sleep(1000);
+            AutoUtil.sleep(2000);
             file = waitAndGetFile(path);
             if(file!=null){
                 String pngPath = path+"/"+file.getName();
-                System.out.println("running-->pngPath:"+pngPath);
+                System.out.println("doAction--->file name:"+file.getName()+" size:"+file.length());
                 bi = BitmapFactory.decodeFile(pngPath);
+            }else {
+                System.out.println("doAction--->file is null");
             }
             System.out.println("running-->等待图片生成:");
         }
 
         return bi;
     }
+    /*public void copyFile(File fromFile) {
+        System.out.println("doAction-->copyFile:"+fromFile.getName());
+        File toFile = new File("/sdcard/azy/"+fromFile.getName());
+        FileInputStream ins = null;
+        try {
+            ins = new FileInputStream(fromFile);
+            FileOutputStream out = new FileOutputStream(toFile);
+            byte[] b = new byte[1024];
+            int n=0;
+            while((n=ins.read(b))!=-1){
+                out.write(b, 0, n);
+            }
+            ins.close();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }*/
+    public Bitmap newWaitAndBitmap(){
+        File file = newWaitAndGetFile();
+        System.out.println("doAction----->获取到文件："+file.getName()+" length:"+file.length());
+        String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
+        String pngPath = path+"/"+file.getName();
+        Bitmap bi = BitmapFactory.decodeFile(pngPath);
+        while (bi==null){
+            AutoUtil.sleep(1000);
+            bi = BitmapFactory.decodeFile(pngPath);
+            if(bi!=null){
+                System.out.println("doAction--->biMap is ok height:"+bi.getHeight()+" width:"+bi.getWidth());
+            }else {
+                System.out.println("doAction--->biMap is null");
+            }
+        }
+        return bi;
+    }
+    public File newWaitAndGetFile(){
+        String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
+        File file = waitAndGetFile(path);
+        while (file==null){
+            AutoUtil.sleep(1000);
+            file = waitAndGetFile(path);
+            if(file!=null){
+                System.out.println("doAction--->file name:"+file.getName()+" size:"+file.length());
+            }else {
+                System.out.println("doAction--->file is null");
+            }
+        }
+        return file;
+    }
+    /**
+     * @param startX endX 滑动起始 结束 位置
+     * @param min1，max1 滑动前段快速部分每段间隔为 min1和max1 之间随机数
+     * @param slowDistance 后面减速距离
+     * @param min2,max2 滑动 后面减速距离 每段间隔为min2和max2 之间随机数
+     * @param yMin ,yMax 滑动y方向波动距离
+     * @return
+     */
+    public Point[] getSwipePoints(int startX,int endY,int min1,int max1,int slowDistance,int min2,int max2,int yMin,int yMax){
+        List<Integer> xList = getAllInterVal(startX,endY,min1,max1,slowDistance,min2,max2);
+        System.out.println("doAction-->滑动坐标距离"+JSON.toJSONString(xList));
+        Point[] points = new Point[xList.size()];
+        for(int i=0;i<xList.size();i++){
+            Point point = new Point();
+            point.set(xList.get(i),getRandomNum(yMin,yMax));
+            points[i] = point;
+        }
+        return points;
+    }
+
+    /**
+     * @param startX endX 滑动起始 结束 位置
+     * @param min1，max1 滑动前段快速部分每段间隔为 min1和max1 之间随机数
+     * @param slowDistance 后面减速距离
+     * @param min2,max2 滑动 后面减速距离 每段间隔为min2和max2 之间随机数
+     * @return 滑动点集合
+     */
+    public List<Integer> getAllInterVal(int startX,int endX,int min1,int max1,int slowDistance,int min2,int max2){
+        List<Integer> result  = new ArrayList<Integer>();
+        List<Integer> list1 = getInterVal(startX,endX-slowDistance,min1,max1);
+        List<Integer> list2 = getInterVal(endX-slowDistance+3,endX,min2,max2);
+        result.addAll(list1);
+        result.addAll(list2);
+        return result;
+    }
+    //获取指定范围随机数
+    public int getRandomNum(int min,int max){
+        Random random = new Random();
+        int s = random.nextInt(max)%(max-min+1) + min;
+        return s;
+    }
+    //startX 和 tmpEndX 划分段，每段大小为为min 和max之间随机数
+    public List<Integer> getInterVal(int startX,int tmpEndX,int min,int max){
+        List<Integer> list = new ArrayList<Integer>();
+        list.add(startX);
+        while (true){
+            startX = startX+ getRandomNum(min,max);
+            if(startX<tmpEndX){
+                list.add(startX);
+            }else {
+                list.add(tmpEndX);
+                break;
+            }
+        }
+        return list;
+    }
 
 
-
-    public Point[] getDargPoins(int startX,int endY,int locY){
+    public Point[] getDargPoins(int startX,int endX,int locY){
         Point point0 = new Point();
         Point point1 = new Point();
         Point point2 = new Point();
         point0.set(startX,locY);
-        point1.set(endY-70,locY);
-        point2.set(endY,locY);
+        point1.set(endX-70,locY);
+        point2.set(endX,locY);
         Point[] points = {point0,point1,point2};
         return points;
     }
@@ -787,16 +988,20 @@ public class ExampleInstrumentedTest {
         System.out.println("doAction-->启动微信");
         startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
         AutoUtil.sleep(1000);
+        int i = 0;
         while (!mDevice.getCurrentPackageName().contains("tencent")||mDevice.findObject(By.text("注册"))==null){
             System.out.println("doAction-->等待微信启动成功");
             AutoUtil.sleep(800);
             if(!mDevice.getCurrentPackageName().contains("tencent")){
                 continue;
             }else if(mDevice.findObject(By.text("注册"))==null){
-                System.out.println("doAction-->上次清楚失败，继续清除");
-                killAndClearWxData();
-                startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
                 AutoUtil.sleep(1000);
+                ++i;
+                if(i>3){
+                    System.out.println("doAction-->上次清楚失败，继续清除");
+                    killAndClearWxData();
+                    startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+                }
             }
         }
 
@@ -1007,7 +1212,7 @@ public class ExampleInstrumentedTest {
         while (i<seconds){
             if(isVpnConnected()) return true;
             System.out.println("doAction--->等待vpn连接"+i);
-            AutoUtil.sleep(1000);
+            AutoUtil.sleep(500);
             ++i;
         }
         return false;

@@ -33,17 +33,20 @@ public class WindowOperationConf {
         setOps(ops,windowNodeInfo3,nodeInfo31);
         setOps(ops,windowNodeInfo3,nodeInfo32);
 
-        WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","注册","为了你的帐号安全，本次注册需要进行安全验证码校验","点击开始安全校验");
+        WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","注册","当前所在页面,安全校验","点击开始安全校验");
+        //WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","注册","为了你的帐号安全，本次注册需要进行安全验证码校验","点击开始安全校验");
         NodeInfo nodeInfo41 = new NodeInfo(1,"","开始","点击开始安全校验");
         setOps(ops,windowNodeInfo4,nodeInfo41);
 
+        WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","注册","当前所在页面,微信安全","自定义-过滑块");
         //WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","注册","拖动下方滑块完成拼图","自定义-过滑块");
-        //setOps(ops,windowNodeInfo5,null);
+        setOps(ops,windowNodeInfo5,null);
 
         WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","注册","联系符合以下条件的微信用户","自定义-注册异常二维码出现");
         setOps(ops,windowNodeInfo6,null);
 
-        WindowNodeInfo windowNodeInfo7 = new WindowNodeInfo("6.6.7","注册","发送短信后请回到本界面继续下一步","自定义-发送短信");
+        WindowNodeInfo windowNodeInfo7 = new WindowNodeInfo("6.6.7","注册","已发送短信，下一步","自定义-发送短信");
+        //WindowNodeInfo windowNodeInfo7 = new WindowNodeInfo("6.6.7","注册","发送短信后请回到本界面继续下一步","自定义-发送短信");
         setOps(ops,windowNodeInfo7,null);
 
         WindowNodeInfo windowNodeInfo8 = new WindowNodeInfo("6.6.7","注册","尚未收到你发送的短信验证码","自定义-尚未收到短信");
