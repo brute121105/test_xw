@@ -454,9 +454,9 @@ public class PhoneConf {
    }
     public static Wx008Data createRegData(){
         Random rand = new Random();
-        String phone = "1"+getNum(10);
+        //String phone = "1"+getNum(10);
         //phone="18137447045";
-        //String phone = getOnePhone();
+        String phone = getOnePhone();
         NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);
         Wx008Data data = createReg008Data(WxNickNameConstant.getName1(),phone,"www23456","86","011",JSON.toJSONString(npi));
         System.out.println("createRegData--->"+JSON.toJSONString(data));
