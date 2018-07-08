@@ -49,8 +49,8 @@ public class WindowOperationConf {
         //WindowNodeInfo windowNodeInfo7 = new WindowNodeInfo("6.6.7","注册","发送短信后请回到本界面继续下一步","自定义-发送短信");
         setOps(ops,windowNodeInfo7,null);
 
-        WindowNodeInfo windowNodeInfo8 = new WindowNodeInfo("6.6.7","注册","尚未收到你发送的短信验证码","自定义-尚未收到短信");
-        setOps(ops,windowNodeInfo8,null);
+        /*WindowNodeInfo windowNodeInfo8 = new WindowNodeInfo("6.6.7","注册","尚未收到你发送的短信验证码","自定义-尚未收到短信");
+        setOps(ops,windowNodeInfo8,null);*/
 
         WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","注册","通讯录|发现","自定义-判断登录成功-结束");
         setOps(ops,windowNodeInfo9,null);
@@ -79,6 +79,12 @@ public class WindowOperationConf {
 
         WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","养号","帐号或密码错误","自定义-登录异常");
         setOps(ops,windowNodeInfo4,null);
+
+        WindowNodeInfo windowNodeInfo41 = new WindowNodeInfo("6.6.7","养号","帐号的使用存在异常","自定义-登录异常");
+        setOps(ops,windowNodeInfo41,null);
+
+        WindowNodeInfo windowNodeInfo42 = new WindowNodeInfo("6.6.7","养号","你正在一台新设备登录微信","自定义-登录异常");
+        setOps(ops,windowNodeInfo42,null);
 
         WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","养号","通讯录|发现","自定义-判断登录成功-结束");
         setOps(ops,windowNodeInfo5,null);

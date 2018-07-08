@@ -18,9 +18,20 @@ public class DragImageUtil2 {
     private static int availableWidth=130;//方块宽度
     private static int pic1X = 166;//方块一 x 白色定位
     private static int pic1X_1 = 154;//方块一 x 白色定位 第二种情况
-    private static int minY=510,maxY=875;
+    private static int minY=410,maxY=875;
     private static int pic1_rgb_r_min =230,pic1_rgb_r_max=250;//图片一 方块
     private static int pic2_minX = 730,pic2_maxX = 840;
+
+    public static Integer[]  newGetPic2LocXAndDrapX(Bitmap bi) {
+        Integer[] result1 = getPic2LocXAndDrapX(bi);
+        if(result1[1]==0){
+            System.out.println("doAction--->处理154特殊情况");
+            result1[0] = 154;//处理154特殊情况
+            DragImageUtil3 dragImageUtil3 = new DragImageUtil3();
+            result1[1] = dragImageUtil3.bakGetEndX(bi);
+        }
+        return result1;
+    }
 
     //获取方块二x坐标位置
     public static Integer[]  getPic2LocXAndDrapX(Bitmap bi) {

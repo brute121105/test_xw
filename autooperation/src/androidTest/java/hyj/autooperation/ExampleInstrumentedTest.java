@@ -156,6 +156,10 @@ public class ExampleInstrumentedTest {
                      * 处理微信不在当前窗口
                      */
                     long waitMs = System.currentTimeMillis()-lastNotNullTime;
+                    if(waitMs>15000&&"自定义-点击注册2".equals(currentWindowNodeInfo.getOperation())){
+                        mDevice.pressBack();
+                        continue;
+                    }
                     if(waitMs>90000){
                         System.out.println("doAction--->匹配null等待超过90秒，重试");
                         initAuto("retry");
@@ -358,13 +362,14 @@ public class ExampleInstrumentedTest {
                  */
                 cmdScrrenShot();//截图
                 Bitmap bi = newWaitAndBitmap();
-                Integer[] dragEndX = DragImageUtil2.getPic2LocXAndDrapX(bi);
+                Integer[] dragEndX = DragImageUtil2.newGetPic2LocXAndDrapX(bi);
                 if(dragEndX[1]>300){
                     Point[] points = getSwipePoints(dragEndX[0],dragEndX[1]+63,50,100,70,5,10,1000,1050);//63为方块半宽度 dragEndX[0] 为拖动点x起始位置  dragEndX[1] 为方块二边沿起始位置
                     System.out.println("doAction--->拖动滑块开始1");
                     mDevice.swipe(points,15);
                     System.out.println("doAction--->拖动滑块结束1");
                 }else {
+                    mDevice.click(1000,1150);
                     /*Point[] points2 = getDargPoins(dragEndX[0],dragEndX[1]+66,1029);
                     mDevice.swipe(points2,50);*/
                 }
@@ -421,7 +426,7 @@ public class ExampleInstrumentedTest {
             }
             isOperationsSucc = true;
         }else if("自定义-输入发圈内容-结束".equals(wni.getOperation())){
-            String inputText = "634 "+currentWx008Data.getPhone();
+            String inputText = currentWx008Data.getPhone()+""+System.currentTimeMillis();
             UiObject2 uiObject2 = mDevice.findObject(By.textContains(wni.getMathWindowText()));
             uiObject2.setText(inputText);
             mDevice.findObject(By.text("发表")).click();
@@ -435,13 +440,21 @@ public class ExampleInstrumentedTest {
             mDevice.findObject(By.text("发送短信")).click();
             AutoUtil.sleep(1000);
             if(!mDevice.getCurrentPackageName().contains("tencent")) mDevice.pressBack();
+
+            UiObject2 notReceiveMsg = mDevice.findObject(By.textContains("尚未收到你发送的短信验证码"));
+            if(notReceiveMsg!=null){
+                mDevice.pressBack();
+                System.out.println("doAction--->尚未收到你发送的短信验证码，休息20s");
+                AutoUtil.sleep(20000);
+            }
+
             UiObject2 sendContentUiObj = mDevice.findObject(By.textStartsWith("发送 zc"));
             UiObject2 receiveUiObj = mDevice.findObject(By.textStartsWith("到 "));
             String res = sendPhoneMsg(sendContentUiObj,receiveUiObj);
             UiObject2 nextUiObj = mDevice.findObject(By.text("已发送短信，下一步"));
             int i = 0;
             if("提交成功".equals(res)){
-                while (sendContentUiObj!=null&&i<4){
+                while (nextUiObj!=null&&sendContentUiObj!=null&&i<4){
                     System.out.println("doAction--->点击已发送短信，下一步"+i);
                     nextUiObj.click();
                     sendContentUiObj = mDevice.findObject(By.textStartsWith("发送 zc"));
@@ -473,6 +486,10 @@ public class ExampleInstrumentedTest {
             deviceConfig.setWxid(wxid);
             saveDeviceConfig(deviceConfig);
 
+            mDevice.swipe(222,900,888,900,5);
+            mDevice.swipe(222,700,888,700,10);
+            mDevice.swipe(200,500,888,500,7);
+
             operationDesc = "获取wxid："+wxid;
             isOperationsSucc = true;
         }else if("自定义-长按拍照分享".equals(wni.getOperation())){
@@ -500,7 +517,7 @@ public class ExampleInstrumentedTest {
             System.out.println("doAction---> sendPhoneMsg url-->"+url);
             String resBody = OkHttpUtil.okHttpGet(url);
             System.out.println("doAction--->resBody sendPhoneMsg url-->"+resBody);
-            if(resBody.contains("提交成功")){
+            if(resBody.contains("提交成功")||resBody.contains("号码已发送过zc短信")){
                 resMsg = "提交成功";
             }
         }
@@ -676,8 +693,8 @@ public class ExampleInstrumentedTest {
     public String getNotNullComponentText(UiObject2 obj){
         String result = "";
         try {
-            //System.out.println(" text:"+obj.getText()+" desc:"+obj.getContentDescription());
-            System.out.println("debug--->"+obj.getClassName()+" text:"+obj.getText()+" desc:"+obj.getContentDescription()+" pgName:"+obj.getApplicationPackage()+" resName:"+obj.getResourceName()+" childCount:"+obj.getChildCount()+" isclick:"+obj.isClickable()+" ischeked:"+obj.isChecked());
+            System.out.println(" text:"+obj.getText()+" desc:"+obj.getContentDescription());
+            //System.out.println("debug--->"+obj.getClassName()+" text:"+obj.getText()+" desc:"+obj.getContentDescription()+" pgName:"+obj.getApplicationPackage()+" resName:"+obj.getResourceName()+" childCount:"+obj.getChildCount()+" isclick:"+obj.isClickable()+" ischeked:"+obj.isChecked());
             if(!TextUtils.isEmpty(obj.getText())) result = result+obj.getText()+"|";
             if(!TextUtils.isEmpty(obj.getContentDescription())) result = result+obj.getContentDescription()+"|";
         }catch (Exception e){
