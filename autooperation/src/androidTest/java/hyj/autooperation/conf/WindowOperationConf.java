@@ -33,10 +33,10 @@ public class WindowOperationConf {
         setOps(ops,windowNodeInfo3,nodeInfo31);
         setOps(ops,windowNodeInfo3,nodeInfo32);
 
-        WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","注册","当前所在页面,安全校验","点击开始安全校验");
+        WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","注册","当前所在页面,安全校验","自定义-点击开始安全校验");
         //WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","注册","为了你的帐号安全，本次注册需要进行安全验证码校验","点击开始安全校验");
-        NodeInfo nodeInfo41 = new NodeInfo(1,"","开始","点击开始安全校验");
-        setOps(ops,windowNodeInfo4,nodeInfo41);
+        //NodeInfo nodeInfo41 = new NodeInfo(1,"","开始","点击开始安全校验");
+        setOps(ops,windowNodeInfo4,null);
 
         WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","注册","当前所在页面,微信安全","自定义-过滑块");
         //WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","注册","拖动下方滑块完成拼图","自定义-过滑块");
@@ -86,8 +86,14 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo42 = new WindowNodeInfo("6.6.7","养号","你正在一台新设备登录微信","自定义-登录异常");
         setOps(ops,windowNodeInfo42,null);
 
+        WindowNodeInfo windowNodeInfo43 = new WindowNodeInfo("6.6.7","养号","操作频率过快","自定义-登录异常");
+        setOps(ops,windowNodeInfo43,null);
+
         WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","养号","通讯录|发现","自定义-判断登录成功-结束");
         setOps(ops,windowNodeInfo5,null);
+
+        WindowNodeInfo windowNodeInfo60 = new WindowNodeInfo("6.6.7","养号","看看手机通讯录","自定义-随机界面");
+        setOps(ops,windowNodeInfo60,null);
 
 
         WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","点击发现");

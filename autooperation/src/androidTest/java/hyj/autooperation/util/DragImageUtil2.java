@@ -26,8 +26,14 @@ public class DragImageUtil2 {
         Integer[] result1 = getPic2LocXAndDrapX(bi);
         if(result1[1]==0){
             System.out.println("doAction--->处理154特殊情况");
-            result1[0] = 154;//处理154特殊情况
-            DragImageUtil3 dragImageUtil3 = new DragImageUtil3();
+            result1[0] = pic1X_1+availableWidth/2;//处理154特殊情况
+            DragImageUtil3 dragImageUtil3 = new DragImageUtil3(pic1X_1);
+            result1[1] = dragImageUtil3.bakGetEndX(bi);
+        }
+        if(result1[1]==0){
+            System.out.println("doAction--->处理166特殊情况");
+            result1[0] = pic1X+availableWidth/2;//处理154特殊情况
+            DragImageUtil3 dragImageUtil3 = new DragImageUtil3(pic1X);
             result1[1] = dragImageUtil3.bakGetEndX(bi);
         }
         return result1;

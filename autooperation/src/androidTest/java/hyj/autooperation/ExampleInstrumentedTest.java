@@ -48,6 +48,11 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import hyj.autooperation.common.FilePathCommon;
 import hyj.autooperation.conf.WindowOperationConf;
@@ -94,7 +99,7 @@ public class ExampleInstrumentedTest {
         List<String> autoTypes = new ArrayList<String>();
         autoTypes.add(device.getRunType()==1?"注册":"养号");
         autoTypes.add("发圈");
-        autoTypes.add("提取wxid");
+        //autoTypes.add("提取wxid");
         return autoTypes;
     }
 
@@ -152,6 +157,7 @@ public class ExampleInstrumentedTest {
                 System.out.println("ops-->"+JSON.toJSONString(ops));
                 WindowNodeInfo wni = getWniByWindowText(ops,windowText);
                 if(wni==null){
+                    if(windowText.contains("正在登录...")||windowText.contains("正在载入数据...")||windowText.contains("progressBar")) continue;
                     /**
                      * 处理微信不在当前窗口
                      */
@@ -179,7 +185,7 @@ public class ExampleInstrumentedTest {
                     lastNotNullTime= System.currentTimeMillis();
                 }
                 if(currentWindowNodeInfo.getOperation().equals(wni.getOperation())){
-                    long waitMs = System.currentTimeMillis()-lastNotNullTime;
+                    long waitMs = System.currentTimeMillis()-lastSameOperationTime;
                     if(waitMs>90000){
                         System.out.println("doAction--->静止等待超过90秒，重试");
                         initAuto("retry");
@@ -194,6 +200,7 @@ public class ExampleInstrumentedTest {
                 System.out.println("running-->wni："+JSON.toJSONString(wni));
                 doAction(wni);
                 if("自定义-登录异常".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
+                    updateDeviceConfig("fail"+windowText);
                     initAuto("next");
                 }else if("自定义-注册异常二维码出现".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
                     initAuto("next");
@@ -204,9 +211,7 @@ public class ExampleInstrumentedTest {
                 }
                 else if(wni.getOperation().contains("-结束")&&wni.isWindowOperatonSucc()){
                     if(wni.getOperation().contains("判断登录成功")){
-                        deviceConfig = getDeviceConfig();
-                        deviceConfig.setLoginResult("success");
-                        saveDeviceConfig(deviceConfig);
+                        updateDeviceConfig("success");
                         System.out.println("doAction--->写入登录success标志");
                     }
                     if(otherAutoTypes.size()==1){//等于1，登录成功没有其他动作
@@ -241,6 +246,11 @@ public class ExampleInstrumentedTest {
                 e.printStackTrace();
             }
         }
+    }
+    public void updateDeviceConfig(String msg){
+        deviceConfig = getDeviceConfig();
+        deviceConfig.setLoginResult(msg);
+        saveDeviceConfig(deviceConfig);
     }
     public boolean isMathOperation(String operation){
         boolean flag = false;
@@ -331,8 +341,8 @@ public class ExampleInstrumentedTest {
             }
             operationDesc = "输入账号"+currentWx008Data.getPhone()+"，输入密码"+currentWx008Data.getWxPwd()+"，点击【注册】"+isOperationsSucc+" uosSize:"+(uos==null?"null":uos.size());
         }else if("自定义-过滑块".equals(wni.getOperation())){
-            if(validEnviroment()){
-                //delAllFile();
+            if(validEnviroment()){//008不校验改机
+                delAllFile();
                 AutoUtil.sleep(2000);
                 System.out.println("doAction--->改机成功");
                 /**
@@ -363,6 +373,7 @@ public class ExampleInstrumentedTest {
                 cmdScrrenShot();//截图
                 Bitmap bi = newWaitAndBitmap();
                 Integer[] dragEndX = DragImageUtil2.newGetPic2LocXAndDrapX(bi);
+                //Integer[] dragEndX = DragImageUtil2.getPic2LocXAndDrapX(bi);
                 if(dragEndX[1]>300){
                     Point[] points = getSwipePoints(dragEndX[0],dragEndX[1]+63,50,100,70,5,10,1000,1050);//63为方块半宽度 dragEndX[0] 为拖动点x起始位置  dragEndX[1] 为方块二边沿起始位置
                     System.out.println("doAction--->拖动滑块开始1");
@@ -474,7 +485,9 @@ public class ExampleInstrumentedTest {
             isOperationsSucc = true;
         }else if("自定义-提取wxid-结束".equals(wni.getOperation())){
             UiObject2 uiObject2 = mDevice.findObject(By.textStartsWith("微信号：wxid"));
-            while (uiObject2==null){
+            int count = 0;
+            while (uiObject2==null&&count<5){
+                count = count+1;
                 System.out.println("doAction--->向左滑动");
                 mDevice.swipe(800,800,200,800,5);
                 uiObject2 = mDevice.findObject(By.textStartsWith("微信号：wxid"));
@@ -487,8 +500,11 @@ public class ExampleInstrumentedTest {
             saveDeviceConfig(deviceConfig);
 
             mDevice.swipe(222,900,888,900,5);
+            AutoUtil.sleep(500);
             mDevice.swipe(222,700,888,700,10);
-            mDevice.swipe(200,500,888,500,7);
+            AutoUtil.sleep(500);
+            mDevice.swipe(200,500,888,500,5);
+            AutoUtil.sleep(500);
 
             operationDesc = "获取wxid："+wxid;
             isOperationsSucc = true;
@@ -500,6 +516,17 @@ public class ExampleInstrumentedTest {
                 mDevice.pressBack();
                 isOperationsSucc = false;
             }
+        }else if("自定义-点击开始安全校验".equals(wni.getOperation())){
+            UiObject2 uiObject2 = mDevice.findObject(By.desc("开始"));
+            if(uiObject2==null) mDevice.pressBack();
+            uiObject2.click();
+            operationDesc = "点击 开始安全校验";
+            isOperationsSucc = true;
+        }else if("自定义-随机界面".equals(wni.getOperation())){
+            UiObject2 uiObject2 = mDevice.findObject(By.desc("开始"));
+            mDevice.pressBack();
+            operationDesc = "随机界面 pressBack";
+            isOperationsSucc = true;
         }
         wni.setWindowOperationDesc(operationDesc);
         wni.setWindowOperatonSucc(isOperationsSucc);
@@ -529,7 +556,7 @@ public class ExampleInstrumentedTest {
         String phoneTag = FileUtil.readAllUtf8(FilePathCommon.phoneTagPath);
         String phoneTag008 = TextUtils.isEmpty(currentWx008Data.getPhone())?currentWx008Data.getWxId():currentWx008Data.getPhone();
         System.out.println("phoneTag-->"+phoneTag+" phoneTag008:"+phoneTag008);
-        if(!phoneTag.equals(phoneTag008)){
+        if(!phoneTag.equals(phoneTag008)&&deviceConfig.getIs008Gj()==0){
             LogUtil.login(" exception change phone fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd());
             return false;
         }else {
@@ -693,7 +720,7 @@ public class ExampleInstrumentedTest {
     public String getNotNullComponentText(UiObject2 obj){
         String result = "";
         try {
-            System.out.println(" text:"+obj.getText()+" desc:"+obj.getContentDescription());
+            System.out.println("debug---> text:"+obj.getText()+" desc:"+obj.getContentDescription());
             //System.out.println("debug--->"+obj.getClassName()+" text:"+obj.getText()+" desc:"+obj.getContentDescription()+" pgName:"+obj.getApplicationPackage()+" resName:"+obj.getResourceName()+" childCount:"+obj.getChildCount()+" isclick:"+obj.isClickable()+" ischeked:"+obj.isChecked());
             if(!TextUtils.isEmpty(obj.getText())) result = result+obj.getText()+"|";
             if(!TextUtils.isEmpty(obj.getContentDescription())) result = result+obj.getContentDescription()+"|";
@@ -995,6 +1022,7 @@ public class ExampleInstrumentedTest {
             flag = isConnectInternet();
             System.out.println("doAction-->开启飞行模式-等待网络恢复"+i);
         }
+        deviceConfig.setIpAddress(getIp());
     }
     public void startWx(){
         System.out.println("doAction-->启动微信");
@@ -1006,10 +1034,16 @@ public class ExampleInstrumentedTest {
         startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
         AutoUtil.sleep(1000);
         int i = 0;
+        int waitStartNum=0;
         while (!mDevice.getCurrentPackageName().contains("tencent")||mDevice.findObject(By.text("注册"))==null){
             System.out.println("doAction-->等待微信启动成功");
             AutoUtil.sleep(800);
             if(!mDevice.getCurrentPackageName().contains("tencent")){
+                if(waitStartNum>25){
+                    waitStartNum = 0;
+                    startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+                }
+                waitStartNum = waitStartNum+1;
                 continue;
             }else if(mDevice.findObject(By.text("注册"))==null){
                 AutoUtil.sleep(1000);
@@ -1080,18 +1114,18 @@ public class ExampleInstrumentedTest {
         List<String> cmds = new ArrayList<String>();
         cmds.add("am force-stop com.tencent.mm" );
         cmds.add("pm clear com.tencent.mm" );
-        cmds.add("rm -r -f /data/data/com.tencent.mm/MicroMsg" );
-        cmds.add("rm -r -f /data/data/com.tencent.mm/app_cache" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/MicroMsg" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/app_cache" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/app_dex" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/app_font" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/app_lib" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/app_recover_lib" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/app_tbs" );
-        cmds.add("rm -r -f /data/data/com.tencent.mm/cache" );
-        cmds.add("rm -r -f /data/data/com.tencent.mm/databases" );
-        cmds.add("rm -r -f /data/data/com.tencent.mm/face_detect" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/cache" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/databases" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/face_detect" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/files" );
-        cmds.add("rm -r -f /data/data/com.tencent.mm/shared_prefs" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/shared_prefs" );
         cmds.add("rm -r -f /sdcard/tencent" );
         return cmds;
     }
@@ -1264,6 +1298,7 @@ public class ExampleInstrumentedTest {
             System.out.println("doAction----------------------------------------------------->action:"+lastAction);
             if("点击开启VPN".equals(lastAction)&&waitVpnConn(10)){
                 System.out.println("doAction--->vpn连接成功");
+                deviceConfig.setIpAddress(getIp());
                 mDevice.pressBack();
                 mDevice.pressHome();
                 return;
@@ -1287,7 +1322,7 @@ public class ExampleInstrumentedTest {
                     System.out.println("doAction-->点击开启VPN");
                     if(chs.get(1).isChecked()){
                         chs.get(1).click();
-                        AutoUtil.sleep(800);
+                        AutoUtil.sleep(4800);
                         chs.get(1).click();
                     }else {
                         chs.get(1).click();
@@ -1298,6 +1333,34 @@ public class ExampleInstrumentedTest {
                 }
             }
         }
+    }
+
+    //获取当前ip
+    public String getIp(){
+        ExecutorService threadPool = Executors.newFixedThreadPool(1);
+        Future<String> future =threadPool.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                String ipUrl = "http://pv.sohu.com/cityjson?ie=utf-8";
+                String res = OkHttpUtil.okHttpGet(ipUrl);
+                return res;
+            }
+        });
+        String res = getFuture(future);
+        System.out.println("doAction--->ip res:"+res);
+        return res;
+    }
+
+    public String getFuture(Future<String> future){
+        String res = "";
+        try {
+             res  = future.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 
     public void opentActivity(String acvityName){

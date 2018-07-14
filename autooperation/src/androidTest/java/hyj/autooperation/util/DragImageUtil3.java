@@ -18,11 +18,15 @@ import hyj.autooperation.model.PixPoint;
 public class DragImageUtil3 {
 
     int availableWidth=126;//方块宽度
-    int pic1X = 166;//方块一 x 白色定位
     int pic1X_1 = 154;//方块一 x 白色定位 第二种情况
     int minY=410,maxY=875;
     int pic1_rgb_r_min =230,pic1_rgb_r_max=250;//图片一 方块
     int pic2_minX = 730,pic2_maxX = 840;
+
+    public DragImageUtil3(int pic1X_1){
+        this.pic1X_1 = pic1X_1;
+    }
+
 
 
     public int  bakGetEndX(Bitmap bit) {
@@ -36,6 +40,11 @@ public class DragImageUtil3 {
         }
         if(endX==0) {
             pic1_rgb_r_min =  245;
+            pic1_rgb_r_max = 255;
+            endX = getPic2LocX(bit,pic1X_1,pic1_rgb_r_min,pic1_rgb_r_max);
+        }
+        if(endX==0) {
+            pic1_rgb_r_min =  239;
             pic1_rgb_r_max = 255;
             endX = getPic2LocX(bit,pic1X_1,pic1_rgb_r_min,pic1_rgb_r_max);
         }
