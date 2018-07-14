@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     CheckBox isFeedCheckBox;
     CheckBox loginSucessPauseCheckBox;
     CheckBox isLocalSettingCheckBox;
+    CheckBox gj008CheckBox;
 
     private String[] phoneStrs;
 
@@ -122,6 +124,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loginSucessPauseCheckBox = (CheckBox) this.findViewById(R.id.loginSucessPause);
         loginSucessPauseCheckBox.setChecked("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_LOGIN_PAUSE)) ? true : false);
         loginSucessPauseCheckBox.setOnClickListener(this);
+        //008改机
+        gj008CheckBox = (CheckBox) this.findViewById(R.id.gj008);
+        gj008CheckBox.setChecked("1".equals(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_IS_GJ008)) ? true : false);
+        gj008CheckBox.setOnClickListener(this);
         //综合参数
         editText = (EditText) findViewById(R.id.ext);
         String c = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_EXT);
@@ -272,6 +278,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_HOST, hostEditText.getText().toString());
         //本地配置
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_LOCAL_SETTING, isLocalSettingCheckBox.isChecked() ? "1" : "0");
+        //008改机
+        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_GJ008, gj008CheckBox.isChecked() ? "1" : "0");
         //设备编号
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_DEVICE, deviceEditText.getText().toString());
 
@@ -302,15 +310,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     String host = "http://192.168.1.5:8080";
     public void testMethod() {
-        FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
+        Wx008Data wx008Data = new Wx008Data();
+        wx008Data.setPhone("13384081569");
+        set008Environment(wx008Data);
+       /* FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"");
         //delAllFile();
         final Device device = new Device();
         device.setChangeIpMode(1);
         saveDeviceConfig(device);
+*/
 
-
-        new MonitorStatusThread().start();
+        /*new MonitorStatusThread().start();
 
         new Thread(new Runnable() {
             @Override
@@ -347,9 +358,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 while (true){
                     String tag = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
                     System.out.println("main-->currentSrc:"+JSON.toJSONString(device1)+" 监听环境设置标志:"+tag);
-                    /**
+                    *//**
                      * 环境设置标志
-                     */
+                     *//*
                     if("next".equals(tag)||"retry".equals(tag)){
                         if("注册".equals(1==device1.getRunType())){
                             if(tag.equals("next")){
@@ -419,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
             }
 
-        }).start();
+        }).start();*/
         /*List<String> phones = FileUtil.read008Data("/sdcard/brute9.txt");
         for (String phone : phones) {
             phone = phone.substring(phone.indexOf("--") + 2);
@@ -433,11 +444,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }*/
     }
-    private void delAllFile(){
-       /* File file = new File(FilePathCommon.fkScreenShotPath);
+   /* private void delAllFile(){
+       *//* File file = new File(FilePathCommon.fkScreenShotPath);
         if(file.exists()){
             file.delete();
-        }*/
+        }*//*
         String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
         File[] files = new File(path).listFiles();
         if(files!=null&&files.length>0){
@@ -445,7 +456,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 System.out.println("main-->删除文件："+file.getName()+" "+file.delete());
             }
         }
-    }
+    }*/
     private void delAllScreenshots(){
         String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
         File file = new File(path);
@@ -552,7 +563,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             device = new Device();
             device.setRunState(1);
             device.setRunType(isFeedCheckBox.isChecked()?2:1);//养号 注册
-            device.setChangeIpMode(1);
+            device.setChangeIpMode(isAirChangeIpCheckBox.isChecked()?2:1);
+            device.setIs008Gj(gj008CheckBox.isChecked()?1:0);
 
         }else {
             //服务器获取配置
@@ -613,7 +625,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         */
                        if("next".equals(tag)||"retry".equals(tag)){
                            setWx008Data(tag);
-                           setEnviroment(currentWx008Data);//修改hook文件
+                           if(device.getIs008Gj()==1){
+                               set008Environment(currentWx008Data);
+                           }else {
+                               setEnviroment(currentWx008Data);//修改hook文件
+                           }
                            FileUtil.writeContent2FileForceUtf8(FilePathCommon.wx008DataFilePath,JSON.toJSONString(currentWx008Data));//写入008j数据，供对方用
                            FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"done");
                            System.out.println("main-->doAction--->mainActivity环境和currentData已准备，写入done标志完成");
@@ -624,9 +640,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                        if(!TextUtils.isEmpty(device.getLoginResult())){
                            if(isLocalSettingCheckBox.isChecked()){//本地
                                currentWx008Data.setExpMsg(device.getLoginResult());
-                               currentWx008Data.setWxid19(device.getWxid());
+                               if(TextUtils.isEmpty(currentWx008Data.getWxid19())
+                                       ||(currentWx008Data.getWxid19()!=null&&!currentWx008Data.getWxid19().contains("wxid_"))){
+                                   currentWx008Data.setWxid19(device.getWxid());
+                               }
                                int cn = DaoUtil.updateExpMsg(currentWx008Data,currentWx008Data.getExpMsg()+"-"+AutoUtil.getCurrentDate());
-                               System.out.println("main-->updateExpMsg:"+device.getLoginResult()+" cn:"+cn);
+                               LogUtil.login(loginIndex+" msg:"+currentWx008Data.getExpMsg(),currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+device.getIpAddress());
+                               System.out.println("doAction--->main-->updateExpMsg:"+device.getLoginResult()+" cn:"+cn);
                            }else {//服务器
                                httpRequestService.updateMaintainStatus(currentWx008Data.getId(),0);
                            }
@@ -667,6 +687,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                }
            }
 
+
            private void setEnviroment(Wx008Data currentWx008Data){
                NewPhoneInfo pi = null;
                if(!TextUtils.isEmpty(currentWx008Data.getPhoneStrsAw())){//aw数据
@@ -681,6 +702,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
                FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
            }
+
        }).start();
+    }
+    private void set008Environment(Wx008Data currentWx008Data){
+       File[] files = FileUtil.readFileInFolderByPath(FilePathCommon.sl008DataPath);
+       for(File file:files){
+           System.out.println("main-->008 str fileName:"+file.getName());
+           if(file.getName().equals(currentWx008Data.getPhone()+".txt")){
+               String str = FileUtil.readAllUtf8ByFile(file);
+               FileUtil.writeContent2FileForceUtf8(FilePathCommon.device008TxtPath,str);
+               String strs = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
+               System.out.println("main-->008 str strs:"+strs);
+               break;
+           }
+       }
     }
 }

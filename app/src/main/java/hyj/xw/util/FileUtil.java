@@ -244,6 +244,29 @@ public class FileUtil {
         return str;
     }
 
+    public static String readAllUtf8ByFile(File file) {
+        String str = "";
+        try {
+            String encoding="utf-8";
+            if(file.isFile() && file.exists()){ //判断文件是否存在
+                InputStreamReader read = new InputStreamReader(
+                        new FileInputStream(file),encoding);//考虑到编码格式
+                BufferedReader bufferedReader = new BufferedReader(read);
+                String lineTxt = null;
+                while((lineTxt = bufferedReader.readLine()) != null){
+                    str = str + lineTxt;
+                }
+                read.close();
+            }else{
+                System.out.println("找不到指定的文件");
+            }
+        } catch (Exception e) {
+            System.out.println("读取文件内容出错");
+            e.printStackTrace();
+        }
+        return str;
+    }
+
     public static String readAll1(String path) {
         String str = "";
         try {
@@ -364,5 +387,21 @@ public class FileUtil {
 
     }
 
-
+    //读取文件夹
+    public static File readFolderByPath(String path){
+        File file = new File(path);
+        if(file.exists()){
+            return file;
+        }
+        return null;
+    }
+    //读取文件夹下的所有文件
+    public static File[] readFileInFolderByPath(String path){
+        File file = readFolderByPath(path);
+        if(file!=null){
+            File[] files = file.listFiles();
+            return files;
+        }
+        return null;
+    }
 }

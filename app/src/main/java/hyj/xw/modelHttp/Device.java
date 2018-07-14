@@ -117,6 +117,25 @@ public class Device {
 
     private String loginResult;
     private String wxid;
+    private int is008Gj;//是否008g改机 1 是  0 否
+
+    private String ipAddress;
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public int getIs008Gj() {
+        return is008Gj;
+    }
+
+    public void setIs008Gj(int is008Gj) {
+        this.is008Gj = is008Gj;
+    }
 
     public String getWxid() {
         return wxid;

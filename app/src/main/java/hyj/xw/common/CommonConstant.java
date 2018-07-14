@@ -32,6 +32,7 @@ public class CommonConstant {
 
     public static String APPCONFIG_IS_AIR_CHANGE_IP = "isAirChangeIp";//飞行模式换ip
     public static String APPCONFIG_IS_LOGIN_PAUSE = "isLoginSuccessPause";//登录成功暂停
+    public static String APPCONFIG_IS_GJ008 = "gj008";//008改机
     public static String APPCONFIG_CN_NUM = "cnNum";//国别
     public static String APPCONFIG_API_ID = "apiId";//api账号
     public static String APPCONFIG_API_PWD = "apiPwd";//api密码

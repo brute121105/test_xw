@@ -47,6 +47,15 @@
             android:layout_weight="1"
             android:text="登录暂停"
             android:textSize="18sp" />
+
+        <CheckBox
+            android:id="@+id/gj008"
+            android:textColor="#2E2E2E"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="008"
+            android:textSize="18sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -59,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="本地配置"
+            android:text="单机模式"
             android:textSize="18sp"
             />
         <CheckBox
