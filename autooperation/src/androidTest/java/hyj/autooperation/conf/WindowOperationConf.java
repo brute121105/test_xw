@@ -59,6 +59,9 @@ public class WindowOperationConf {
         NodeInfo nodeInfo101 = new NodeInfo(1,"不是我的，继续注册","","点击不是我的，继续注册");
         setOps(ops,windowNodeInfo10,nodeInfo101);
 
+        WindowNodeInfo windowNodeInfo100 = new WindowNodeInfo("6.6.7","注册","网络错误，请稍后再试","自定义-随机界面");
+        setOps(ops,windowNodeInfo100,null);
+
         /*WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","注册","通讯录|发现","自定义-提取wxid-结束");
         setOps(ops,windowNodeInfo9,null);*/
 
@@ -95,14 +98,20 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo60 = new WindowNodeInfo("6.6.7","养号","看看手机通讯录","自定义-随机界面");
         setOps(ops,windowNodeInfo60,null);
 
+        WindowNodeInfo windowNodeInfo61 = new WindowNodeInfo("6.6.7","养号","如果对方登录成功，本设备将会被强制退出登录","自定义-随机界面");
+        setOps(ops,windowNodeInfo61,null);
 
-        WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","点击发现");
+
+        /*WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","点击发现");
         NodeInfo nodeInfo61 = new NodeInfo(1,"发现","","点击发现");
         setOps(ops,windowNodeInfo6,nodeInfo61);
 
         WindowNodeInfo windowNodeInfo7 = new WindowNodeInfo("6.6.7","发圈","附近的人|朋友圈","点击朋友圈");
         NodeInfo nodeInfo71 = new NodeInfo(1,"朋友圈","","点击朋友圈");
-        setOps(ops,windowNodeInfo7,nodeInfo71);
+        setOps(ops,windowNodeInfo7,nodeInfo71);*/
+
+        WindowNodeInfo windowNodeInfo70 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","自定义-进入朋友圈");
+        setOps(ops,windowNodeInfo70,null);
 
         WindowNodeInfo windowNodeInfo8 = new WindowNodeInfo("6.6.7","发圈","轻触更换主题照片|拍照分享","自定义-长按拍照分享");
         setOps(ops,windowNodeInfo8,null);
