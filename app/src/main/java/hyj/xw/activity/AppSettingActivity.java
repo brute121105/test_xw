@@ -13,12 +13,14 @@ import com.alibaba.fastjson.JSON;
 import java.io.File;
 import java.util.List;
 
+import hyj.xw.GlobalApplication;
 import hyj.xw.R;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
+import hyj.xw.service.HttpRequestService;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.FileUtil;
@@ -54,6 +56,9 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
         import62Btn.setOnClickListener(this);
         deleteIndexBtn.setOnClickListener(this);
         updatePwdBtn.setOnClickListener(this);
+        //上传数据
+        Button uploadDataBtn = (Button)this.findViewById(R.id.uploadData);
+        uploadDataBtn.setOnClickListener(this);
     }
 
     @Override
@@ -77,8 +82,50 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
             case R.id.btn_update_pwd:
                 updatePwd();
                 break;
+            case R.id.uploadData:
+                uploadData();
+                break;
         }
     }
+    private void uploadData(){
+        final String indexStr = delteIndexEdt.getText().toString();
+        final int startIndex,endIndex;
+        if(indexStr.indexOf("-")>-1){
+            String[] indexArr = indexStr.split("-");
+            startIndex = Integer.parseInt(indexArr[0]);
+            endIndex = Integer.parseInt(indexArr[1]);
+            if(startIndex>endIndex){
+                Toast.makeText(AppSettingActivity.this,"开始序号大于结束序号",Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }else {
+            Toast.makeText(AppSettingActivity.this,"序号格式不错误，必须包含-，例如：5-20",Toast.LENGTH_LONG).show();
+            return;
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpRequestService service = new HttpRequestService();
+                List<Wx008Data> wx008Datas = DaoUtil.findByDataBydataFlag();
+                int uploadCn=0,failCn = 0;
+                for(int i=0,l=wx008Datas.size();i<l;i++){
+                    if(i>=startIndex&&i<=endIndex){
+                        Wx008Data wx008Data = wx008Datas.get(i);
+                        wx008Data.setId(null);
+                        String str = service.uploadPhoneData(JSON.toJSONString(wx008Data));
+                        System.out.println("upload res--->"+str);
+                        if(str.contains("成功")){
+                            uploadCn = uploadCn+1;
+                        }else {
+                            failCn = failCn+1;
+                        }
+                    }
+                }
+                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"上传序号"+indexStr+"之间：成功"+uploadCn+" 条，失败："+failCn+"条");
+            }
+        }).start();
+    }
+
     private void importAppConfig(){
         File file = new File("/sdcard/A_hyj_json/appConfig/");
         File[] files = file.listFiles();

@@ -23,6 +23,7 @@ public class FilePathCommon {
     public static final String wx008DataFilePath;
     public static final String startRunninConfigTxtPath;
     public static final String device008TxtPath;
+    public static final String stopTxtPath;
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
         baseAppPathAW= Environment.getExternalStorageDirectory().getAbsolutePath()+"/.money/";
@@ -35,6 +36,7 @@ public class FilePathCommon {
         phoneTagPath=baseAppPath+"/hk/phoneTag.txt";
         fkFilePath = baseAppPath+"/fangkuai.txt";
         fkScreenShotPath = baseAppPath+"/fangkuai.png";
+        stopTxtPath = baseAppPath+"/stop.txt";
         setEnviromentFilePath = baseAppPath+"/enviroment.txt";
         wx008DataFilePath = baseAppPath+"/wx008Data.txt";
         startRunninConfigTxtPath = baseAppPath+"/startRunningConfig.txt";

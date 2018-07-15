@@ -8,23 +8,81 @@
     android:theme="@android:style/Theme.Black.NoTitleBar"
     tools:context="hyj.xw.MainActivity">
 
-    <TextView
-        android:visibility="gone"
-        android:text="服务器地址"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#2E2E2E"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/host"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_weight="1"
+            android:text="帐号"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#2E2E2E"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:layout_weight="2"
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/deviceNum"
-        android:hint="设备编号"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_weight="1"
+            android:text="密码"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#2E2E2E"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:layout_weight="2"
+            android:id="@+id/password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_weight="1"
+            android:text="服务器地址"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#2E2E2E"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:layout_weight="2"
+            android:id="@+id/host"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_weight="1"
+            android:text="设备编号"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#2E2E2E"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:layout_weight="2"
+            android:id="@+id/deviceNum"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -279,6 +337,7 @@
         android:textSize="18sp" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/open_assist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

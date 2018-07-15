@@ -9,24 +9,28 @@
     tools:context="hyj.xw.activity.AppSettingActivity">
 
     <Button
+        android:visibility="gone"
         android:id="@+id/btn_export_config"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="导出配置"
         android:textSize="18sp" />
     <Button
+        android:visibility="gone"
         android:id="@+id/btn_import_config"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="导入配置"
         android:textSize="18sp" />
     <Button
+        android:visibility="gone"
         android:id="@+id/btn_kill_app"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="杀死进程"
         android:textSize="18sp" />
     <Button
+        android:visibility="gone"
         android:id="@+id/btn_import_62"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,6 +40,12 @@
         android:id="@+id/edt_delte_index"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/uploadData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="上传数据"
+        android:textSize="18sp" />
     <Button
         android:id="@+id/btn_delete_data_index"
         android:layout_width="match_parent"

@@ -7,9 +7,9 @@
     android:layout_height="match_parent"
     android:theme="@android:style/Theme.Black.NoTitleBar"
     tools:context="hyj.xw.activity.DataImpExpActivity">
-
+   <!-- \n2、a数据存放目录：azy/dataA\n3、62数据存放目录：azy/data62\n4、账号密码存放目录：azy/dataZH-->
     <TextView
-        android:text="导入数据前把数据放到相应目录\n1、备份数据存放目录：azy/dataBF\n2、a数据存放目录：azy/dataA\n3、62数据存放目录：azy/data62\n4、账号密码存放目录：azy/dataZH"
+        android:text="导入数据前把数据放到相应目录\n1、备份数据存放目录：azy/dataBF"
         android:textSize="20sp"
         android:textColor="#2E2E2E"
         android:layout_width="wrap_content"
@@ -37,6 +37,7 @@
 
 
     <LinearLayout
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -58,6 +59,7 @@
 
 
     <LinearLayout
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -78,6 +80,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText cnNumEditText;
     EditText hostEditText;
     EditText deviceEditText;
+    EditText usernameEditText;
+    EditText passwordEditText;
     CheckBox isAirChangeIpCheckBox;
     CheckBox isFeedCheckBox;
     CheckBox loginSucessPauseCheckBox;
@@ -135,11 +137,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //服务器地址
         hostEditText = (EditText) findViewById(R.id.host);
         String hostValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_HOST);
-        hostEditText.setText(TextUtils.isEmpty(hostValue) ? "192.168.1.5:8080" : hostValue);
+        hostEditText.setText(TextUtils.isEmpty(hostValue) ? "120.78.134.230:8080" : hostValue);
         //设备编号
         deviceEditText = (EditText) findViewById(R.id.deviceNum);
         String deviceNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_DEVICE);
         deviceEditText.setText(TextUtils.isEmpty(deviceNum) ? "" : deviceNum);
+        //帐号
+        usernameEditText = (EditText) findViewById(R.id.username);
+        String username = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_USERNAME);
+        usernameEditText.setText(TextUtils.isEmpty(username) ? "" : username);
+        //密码
+        passwordEditText = (EditText) findViewById(R.id.password);
+        String password = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_PWD);
+        passwordEditText.setText(TextUtils.isEmpty(password) ? "" : password);
         //国别
         cnNumEditText = (EditText) findViewById(R.id.cnNum);
         String cnNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_CN_NUM);
@@ -191,14 +201,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button startUiAuto = (Button) this.findViewById(R.id.start_uiAuto);
         startUiAuto.setOnClickListener(this);
 
-        //AutoUtil.addPhoneContacts("zz","12365489658");
-        // AutoUtil.addPhoneContacts("zz1","12365489658");
-        //getSysLanguage();
-        //DeviceParamUtil.getAwPhoneInfo();
-        //PhoneConf.getAddFrWx();
-        //System.out.println("mac-->"+AutoUtil.getLocalMacAddress());
-        //GetPhoneInfoUtil.getEnvironmentAwData();
-        //DaoUtil.readFilePhoneAndPwdUpdate2Db();
     }
 
     @Override
@@ -282,6 +284,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_GJ008, gj008CheckBox.isChecked() ? "1" : "0");
         //设备编号
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_DEVICE, deviceEditText.getText().toString());
+        //帐号
+        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_USERNAME, usernameEditText.getText().toString());
+        //密码
+        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_PWD, passwordEditText.getText().toString());
 
     }
 
@@ -308,129 +314,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath, JSON.toJSONString(device));
     }
 
-    String host = "http://192.168.1.5:8080";
     public void testMethod() {
-        Wx008Data wx008Data = new Wx008Data();
-        wx008Data.setPhone("13384081569");
-        set008Environment(wx008Data);
-       /* FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
-        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"");
-        //delAllFile();
-        final Device device = new Device();
-        device.setChangeIpMode(1);
-        saveDeviceConfig(device);
-*/
-
-        /*new MonitorStatusThread().start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("main-->start========");
-                AutoUtil.execShell("am force-stop hyj.autooperation");
-                AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.autooperation.ExampleInstrumentedTest#useAppContext hyj.autooperation.test/android.support.test.runner.AndroidJUnitRunner");
-            }
-        }).start();
-
-        final HttpRequestService httpRequestService = new HttpRequestService();
-
-
-        new Thread(new Runnable() {
-            int loginIndex=0;
-            @Override
-            public void run() {
-                Device device1 = getDeviceConfig();
-                List<Wx008Data> wx008Datas=null ;
-                Wx008Data currentWx008Data=null;//当前运行wx数据
-                if(1==device1.getRunType()){//注册
-                    System.out.println("main-->doAction---> 开始..获取一份新改机wxData并保存");
-                    currentWx008Data = PhoneConf.createRegData();;//当前运行wx数据
-                    currentWx008Data.save();
-                }else if(2==device1.getRunType()) {//养号
-                    if(isLocalSettingCheckBox.isChecked()){
-                        loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
-                        wx008Datas = DaoUtil.getWx008Datas();
-                        currentWx008Data = wx008Datas.get(loginIndex);
-                    }else {
-                        currentWx008Data = httpRequestService.getMaintainData();
-                    }
-                }
-                while (true){
-                    String tag = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
-                    System.out.println("main-->currentSrc:"+JSON.toJSONString(device1)+" 监听环境设置标志:"+tag);
-                    *//**
-                     * 环境设置标志
-                     *//*
-                    if("next".equals(tag)||"retry".equals(tag)){
-                        if("注册".equals(1==device1.getRunType())){
-                            if(tag.equals("next")){
-                                currentWx008Data = PhoneConf.createRegData();
-                                currentWx008Data.save();
-                                System.out.println("main-->doAction--->获取一份新改机wxData并保存");
-                            }
-                        }else if("养号".equals(2==device1.getRunType())) {
-                            if(tag.equals("next")){
-                                if(isLocalSettingCheckBox.isChecked()){
-                                    doNextIndexAndRecord2DB();
-                                    currentWx008Data = wx008Datas.get(loginIndex);
-                                    System.out.println("main-->doAction--->loginIndex+1 获取下一个");
-                                }else {
-                                    currentWx008Data = httpRequestService.getMaintainData();
-                                }
-                            }
-                        }
-                        setEnviroment(currentWx008Data);//修改hook文件
-                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.wx008DataFilePath,JSON.toJSONString(currentWx008Data));//写入008j数据，供对方用
-                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"done");
-                        System.out.println("main-->doAction--->mainActivity环境和currentData已准备，写入done标志完成");
-                    }
-                     device1 = getDeviceConfig();
-                     if(!TextUtils.isEmpty(device1.getLoginResult())){
-                         if(isLocalSettingCheckBox.isChecked()){//本地
-                             currentWx008Data.setExpMsg(device1.getLoginResult());
-                             int cn = DaoUtil.updateExpMsg(currentWx008Data,currentWx008Data.getExpMsg()+"-"+AutoUtil.getCurrentDate());
-                             System.out.println("main-->updateExpMsg:"+device1.getLoginResult()+" cn:"+cn);
-                         }else {//服务器
-                             httpRequestService.updateMaintainStatus(currentWx008Data.getId(),0);
-                         }
-                         device1.setLoginResult("");
-                         saveDeviceConfig(device1);
-                     }
-                }
-            }
-
-            private File waitAndGetFile(){
-                String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
-                File picFile = null;
-                File[] files = new File(path).listFiles();
-                if(files!=null&&files.length>0){
-                    picFile = files[files.length-1];
-                }
-                return picFile;
-            }
-
-            private void doNextIndexAndRecord2DB(){
-                int endLoginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_END_LOGIN_INDEX));
-                System.out.println("errRecord loginIndex-->"+loginIndex);
-                loginIndex = loginIndex+1;
-                AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
-            }
-            private void setEnviroment(Wx008Data currentWx008Data){
-                NewPhoneInfo pi = null;
-                if(!TextUtils.isEmpty(currentWx008Data.getPhoneStrsAw())){//aw数据
-                    pi = JSON.parseObject(currentWx008Data.getPhoneStrsAw(),NewPhoneInfo.class);
-                    if(TextUtils.isEmpty(pi.getRgPhoneNo())){
-                        pi.setRgPhoneNo(pi.getLine1Number());
-                    }
-                }else {
-                    pi = PhoneConf.xw2awData(currentWx008Data);
-                }
-                pi.setCpuName(pi.getCpuName().trim().toLowerCase());
-                CreatePhoneEnviroment.create(GlobalApplication.getContext(),pi);
-                FileUtil.writeContent2FileForceUtf8(FilePathCommon.baseAppPathAW,FilePathCommon.npiFileName, JSON.toJSONString(pi));
-            }
-
-        }).start();*/
+        set008Data();
         /*List<String> phones = FileUtil.read008Data("/sdcard/brute9.txt");
         for (String phone : phones) {
             phone = phone.substring(phone.indexOf("--") + 2);
@@ -444,19 +329,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }*/
     }
-   /* private void delAllFile(){
-       *//* File file = new File(FilePathCommon.fkScreenShotPath);
-        if(file.exists()){
-            file.delete();
-        }*//*
-        String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
-        File[] files = new File(path).listFiles();
-        if(files!=null&&files.length>0){
-            for(File file:files){
-                System.out.println("main-->删除文件："+file.getName()+" "+file.delete());
-            }
-        }
-    }*/
+
     private void delAllScreenshots(){
         String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
         File file = new File(path);
@@ -537,26 +410,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void testConn(){
-        delAllScreenshots();
+        save();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("testConn OkHttpUtil deviceConnectServer url--->2");
-                String deviceNum = deviceEditText.getText().toString();
-                if(TextUtils.isEmpty(deviceNum)){
-                    AutoUtil.showToastByRunnable(MainActivity.this,"设备编号不能为空");
-                    return;
+                try {
+                    String deviceNum = deviceEditText.getText().toString();
+                    if(TextUtils.isEmpty(deviceNum)){
+                        AutoUtil.showToastByRunnable(MainActivity.this,"设备编号不能为空");
+                        return;
+                    }
+                    HttpRequestService httpRequestService = new HttpRequestService();
+                    String loginRes = httpRequestService.login();
+                    if(!"成功".equals(loginRes)){
+                        AutoUtil.showToastByRunnable(MainActivity.this,loginRes);
+                        return;
+                    }
+                    String res = httpRequestService.deviceConnectServer();
+                    AutoUtil.showToastByRunnable(MainActivity.this,res);
+                }catch (Exception e){
+                    AutoUtil.showToastByRunnable(MainActivity.this,"参数异常，核对填写是否正确");
+                    e.printStackTrace();
                 }
-                HttpRequestService httpRequestService = new HttpRequestService();
-                String res = httpRequestService.deviceConnectServer(deviceNum);
-                System.out.println("testConn OkHttpUtil deviceConnectServer res--->"+res);
-                AutoUtil.showToastByRunnable(MainActivity.this,res);
-                System.out.println("testConn OkHttpUtil deviceConnectServer url--->2");
             }
         }).start();
     }
 
-    public void initDeviceConfig2Txt(){
+    public String initDeviceConfig2Txt(){
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"");
+        String result = "";
         Device device = null;
         if(isLocalSettingCheckBox.isChecked()){
             //本地配置
@@ -564,44 +447,72 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             device.setRunState(1);
             device.setRunType(isFeedCheckBox.isChecked()?2:1);//养号 注册
             device.setChangeIpMode(isAirChangeIpCheckBox.isChecked()?2:1);
-            device.setIs008Gj(gj008CheckBox.isChecked()?1:0);
+            device.setHookType(gj008CheckBox.isChecked()?2:1);
+            FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,"1");//暂停标志 1、正常；2、暂停
 
         }else {
             //服务器获取配置
             String deviceNum = deviceEditText.getText().toString();
             if(TextUtils.isEmpty(deviceNum)){
-                AutoUtil.showToastByRunnable(MainActivity.this,"设备编号不能为空");
-                return;
+                result = "设备编号不能为空";
+                AutoUtil.showToastByRunnable(MainActivity.this,result);
+                return result;
             }
             HttpRequestService httpRequestService = new HttpRequestService();
             String res = httpRequestService.getStartConifgFromServer(deviceNum);
-            if(TextUtils.isEmpty(res)||res.contains("data")){
-                AutoUtil.showToastByRunnable(MainActivity.this,"1、获取服务器配置信息失败\n"+res);
-                return;
+            if(TextUtils.isEmpty(res)||!res.contains("data")){
+                result = "1、获取服务器配置信息失败\n"+res;
+                AutoUtil.showToastByRunnable(MainActivity.this,result);
+                return result;
             }
             ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+            System.out.println("OkHttpUtil getStartConifgFromServer responseData--->"+JSON.toJSONString(responseData));
             device = JSONObject.parseObject(responseData.getData(),Device.class);
             if(device==null||TextUtils.isEmpty(device.getNum())){
-                AutoUtil.showToastByRunnable(MainActivity.this,"2、获取服务器配置信息失败\n"+res);
-                return;
+                result = "2、获取服务器配置信息失败\n"+res;
+                AutoUtil.showToastByRunnable(MainActivity.this,result);
+                return result;
             }
             System.out.println("OkHttpUtil getStartConifgFromServer device--->"+JSON.toJSONString(device));
         }
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,device.getRunState()+"");//暂停标志 1、正常；2、暂停
         saveDeviceConfig(device);
+        return result;
     }
 
     public void startUiAuto(){
-        //初始化配置信息
-        initDeviceConfig2Txt();
-
         new Thread(new Runnable() {
             @Override
             public void run() {
                 System.out.println("main-->start========");
+                //初始化配置信息
+                String result = initDeviceConfig2Txt();
+                if(!"".equals(result)) return;
                 AutoUtil.execShell("am force-stop hyj.autooperation");
                 AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.autooperation.ExampleInstrumentedTest#useAppContext hyj.autooperation.test/android.support.test.runner.AndroidJUnitRunner");
             }
         }).start();
+
+        //暂停标准监测
+        class StopThread extends Thread{
+            @Override
+            public void run() {
+                HttpRequestService httpRequestService = new HttpRequestService();
+                String deviceNum = deviceEditText.getText().toString();
+                while (true){
+                    AutoUtil.sleep(1500);
+                    try {
+                        String res = httpRequestService.getStartConifgFromServer(deviceNum);
+                        ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+                        Device device = JSONObject.parseObject(responseData.getData(),Device.class);
+                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,device.getRunState()+"");//暂停标志 1、正常；2、暂停
+                        System.out.println("StopThread-->runState:"+device.getRunState());
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
 
        new Thread(new Runnable() {
            HttpRequestService httpRequestService = new HttpRequestService();
@@ -611,8 +522,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
            Wx008Data currentWx008Data=null;
            @Override
            public void run() {
-               FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
-               FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"");
+               if(!isLocalSettingCheckBox.isChecked()) new StopThread().start();
                //delAllFile();
                while (true){
                    try {
@@ -624,8 +534,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         * 获取008数据并 环境设置标志
                         */
                        if("next".equals(tag)||"retry".equals(tag)){
-                           setWx008Data(tag);
-                           if(device.getIs008Gj()==1){
+                           setWx008Data(tag);//获取008数据
+                           if(device.getHookType()==2){
                                set008Environment(currentWx008Data);
                            }else {
                                setEnviroment(currentWx008Data);//修改hook文件
@@ -638,19 +548,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         * 回写登录结果
                         */
                        if(!TextUtils.isEmpty(device.getLoginResult())){
-                           if(isLocalSettingCheckBox.isChecked()){//本地
-                               currentWx008Data.setExpMsg(device.getLoginResult());
-                               if(TextUtils.isEmpty(currentWx008Data.getWxid19())
-                                       ||(currentWx008Data.getWxid19()!=null&&!currentWx008Data.getWxid19().contains("wxid_"))){
-                                   currentWx008Data.setWxid19(device.getWxid());
-                               }
-                               int cn = DaoUtil.updateExpMsg(currentWx008Data,currentWx008Data.getExpMsg()+"-"+AutoUtil.getCurrentDate());
-                               LogUtil.login(loginIndex+" msg:"+currentWx008Data.getExpMsg(),currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+device.getIpAddress());
-                               System.out.println("doAction--->main-->updateExpMsg:"+device.getLoginResult()+" cn:"+cn);
-                           }else {//服务器
-                               httpRequestService.updateMaintainStatus(currentWx008Data.getId(),0);
+                           currentWx008Data.setExpMsg(device.getLoginResult());
+                           System.out.println("doAction---main-device.getid:"+device.getWxid());
+                           if(TextUtils.isEmpty(currentWx008Data.getWxid19())&&TextUtils.isEmpty(device.getWxid())){
+                               System.out.println("doAction---main-device.getid:原本不存在");
+                               currentWx008Data.setWxid19(device.getWxid());
                            }
+                           int cn = DaoUtil.updateExpMsg(currentWx008Data,currentWx008Data.getExpMsg()+"-"+AutoUtil.getCurrentDate());
+                           String recordTxt = loginIndex+" msg:"+currentWx008Data.getExpMsg()+" "+currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+device.getIpAddress();
+                           LogUtil.login("",recordTxt);
+                           System.out.println("doAction--->main-->updateExpMsg:"+device.getLoginResult()+" cn:"+cn+" recordTxt:"+recordTxt);
+                           if(!isLocalSettingCheckBox.isChecked()){//服务器
+                               if(device.getRunType()==2){
+                                   String res = httpRequestService.updateMaintainStatus(currentWx008Data.getId(),0);
+                                   System.out.println("doAction--->修改维护状态res："+res);
+                               }else if(device.getRunType()==1){
+                                   String res = httpRequestService.uploadPhoneData(JSON.toJSONString(currentWx008Data));
+                                   System.out.println("doAction--->注册完成上传数据res："+res);
+                               }
+                           }
+                           device.setWxid("");
                            device.setLoginResult("");
+                           device.setIpAddress("");
                            saveDeviceConfig(device);
                        }
                    }catch (Exception e){
@@ -680,8 +599,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                            AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
                            currentWx008Data = wx008Datas.get(loginIndex);
                        }
+                       System.out.println("doAction--->获取本地维护数据:"+JSON.toJSONString(currentWx008Data));
                    }else {
                        currentWx008Data = httpRequestService.getMaintainData();
+                       System.out.println("doAction--->获取远程维护数据:"+JSON.toJSONString(currentWx008Data));
                    }
 
                }
@@ -706,16 +627,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        }).start();
     }
     private void set008Environment(Wx008Data currentWx008Data){
-       File[] files = FileUtil.readFileInFolderByPath(FilePathCommon.sl008DataPath);
-       for(File file:files){
-           System.out.println("main-->008 str fileName:"+file.getName());
-           if(file.getName().equals(currentWx008Data.getPhone()+".txt")){
-               String str = FileUtil.readAllUtf8ByFile(file);
-               FileUtil.writeContent2FileForceUtf8(FilePathCommon.device008TxtPath,str);
-               String strs = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
-               System.out.println("main-->008 str strs:"+strs);
-               break;
-           }
-       }
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.device008TxtPath,currentWx008Data.getPhoneStrs());
+        String strs = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
+        System.out.println("main-->008 str strs:"+strs);
     }
+    private void set008Data(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpRequestService service = new HttpRequestService();
+                Wx008Data wx008Data0 = service.getMaintainData();
+                System.out.println("HttpRequestService-->get ser:"+wx008Data0.getPhoneStrs());
+                List<Wx008Data> wx008Datas = DaoUtil.findByDataBydataFlag();
+                System.out.println("HttpRequestService-->get bd:"+wx008Datas.get(0).getPhoneStrs());
+            }
+        }).start();
+    }
+
 }

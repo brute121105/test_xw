@@ -117,9 +117,23 @@ public class Device {
 
     private String loginResult;
     private String wxid;
-    private int is008Gj;//是否008g改机 1 是  0 否
+    private int hookType;//1 内部 2 008
 
     private String ipAddress;
+
+    /**
+     * 提取微信id：1、不提取，2、提取
+     */
+    private Integer extractWxId;
+
+
+    public Integer getExtractWxId() {
+        return extractWxId;
+    }
+
+    public void setExtractWxId(Integer extractWxId) {
+        this.extractWxId = extractWxId;
+    }
 
     public String getIpAddress() {
         return ipAddress;
@@ -129,12 +143,13 @@ public class Device {
         this.ipAddress = ipAddress;
     }
 
-    public int getIs008Gj() {
-        return is008Gj;
+
+    public int getHookType() {
+        return hookType;
     }
 
-    public void setIs008Gj(int is008Gj) {
-        this.is008Gj = is008Gj;
+    public void setHookType(int hookType) {
+        this.hookType = hookType;
     }
 
     public String getWxid() {
