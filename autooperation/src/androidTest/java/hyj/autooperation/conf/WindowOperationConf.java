@@ -19,7 +19,7 @@ public class WindowOperationConf {
     public static Map<String,WindowNodeInfo> getOperations1(){
         Map<String,WindowNodeInfo> ops = new HashMap<String,WindowNodeInfo>();
 
-        WindowNodeInfo windowNodeInfo1 = new WindowNodeInfo("6.6.7","注册","注册|登录","点击注册1");
+        WindowNodeInfo windowNodeInfo1 = new WindowNodeInfo("6.6.7","注册","注册|语言","点击注册1");
         NodeInfo nodeInfo11 = new NodeInfo(1,"注册","","点击注册1");
         setOps(ops,windowNodeInfo1,nodeInfo11);
 
@@ -59,7 +59,7 @@ public class WindowOperationConf {
         NodeInfo nodeInfo101 = new NodeInfo(1,"不是我的，继续注册","","点击不是我的，继续注册");
         setOps(ops,windowNodeInfo10,nodeInfo101);
 
-        WindowNodeInfo windowNodeInfo100 = new WindowNodeInfo("6.6.7","注册","网络错误，请稍后再试","自定义-随机界面");
+        WindowNodeInfo windowNodeInfo100 = new WindowNodeInfo("6.6.7","注册","网络错误，请稍后再试","自定义-网络错误");
         setOps(ops,windowNodeInfo100,null);
 
         /*WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","注册","通讯录|发现","自定义-提取wxid-结束");
@@ -70,7 +70,7 @@ public class WindowOperationConf {
     public static Map<String,WindowNodeInfo> getOperations(){
         Map<String,WindowNodeInfo> ops = new HashMap<String,WindowNodeInfo>();
 
-        WindowNodeInfo windowNodeInfo1 = new WindowNodeInfo("6.6.7","养号","注册|登录","点击登录1");
+        WindowNodeInfo windowNodeInfo1 = new WindowNodeInfo("6.6.7","养号","注册|语言","点击登录1");
         NodeInfo nodeInfo11 = new NodeInfo(1,"登录","","点击登录1");
         setOps(ops,windowNodeInfo1,nodeInfo11);
 
@@ -92,6 +92,9 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo43 = new WindowNodeInfo("6.6.7","养号","操作频率过快","自定义-登录异常");
         setOps(ops,windowNodeInfo43,null);
 
+        WindowNodeInfo windowNodeInfo44 = new WindowNodeInfo("6.6.7","养号","该微信帐号因批量","自定义-登录异常");
+        setOps(ops,windowNodeInfo44,null);
+
         WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","养号","通讯录|发现","自定义-判断登录成功-结束");
         setOps(ops,windowNodeInfo5,null);
 
@@ -100,6 +103,9 @@ public class WindowOperationConf {
 
         WindowNodeInfo windowNodeInfo61 = new WindowNodeInfo("6.6.7","养号","如果对方登录成功，本设备将会被强制退出登录","自定义-随机界面");
         setOps(ops,windowNodeInfo61,null);
+
+        WindowNodeInfo windowNodeInfo62 = new WindowNodeInfo("6.6.7","养号","微信团队邀请你参与内部体验","自定义-随机界面");
+        setOps(ops,windowNodeInfo62,null);
 
 
         /*WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","点击发现");

@@ -22,7 +22,7 @@ public class IpNetThread extends Thread {
         String ipMsg = "";
         int cn = 0;
         String postBody = "{\"name\":\"lisi\",\"password\":\"李四\"}";//json数据.
-        String res  = OkHttpUtil.okHttpPostBody(ipUrl,postBody);
-        System.out.println("res-->"+res);
+        //String res  = OkHttpUtil.okHttpPostBody(ipUrl,postBody);
+        //System.out.println("res-->"+res);
     }
 }

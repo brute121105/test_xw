@@ -53,6 +53,14 @@ public class LogUtil {
         String fileName = "bakData_"+dateTime+".txt";
         FileUtil.writeContent2File(path,fileName,msg);
     }
+
+    //记录008数据到sd卡
+    public static void logMyError(String path,String msg){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String dateTime = sdf.format(new Date());
+        String fileName = "error_"+dateTime+".txt";
+        FileUtil.writeContent2File(path,fileName,msg);
+    }
     //记录008数据到sd卡
     public static void exportAWUtf8(String path,String msg){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");

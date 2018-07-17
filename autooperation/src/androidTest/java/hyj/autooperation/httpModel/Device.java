@@ -119,7 +119,16 @@ public class Device {
 
     private String wxid;
 
-    private String ipAddress;
+    private String ipAddress;//本次ip
+    private String lastIpAddress;//上次ip
+
+    public String getLastIpAddress() {
+        return lastIpAddress;
+    }
+
+    public void setLastIpAddress(String lastIpAddress) {
+        this.lastIpAddress = lastIpAddress;
+    }
 
     public String getIpAddress() {
         return ipAddress;
@@ -135,6 +144,34 @@ public class Device {
      * 提取微信id：1、不提取，2、提取
      */
     private Integer extractWxId;
+
+    private String host;//后台地址
+    private String token;
+    private String username;//api用户名
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public int getHookType() {
         return hookType;

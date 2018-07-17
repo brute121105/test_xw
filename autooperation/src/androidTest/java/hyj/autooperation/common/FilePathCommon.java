@@ -23,12 +23,15 @@ public class FilePathCommon {
     public static final String wx008DataFilePath;
     public static final String startRunninConfigTxtPath;
     public static final String stopTxtPath;
+    public static final String logErrorPath;
+
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
         baseAppPathAW= Environment.getExternalStorageDirectory().getAbsolutePath()+"/.money/";
         npiFileName = "PhoneInfo.aw";
         importDataAPath=baseAppPath+"/dataA/";
         dataBakPath=baseAppPath+"/dataBF/";
+        logErrorPath=baseAppPath+"/error/";
         importData008Path=baseAppPath+"/data008/";
         sl008DataPath=baseAppPath+"/data008/下载机型/";
         sl008DataPwdPath=baseAppPath+"/data008/pwd.txt";

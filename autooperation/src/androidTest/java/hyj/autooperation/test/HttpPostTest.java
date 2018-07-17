@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,9 +45,11 @@ import java.util.Random;
 
 import hyj.autooperation.common.FilePathCommon;
 import hyj.autooperation.conf.WindowOperationConf;
+import hyj.autooperation.httpModel.Device;
 import hyj.autooperation.model.NodeInfo;
 import hyj.autooperation.model.WindowNodeInfo;
 import hyj.autooperation.model.Wx008Data;
+import hyj.autooperation.service.HttpRequestService;
 import hyj.autooperation.util.AutoUtil;
 import hyj.autooperation.util.DragImageUtil2;
 import hyj.autooperation.util.FileUtil;
@@ -68,8 +71,11 @@ public class HttpPostTest {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                //login();
-                upLoad();
+                String deviceConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
+                Device deviceConfig = JSONObject.parseObject(deviceConfigStr,Device.class);
+                HttpRequestService httpRequestService = new HttpRequestService(deviceConfig);
+                String res = httpRequestService.sendSms("13265987433","1","test");
+                System.out.println("res-->"+res);
             }
         }).start();
     }
@@ -80,7 +86,7 @@ public class HttpPostTest {
         //OkHttpUtil.uploadMultiFile(url,"/sdcard","fangkuai.png");
     }
 
-    public void upLoad(){
+   /* public void upLoad(){
         String url =host+"/commons/pic-loc";
         System.out.println("OkHttpUtil url---->"+url);
         File file = new File("/sdcard/fangkuai.png");
@@ -94,5 +100,5 @@ public class HttpPostTest {
         System.out.println("OkHttpUtil postBody---->"+postBody);
         String res  = OkHttpUtil.okHttpPostBody(url,postBody);
         System.out.println("OkHttpUtil res---->"+res);
-    }
+    }*/
 }
