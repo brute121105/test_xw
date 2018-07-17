@@ -12,6 +12,7 @@ import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.model.PhoneInfo;
 import hyj.xw.model.PixPoint;
 import hyj.xw.modelHttp.Device;
+import hyj.xw.modelHttp.PhoneQueryVO;
 import hyj.xw.modelHttp.ResponseData;
 import hyj.xw.util.OkHttpUtil;
 import okhttp3.MediaType;
@@ -58,7 +59,62 @@ public class HttpRequestService {
         System.out.println("HttpRequestService result---->"+result);
        return result;
     }
+    //获取手机号
+    public String getPhone(String domain){
+        String result = "";
+        try {
+            PhoneQueryVO phoneQueryVO = new PhoneQueryVO(username,deviceNum);
+            phoneQueryVO.setDomain(domain);
+            String reqBody = JSON.toJSONString(phoneQueryVO);
+            String url =host+"/phone/query";
+            System.out.println("HttpRequestService getPhone url-->"+url);
+            System.out.println("HttpRequestService getPhone reqBody-->"+reqBody);
+            String res = OkHttpUtil.okHttpPostBody(url,reqBody);
+            System.out.println("HttpRequestService getPhone res-->"+res);
+            if(res.contains("phone")){
+                JSONObject jsonObject = getJSONObjectData(res);
+                result = jsonObject.getString("phone");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("HttpRequestService getPhone result-->"+result);
+        return result;
+    }
 
+    //更新注册状态
+    public String updateRegStatus(String phone,String loginResult){
+        String result = "";
+        int status=0;
+        if(loginResult.contains("success")){
+            status = 1;
+        }else if(loginResult.contains("regExp")){
+            if(loginResult.contains("二维码")){
+                status = 2;
+            }else if(loginResult.contains("改机失败")) {
+                status = 3;
+            }else if(loginResult.contains("发送短信失败或超过最大尝试次数")) {
+                status = 4;
+            }else{
+                status = 9;
+            }
+        }
+        try {
+            String url =host+"/phone/update-reg-status/"+phone+"/"+status;
+            System.out.println("Test HttpRequestService updateRegStatus url-->"+url);
+            result = OkHttpUtil.okHttpPostBody(url,getTestJSON());
+            System.out.println("Test HttpRequestService updateRegStatus res-->"+result);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+    public String getTestJSON(){
+        String json = "{\"a\":1}";
+        return json;
+    }
+
+    //获取维护数据
     public Wx008Data getMaintainData(){
         Wx008Data wx008Data = null;
         try {
@@ -75,16 +131,16 @@ public class HttpRequestService {
         }
         return wx008Data;
     }
-    public String updateMaintainStatus(long id,int dieFlag){
-        String url =host+"/wxdata/complete-maintain/"+id+"/"+dieFlag;
+    //反馈维护结果
+    public String updateMaintainStatus(String json){
+        String url =host+"/wxdata/complete-maintain";
         System.out.println("HttpRequestService updateMaintainStatus url-->"+url);
-        PixPoint pixPoint = new PixPoint();
-        pixPoint.setB(99);
-        String res = OkHttpUtil.okHttpPostBody(url,JSON.toJSONString(pixPoint));
+        String res = OkHttpUtil.okHttpPostBody(url,json);
         System.out.println("HttpRequestService updateMaintainStatus res-->"+res);
         return res;
     }
 
+    //设备连接
     public String deviceConnectServer(){
         String url =host+"/device/connect";
         System.out.println("HttpRequestService deviceConnectServer url--->"+url);
@@ -94,6 +150,7 @@ public class HttpRequestService {
         System.out.println("HttpRequestService deviceConnectServer --->"+res);
         return res;
     }
+    //获取设备配置
     public String getStartConifgFromServer(String deviceNum){
         String url =host+"/device/num/"+deviceNum;
         System.out.println("HttpRequestService getStartConifgFromServer url--->"+url);
@@ -111,6 +168,12 @@ public class HttpRequestService {
         String res = OkHttpUtil.okHttpPostBody(url,wx008DataStr);
         System.out.println("HttpRequestService uploadPhoneData res--->"+res);
         return res;
+    }
+
+    public JSONObject getJSONObjectData(String json){
+        ResponseData responseData = JSONObject.parseObject(json,ResponseData.class);
+        JSONObject jsonObject = JSONObject.parseObject(responseData.getData());
+        return jsonObject;
     }
 
 

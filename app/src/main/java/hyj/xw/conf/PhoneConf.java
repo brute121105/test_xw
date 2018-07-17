@@ -97,6 +97,8 @@ public class PhoneConf {
         for (int i = 0, l = wx008Datas.size(); i < l; i++) {
             Wx008Data wd = wx008Datas.get(i);
 
+            //System.out.println(i+" wd-->"+JSON.toJSONString(wd));
+
             System.out.println(i+" wx008Datas-->"+JSON.toJSONString(wd));
             if(i>432&&i<443){
                 //DaoUtil.updatePwdByPhone(wd.getPhone(),"www12345");
@@ -452,6 +454,14 @@ public class PhoneConf {
        npi.setBuildBoard("");
        return npi;
    }
+
+    public static Wx008Data createRegDataByPhone(String phone){
+        NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);
+        String pwd = WxNickNameConstant.getZmByCount(3)+phone.substring(phone.length()-6);
+        Wx008Data data = createReg008Data(WxNickNameConstant.getName1(),phone,pwd,"86","011",JSON.toJSONString(npi));
+        System.out.println("createRegData--->"+JSON.toJSONString(data));
+        return data;
+    }
     public static Wx008Data createRegData(){
         Random rand = new Random();
         //String phone = "1"+getNum(10);

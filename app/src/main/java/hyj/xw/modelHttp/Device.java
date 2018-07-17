@@ -126,6 +126,33 @@ public class Device {
      */
     private Integer extractWxId;
 
+    private String host;//后台地址
+    private String token;
+    private String username;//api用户名
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public Integer getExtractWxId() {
         return extractWxId;

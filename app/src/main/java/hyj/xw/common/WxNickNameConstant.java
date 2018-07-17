@@ -43,10 +43,17 @@ public class WxNickNameConstant {
         while(s==null||s.length()<3) {
             s = getName();
         }
-        String head = (String.valueOf(c[new Random().nextInt(25)])+String.valueOf(c[new Random().nextInt(25)])+String.valueOf(c[new Random().nextInt(25)])).toUpperCase();
+        String head = String.valueOf(c[new Random().nextInt(25)])+String.valueOf(c[new Random().nextInt(25)])+String.valueOf(c[new Random().nextInt(25)]);
         s = head+s;
         return s;
 
+    }
+    public static String getZmByCount(int count){
+        String result = "";
+        for(int i=0;i<count;i++){
+            result = result+c[new Random().nextInt(25)];
+        }
+        return result;
     }
     public static void main(String[] args) {
         for(int i=0,l=str.length;i<l;i++) {
