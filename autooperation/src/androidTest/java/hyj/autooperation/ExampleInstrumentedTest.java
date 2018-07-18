@@ -292,15 +292,13 @@ public class ExampleInstrumentedTest {
     @Test
     public void test1(){
         while (true){
-            LogUtil.logMyError(FilePathCommon.logErrorPath,windowText);
-            break;
+            AutoUtil.sleep(2000);
+            List<UiObject2> uiObject2 = mDevice.findObjects(By.clazz(View.class).descContains("开始"));
+            for(UiObject2 uiObject21:uiObject2){
+                System.out.println("uiObject2-->"+uiObject21.getContentDescription());
+            }
 
-          /* UiObject uiObject = findNodeByText("发现");
-            try {
-                uiObject.click();
-            } catch (UiObjectNotFoundException e) {
-                e.printStackTrace();
-            }*/
+
         }
     }
 
@@ -542,8 +540,8 @@ public class ExampleInstrumentedTest {
                 isOperationsSucc = false;
             }
         }else if("自定义-点击开始安全校验".equals(wni.getOperation())){
-            UiObject2 uiObject2 = mDevice.findObject(By.desc("开始"));
-            if(uiObject2==null) mDevice.pressBack();
+            UiObject2 uiObject2 = mDevice.findObject(By.descContains("开始"));
+           if(uiObject2==null) mDevice.pressBack();
             uiObject2.click();
             operationDesc = "点击 开始安全校验";
             isOperationsSucc = true;
@@ -767,8 +765,8 @@ public class ExampleInstrumentedTest {
     public String getNotNullComponentText(UiObject2 obj){
         String result = "";
         try {
-            System.out.println("debug---> text:"+obj.getText()+" desc:"+obj.getContentDescription());
-            //System.out.println("debug--->"+obj.getClassName()+" text:"+obj.getText()+" desc:"+obj.getContentDescription()+" pgName:"+obj.getApplicationPackage()+" resName:"+obj.getResourceName()+" childCount:"+obj.getChildCount()+" isclick:"+obj.isClickable()+" ischeked:"+obj.isChecked());
+            //System.out.println("debug---> text:"+obj.getText()+" desc:"+obj.getContentDescription());
+            System.out.println("debug--->"+obj.getClassName()+" text:"+obj.getText()+" desc:"+obj.getContentDescription()+" pgName:"+obj.getApplicationPackage()+" resName:"+obj.getResourceName()+" childCount:"+obj.getChildCount()+" isclick:"+obj.isClickable()+" ischeked:"+obj.isChecked());
             if(!TextUtils.isEmpty(obj.getText())) result = result+obj.getText()+"|";
             if(!TextUtils.isEmpty(obj.getContentDescription())) result = result+obj.getContentDescription()+"|";
         }catch (Exception e){
