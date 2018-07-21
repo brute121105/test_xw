@@ -97,14 +97,14 @@ public class PhoneConf {
         for (int i = 0, l = wx008Datas.size(); i < l; i++) {
             Wx008Data wd = wx008Datas.get(i);
 
-            //System.out.println(i+" wd-->"+JSON.toJSONString(wd));
+            System.out.println(i+" wd-->"+JSON.toJSONString(wd));
 
             System.out.println(i+" wx008Datas-->"+JSON.toJSONString(wd));
             if(i>432&&i<443){
                 //DaoUtil.updatePwdByPhone(wd.getPhone(),"www12345");
             }
             //Log.i(i+" friends-->",JSON.toJSONString(wx008Datas.get(i).getFriends()));
-            //修改操作开始
+            //修改操作开始 wd-->
             /*System.out.println(i+" dataType-->"+wd.getDataType());
             wd.setDataFlag("008");
             int cn1 = wd.updateAll("phone=?",wd.getPhone());
@@ -265,6 +265,21 @@ public class PhoneConf {
         currentWx008Data.setCreateTime(new Date());
         currentWx008Data.setDataFlag(dataFlag);
         currentWx008Data.setPhoneStrsAw(phoneStrsAw);
+        return currentWx008Data;
+    }
+
+    public static Wx008Data createReg008DataDeviceTxt(String nickName,String phone,String pwd,String cnNum,String dataFlag,String phoneStrsAw){
+        Wx008Data currentWx008Data = new Wx008Data();
+        currentWx008Data.setGuid(AutoUtil.getUUID());
+        currentWx008Data.setNickName(nickName);
+        currentWx008Data.setPhone(phone);
+        currentWx008Data.setWxId(phone);
+        currentWx008Data.setWxPwd(pwd);
+        currentWx008Data.setCnNum(cnNum);
+        currentWx008Data.setCreateTime(new Date());
+        currentWx008Data.setDataFlag(dataFlag);
+        //currentWx008Data.setPhoneStrsAw(phoneStrsAw);
+        currentWx008Data.setPhoneStrs(phoneStrsAw);
         return currentWx008Data;
     }
 
@@ -459,6 +474,12 @@ public class PhoneConf {
         NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);
         String pwd = WxNickNameConstant.getZmByCount(3)+phone.substring(phone.length()-6);
         Wx008Data data = createReg008Data(WxNickNameConstant.getName1(),phone,pwd,"86","011",JSON.toJSONString(npi));
+        System.out.println("createRegData--->"+JSON.toJSONString(data));
+        return data;
+    }
+    public static Wx008Data createRegDataByPhoneAndDeviceTxt(String phone,String dataStr008){
+        String pwd = WxNickNameConstant.getZmByCount(3)+phone.substring(phone.length()-6);
+        Wx008Data data = createReg008DataDeviceTxt(WxNickNameConstant.getName1(),phone,pwd,"86","011",dataStr008);
         System.out.println("createRegData--->"+JSON.toJSONString(data));
         return data;
     }

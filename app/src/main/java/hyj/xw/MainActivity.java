@@ -561,14 +561,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         */
                        if(!TextUtils.isEmpty(device.getLoginResult())){
                            currentWx008Data.setExpMsg(device.getLoginResult());
-                           currentWx008Data.setWxid19(device.getWxid());
-                           /*System.out.println("doAction---main-device.getid:"+device.getWxid());
-                           if(TextUtils.isEmpty(currentWx008Data.getWxid19())&&TextUtils.isEmpty(device.getWxid())){
-                               System.out.println("doAction---main-device.getid:原本不存在");
-                               currentWx008Data.setWxid19(device.getWxid());
-                           }*/
+                           //if(!TextUtils.isEmpty(device.getWxid())) currentWx008Data.setWxid19(device.getWxid());
                            int cn = DaoUtil.updateExpMsg(currentWx008Data,currentWx008Data.getExpMsg()+"-"+AutoUtil.getCurrentDate());
-                           String recordTxt = loginIndex+" msg:"+currentWx008Data.getExpMsg()+" "+currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+device.getIpAddress();
+                           String recordTxt = loginIndex+" msg:"+currentWx008Data.getExpMsg()+" "+currentWx008Data.getPhone()+" "+currentWx008Data.getWxPwd()+" ip:"+device.getIpAddress();
                            LogUtil.login("",recordTxt);
                            System.out.println("doAction--->main-->updateExpMsg:"+device.getLoginResult()+" cn:"+cn+" recordTxt:"+recordTxt);
                            if(!isLocalSettingCheckBox.isChecked()){//服务器
@@ -582,18 +577,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                    String loginResult = device.getLoginResult();
                                    System.out.println("doAction--->zc完成："+loginResult);
                                    if(loginResult.contains("success")){//zc成功
-                                       String res = httpRequestService.uploadPhoneData(JSON.toJSONString(currentWx008Data));
+                                       currentWx008Data.setId(null);
+                                       String json = JSON.toJSONString(currentWx008Data);
+                                       System.out.println("doAction--->注册完成上传数据currentWx008Data："+json);
+                                       String res = httpRequestService.uploadPhoneData(json);
+                                       if(!"".equals(res)){//返回更新成功id，update wxid用到
+                                           currentWx008Data.setId(Long.parseLong(res));
+                                       }
                                        System.out.println("doAction--->注册完成上传数据res："+res);
                                    }
                                    String res1 = httpRequestService.updateRegStatus(currentWx008Data.getPhone(),loginResult);
                                    System.out.println("doAction--->更新手机注册状态res："+res1);
                                }
                            }
-                           device.setWxid("");
                            device.setLoginResult("");
-                           //device.setIpAddress("");
                            saveDeviceConfig(device);
                        }else if(!TextUtils.isEmpty(device.getWxid())){
+                           if(!isLocalSettingCheckBox.isChecked()){
+                               Wx008Data wx008Data = new Wx008Data();
+                               wx008Data.setId(currentWx008Data.getId());
+                               wx008Data.setWxid19(device.getWxid());
+                               String json = JSON.toJSONString(wx008Data);
+                               System.out.println("doAction--->上传wxid json："+json);
+                               String res = httpRequestService.uploadPhoneData(json);
+                               System.out.println("doAction--->上传wxid res："+res);
+                           }
                            updateWxid(currentWx008Data,device);//更新wxid
                        }
                    }catch (Exception e){
@@ -649,7 +657,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                        if(TextUtils.isEmpty(phone)){
                            return "获取手机号失败";
                        }
-                       currentWx008Data = PhoneConf.createRegDataByPhone(phone);
+                       if(device.getHookType()==2){
+                           String dataStr008 = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
+                           System.out.println("main-->doAction--->获取008device.txt数据dataStr008:"+dataStr008);
+                           currentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(phone,dataStr008);
+                       }else {
+                           System.out.println("main-->doAction--->生成内部改机数据");
+                           currentWx008Data = PhoneConf.createRegDataByPhone(phone);
+                       }
                        currentWx008Data.save();
                        System.out.println("main-->doAction--->获取一份新改机wxData并保存");
                    }
@@ -667,6 +682,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                        System.out.println("doAction--->获取本地维护数据:"+JSON.toJSONString(currentWx008Data));
                    }else {
                        currentWx008Data = httpRequestService.getMaintainData();
+                       if(currentWx008Data==null) System.out.println("doAction--->获取维护数据失败 或 数据没有置入维护界面");
                        System.out.println("doAction--->获取远程维护数据:"+JSON.toJSONString(currentWx008Data));
                    }
 

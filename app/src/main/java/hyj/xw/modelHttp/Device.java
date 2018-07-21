@@ -106,6 +106,11 @@ public class Device {
     private String friend;
 
     /**
+     * 加好友，1不加好友 2 加好友
+     */
+    private Integer addFriend;
+
+    /**
      * 头像
      */
     private String avatar;
@@ -369,5 +374,13 @@ public class Device {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Integer getAddFriend() {
+        return addFriend;
+    }
+
+    public void setAddFriend(Integer addFriend) {
+        this.addFriend = addFriend;
     }
 }

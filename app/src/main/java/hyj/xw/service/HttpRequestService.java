@@ -122,10 +122,12 @@ public class HttpRequestService {
             System.out.println("HttpRequestService getMaintainData url-->"+url);
             String res = OkHttpUtil.okHttpGet(url);
             System.out.println("HttpRequestService getMaintainData res-->"+res);
-            ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
-            wx008Data = JSONObject.parseObject(responseData.getData(),Wx008Data.class);
-            System.out.println("HttpRequestService getMaintainData wx008Data-->"+ JSON.toJSONString(wx008Data));
-            wx008Data.setPhoneInfo1(new PhoneInfo());
+            if(res.contains("data")){
+                ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+                wx008Data = JSONObject.parseObject(responseData.getData(),Wx008Data.class);
+                System.out.println("HttpRequestService getMaintainData wx008Data-->"+ JSON.toJSONString(wx008Data));
+                wx008Data.setPhoneInfo1(new PhoneInfo());
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -162,12 +164,17 @@ public class HttpRequestService {
 
 
     public String uploadPhoneData(String wx008DataStr){
+        String result = "";
         String url =host+"/wxdata/save";
         System.out.println("提交数据 HttpRequestService uploadPhoneData wx008DataStr--->"+wx008DataStr);
         System.out.println("HttpRequestService uploadPhoneData url--->"+url);
         String res = OkHttpUtil.okHttpPostBody(url,wx008DataStr);
         System.out.println("HttpRequestService uploadPhoneData res--->"+res);
-        return res;
+        if(res.contains("data")){
+            ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+            result = responseData.getData();
+        }
+        return result;
     }
 
     public JSONObject getJSONObjectData(String json){
