@@ -16,6 +16,7 @@ import java.util.List;
  */
 
 public class Wx008Data{
+    private Long id;
     private String phoneStrs;
     private String phoneStrsAw;//aw数据
     private String rgWxStatus;//aw状态
@@ -79,6 +80,15 @@ public class Wx008Data{
         return str;
 
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     private  String getRandomAbc() {
         String chars = "abcdgijktuxyz12365987";
         String str = chars.charAt((int)(Math.random() * 20))+"";

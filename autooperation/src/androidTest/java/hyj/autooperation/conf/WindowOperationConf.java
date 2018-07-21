@@ -26,12 +26,15 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo2 = new WindowNodeInfo("6.6.7","注册","点击上面的“注册”","自定义-点击注册2");
         setOps(ops,windowNodeInfo2,null);
 
-        WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","注册","我已阅读并同意上述条款","点击同意条款下一步");
+        WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","注册","我已阅读并同意上述条款","自定义-点击同意条款下一步");
+        setOps(ops,windowNodeInfo3,null);
+
+        /*WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","注册","我已阅读并同意上述条款","点击同意条款下一步");
         NodeInfo nodeInfo31 = new NodeInfo(1,"","%我已阅读并同意上述条款","点击同意条款");
         NodeInfo nodeInfo32 = new NodeInfo(1,"","下一步","点击同意条款下一步");
         nodeInfo32.setNodeOperationSleepMs(2000);
         setOps(ops,windowNodeInfo3,nodeInfo31);
-        setOps(ops,windowNodeInfo3,nodeInfo32);
+        setOps(ops,windowNodeInfo3,nodeInfo32);*/
 
         WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","注册","当前所在页面,安全校验","自定义-点击开始安全校验");
         //WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","注册","为了你的帐号安全，本次注册需要进行安全验证码校验","点击开始安全校验");
@@ -131,46 +134,31 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo11 = new WindowNodeInfo("6.6.7","提取wxid","通讯录|发现","自定义-提取wxid-结束");
         setOps(ops,windowNodeInfo11,null);
 
+        WindowNodeInfo windowNodeInfo12 = new WindowNodeInfo("6.6.7","加好友","通讯录|发现","自定义-am启动加好友");
+        setOps(ops,windowNodeInfo12,null);
+        WindowNodeInfo windowNodeInfo13 = new WindowNodeInfo("6.6.7","加好友","我的微信号","自定义-点击加好友输入框");
+        setOps(ops,windowNodeInfo13,null);
+        WindowNodeInfo windowNodeInfo14 = new WindowNodeInfo("6.6.7","加好友","微信号/QQ号/手机号","自定义-输入微信号");
+        setOps(ops,windowNodeInfo14,null);
+
+        WindowNodeInfo windowNodeInfo15 = new WindowNodeInfo("6.6.7","加好友","添加到通讯录","点击添加到通讯录");
+        NodeInfo nodeInfo151 = new NodeInfo(1,"添加到通讯录","","点击添加到通讯录");
+        setOps(ops,windowNodeInfo15,nodeInfo151);
+
+        WindowNodeInfo windowNodeInfo16 = new WindowNodeInfo("6.6.7","加好友","验证申请","自定义-点击发送-结束");//对方没有免验证情况
+        setOps(ops,windowNodeInfo16,null);
+
+        WindowNodeInfo windowNodeInfo17 = new WindowNodeInfo("6.6.7","加好友","发消息","点击发消息");
+        NodeInfo nodeInfo171 = new NodeInfo(1,"发消息","","点击发消息");
+        setOps(ops,windowNodeInfo17,nodeInfo171);
+
+        WindowNodeInfo windowNodeInfo18 = new WindowNodeInfo("6.6.7","加好友","更多功能按钮，已折叠","自定义-输入发送内容-结束");
+        setOps(ops,windowNodeInfo18,null);
+
         return ops;
     }
 
-    /*public static List<WindowNodeInfo> getAllOtherOperation(){
-        List<WindowNodeInfo> ops = new ArrayList<WindowNodeInfo>();
 
-        WindowNodeInfo windowNodeInfo0 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","点击发现");
-        NodeInfo nodeInfo01 = new NodeInfo(1,"发现","","点击发现");
-        windowNodeInfo0.getNodeInfoList().add(nodeInfo01);
-        ops.add(windowNodeInfo0);
-
-        WindowNodeInfo windowNodeInfo1 = new WindowNodeInfo("6.6.7","发圈","附近的人|朋友圈","点击朋友圈");
-        NodeInfo nodeInfo11 = new NodeInfo(1,"朋友圈","","点击朋友圈");
-        windowNodeInfo1.getNodeInfoList().add(nodeInfo11);
-        ops.add(windowNodeInfo1);
-
-        WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","发圈","轻触更换主题照片|拍照分享","自定义-长按拍照分享");
-        //NodeInfo nodeInfo31 = new NodeInfo(6,"","拍照分享","长按拍照分享");
-        //windowNodeInfo3.getNodeInfoList().add(nodeInfo31);
-        ops.add(windowNodeInfo3);
-
-        WindowNodeInfo windowNodeInfo2 = new WindowNodeInfo("6.6.7","发圈","长按拍照按钮发文字，为内部体验功能","自定义-点我知道了");
-        ops.add(windowNodeInfo2);
-
-        WindowNodeInfo windowNodeInfo4 = new WindowNodeInfo("6.6.7","发圈","这一刻的想法...","自定义-输入发圈内容-结束");
-        ops.add(windowNodeInfo4);
-
-        return ops;
-    }*/
-
-   /* public static List<WindowNodeInfo> getOtherOperationByAutoType(String autoType) {
-        List<WindowNodeInfo> result = new ArrayList<WindowNodeInfo>();
-        List<WindowNodeInfo> allOps = getAllOtherOperation();
-        for(WindowNodeInfo windowNodeInfo:allOps){
-            if(autoType.equals(windowNodeInfo.getAutoType())){
-                result.add(windowNodeInfo);
-            }
-        }
-        return result;
-    }*/
 
     public static Map<String,WindowNodeInfo> getOperatioByAutoType(String autoType){
         if("注册".equals(autoType)) return getOperations1();

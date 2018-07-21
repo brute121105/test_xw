@@ -24,6 +24,8 @@ public class FilePathCommon {
     public static final String startRunninConfigTxtPath;
     public static final String stopTxtPath;
     public static final String logErrorPath;
+    public static final String fkPngPath;
+    public static final String device008TxtPath;
 
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
@@ -32,6 +34,7 @@ public class FilePathCommon {
         importDataAPath=baseAppPath+"/dataA/";
         dataBakPath=baseAppPath+"/dataBF/";
         logErrorPath=baseAppPath+"/error/";
+        fkPngPath=baseAppPath+"/fkPng";
         importData008Path=baseAppPath+"/data008/";
         sl008DataPath=baseAppPath+"/data008/下载机型/";
         sl008DataPwdPath=baseAppPath+"/data008/pwd.txt";
@@ -42,5 +45,6 @@ public class FilePathCommon {
         wx008DataFilePath = baseAppPath+"/wx008Data.txt";
         startRunninConfigTxtPath = baseAppPath+"/startRunningConfig.txt";
         stopTxtPath = baseAppPath+"/stop.txt";
+        device008TxtPath = "/sdcard/.system/xposeDevice.txt";
     }
 }

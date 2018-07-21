@@ -295,7 +295,7 @@ public class AutoUtil {
             }
         });
     }
-    public static void startAppByPackName(String packageName,String activity){
+    public static void startAppByPackName(Context context,String packageName,String activity){
         Intent intent = new Intent();
         ComponentName cmp=new ComponentName(packageName,activity);
         //ComponentName cmp=new ComponentName("com.soft.apk008v","com.soft.apk008.LoadActivity");
@@ -303,7 +303,7 @@ public class AutoUtil {
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setComponent(cmp);
-        GlobalApplication.getContext().startActivity(intent);
+        context.startActivity(intent);
     }
     public static void startSysSetting(){
         Intent intent = new Intent(Settings.ACTION_SETTINGS);
@@ -321,9 +321,7 @@ public class AutoUtil {
         GlobalApplication.getContext().startActivity(intent);
     }
 
-    public static void startWx(){
-        startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
-    }
+
 
 
 
@@ -445,14 +443,7 @@ public class AutoUtil {
         values.put(ContactsContract.CommonDataKinds.Phone.NUMBER, phone);
         GlobalApplication.getResolver().insert(ContactsContract.Data.CONTENT_URI, values);
     }
-    //处理不在应在的界面
-    public static void doNotInCurrentView(AccessibilityNodeInfo root,Map<String,String> record){
-        if((record.get("recordAction").contains("wx")||record.get("recordAction").contains("pyq"))&&root.getPackageName().toString().indexOf("tencent")==-1){
-            AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
-            System.out.println("-->【不在微信界面，启动】");
-            AutoUtil.sleep(1000);
-        }
-    }
+
     public static void killApp(){
         AutoUtil.execShell("am force-stop hyj.xw");
         AutoUtil.execShell("am force-stop hyj.weixin_008");

@@ -122,6 +122,20 @@ public class Device {
     private String ipAddress;//本次ip
     private String lastIpAddress;//上次ip
 
+    /**
+     * 加好友，1不加好友 2 加好友
+     */
+    private Integer addFriend;
+
+
+    public Integer getAddFriend() {
+        return addFriend;
+    }
+
+    public void setAddFriend(Integer addFriend) {
+        this.addFriend = addFriend;
+    }
+
     public String getLastIpAddress() {
         return lastIpAddress;
     }

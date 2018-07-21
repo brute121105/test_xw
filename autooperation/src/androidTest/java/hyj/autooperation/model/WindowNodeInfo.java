@@ -118,9 +118,9 @@ public class WindowNodeInfo {
         boolean allNodeOpeSuccFlag = true;
         for(NodeInfo nodeInfo:nodeInfoList){
             allNodeOpeSuccFlag = allNodeOpeSuccFlag & nodeInfo.isOperationSucc();//只要有一个是false,最后的结果返回false
+            this.isWindowOperatonSucc = allNodeOpeSuccFlag;
             nodesResult = "-"+nodesResult+nodeInfo.toString();
         }
-        this.isWindowOperatonSucc = allNodeOpeSuccFlag;
         return nodesResult.replaceAll("null","");
     }
 

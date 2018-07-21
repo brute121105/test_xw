@@ -58,11 +58,44 @@ public class HttpRequestService {
         return result;
     }
 
+    public String uploadPhoneData(Wx008Data wx008Data){
+        String res = "";
+        String wx008DataStr = JSON.toJSONString(wx008Data);
+        String url =host+"/wxdata/save";
+        try {
+            System.out.println("提交数据 TestHttpRequestService uploadPhoneData wx008DataStr--->"+wx008DataStr);
+            System.out.println("TestHttpRequestService uploadPhoneData url--->"+url);
+            res = OkHttpUtil.okHttpPostBody(token,url,wx008DataStr);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("TestHttpRequestService uploadPhoneData res--->"+res);
+        return res;
+    }
+
+    public String setFriendsNull(long id){
+        String res = "";
+        String url =host+"/wxdata/setfriends/"+id+"?friends=";
+        try {
+            System.out.println("TestHttpRequestService setFriendsNull url--->"+url);
+            res = OkHttpUtil.okHttpPostBody(token,url,getTestJSON());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("TestHttpRequestService setFriendsNull res--->"+res);
+        return res;
+    }
+
 
     public JSONObject getJSONObjectData(String json){
         ResponseData responseData = JSONObject.parseObject(json,ResponseData.class);
         JSONObject jsonObject = JSONObject.parseObject(responseData.getData());
         return jsonObject;
+    }
+
+    public String getTestJSON(){
+        String json = "{\"a\":1}";
+        return json;
     }
 
     /**
