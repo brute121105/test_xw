@@ -20,11 +20,14 @@
             android:textColor="#2E2E2E"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
         <EditText
             android:layout_weight="2"
             android:id="@+id/username"
+            android:textColor="#2E2E2E"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:selectAllOnFocus="false" />
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -38,9 +41,11 @@
             android:textColor="#2E2E2E"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
         <EditText
             android:layout_weight="2"
             android:id="@+id/password"
+            android:textColor="#2E2E2E"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -61,6 +66,7 @@
         <EditText
             android:layout_weight="2"
             android:id="@+id/host"
+            android:textColor="#2E2E2E"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -79,6 +85,7 @@
             android:layout_height="wrap_content" />
         <EditText
             android:layout_weight="2"
+            android:textColor="#2E2E2E"
             android:id="@+id/deviceNum"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
