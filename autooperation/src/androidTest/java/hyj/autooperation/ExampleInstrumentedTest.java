@@ -1584,46 +1584,6 @@ public class ExampleInstrumentedTest {
             }
         }
     }
-    /*public void doVpn(){
-        String lastAction="init";
-        while (true){
-            instrumentation = InstrumentationRegistry.getInstrumentation();
-            mDevice = UiDevice.getInstance(instrumentation);
-            System.out.println("doAction----------------------------------------------------->action:"+lastAction);
-            if("点击开启VPN".equals(lastAction)&&waitVpnConn(10)){
-                System.out.println("doAction--->vpn连接成功");
-                mDevice.pressBack();
-                mDevice.pressBack();
-                mDevice.pressHome();
-                return;
-                //if(waitAndCheckIp())  return;
-            }
-            String pkg = mDevice.getCurrentPackageName();
-            String allText = getAllWindowText(pkg);
-            if(!"com.android.settings".equals(pkg)&&!"com.android.vpndialogs".equals(pkg)){
-                System.out.println("doAction-->打开vpn:"+pkg);
-                opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
-                lastAction = "打开vpn界面";
-                continue;
-            }else if(mDevice.findObject(By.textContains("网络共享"))!=null){
-                boolean flag = mDevice.click(584,410);
-                lastAction = "点击VPN";
-                System.out.println("doAction-->点击VPN"+flag);
-            }else if(mDevice.findObject(By.textContains("添加VPN"))!=null){
-                List<UiObject2> chs = mDevice.findObjects(By.res("android:id/checkbox"));
-                if(chs!=null&&chs.size()>1){
-                    lastAction = "点击开启VPN";
-                    System.out.println("doAction-->点击开启VPN");
-                    switchVpnAndMidSleep(chs.get(1),5000);
-                }else {
-                    mDevice.pressBack();
-                    System.out.println("doAction-->chs is null");
-                }
-            }else {
-                mDevice.pressBack();
-            }
-        }
-    }*/
 
     //对比ip直到ip不同结束
     public boolean waitAndCheckIp(){
