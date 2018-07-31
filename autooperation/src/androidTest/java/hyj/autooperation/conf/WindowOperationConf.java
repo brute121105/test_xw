@@ -14,7 +14,6 @@ import hyj.autooperation.model.WindowNodeInfo;
 
 public class WindowOperationConf {
 
-    public static final String sendPhoneMsgUrl = "http://112.124.31.14:8060/SendSms?token=87BBCED60A9A4801AE8E270E030DCF93289E02C6BAACCD94&requestid=fujiantest";
 
     public static Map<String,WindowNodeInfo> getOperations1(){
         Map<String,WindowNodeInfo> ops = new HashMap<String,WindowNodeInfo>();
@@ -28,6 +27,10 @@ public class WindowOperationConf {
 
         WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","注册","我已阅读并同意上述条款","自定义-点击同意条款下一步");
         setOps(ops,windowNodeInfo3,null);
+
+        WindowNodeInfo windowNodeInfo31 = new WindowNodeInfo("6.6.7","注册","微信隐私保护指引","自定义-点击同意条款下一步6.6");
+        setOps(ops,windowNodeInfo31,null);
+
 
         /*WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","注册","我已阅读并同意上述条款","点击同意条款下一步");
         NodeInfo nodeInfo31 = new NodeInfo(1,"","%我已阅读并同意上述条款","点击同意条款");
@@ -97,6 +100,9 @@ public class WindowOperationConf {
 
         WindowNodeInfo windowNodeInfo44 = new WindowNodeInfo("6.6.7","养号","该微信帐号因批量","自定义-登录异常");
         setOps(ops,windowNodeInfo44,null);
+
+        WindowNodeInfo windowNodeInfo45 = new WindowNodeInfo("6.6.7","养号","该微信帐号因使用了微信外挂","自定义-登录异常");
+        setOps(ops,windowNodeInfo45,null);
 
         WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","养号","通讯录|发现","自定义-判断登录成功-结束");
         setOps(ops,windowNodeInfo5,null);

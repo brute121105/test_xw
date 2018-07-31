@@ -120,7 +120,7 @@ public class Device {
     private String wxid;
 
     private String ipAddress;//本次ip
-    private String lastIpAddress;//上次ip
+    private String lastIpAddress;//交互ip，1 mainactivity 获取ip， 长度大于1 mainactivity写入ip
 
     /**
      * 加好友，1不加好友 2 加好友
@@ -162,6 +162,34 @@ public class Device {
     private String host;//后台地址
     private String token;
     private String username;//api用户名
+
+    private String callNumber;
+    private String calledNumber;
+    private String content;
+
+    public String getCallNumber() {
+        return callNumber;
+    }
+
+    public void setCallNumber(String callNumber) {
+        this.callNumber = callNumber;
+    }
+
+    public String getCalledNumber() {
+        return calledNumber;
+    }
+
+    public void setCalledNumber(String calledNumber) {
+        this.calledNumber = calledNumber;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 
     public String getHost() {
         return host;
