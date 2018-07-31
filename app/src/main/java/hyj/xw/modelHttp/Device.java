@@ -126,6 +126,8 @@ public class Device {
 
     private String ipAddress;
 
+    private String lastIpAddress;//交互ip，1 mainactivity 获取ip， 长度大于1 mainactivity写入ip
+
     /**
      * 提取微信id：1、不提取，2、提取
      */
@@ -134,6 +136,43 @@ public class Device {
     private String host;//后台地址
     private String token;
     private String username;//api用户名
+
+    private String callNumber;
+    private String calledNumber;
+    private String content;
+
+
+    public String getCallNumber() {
+        return callNumber;
+    }
+
+    public void setCallNumber(String callNumber) {
+        this.callNumber = callNumber;
+    }
+
+    public String getCalledNumber() {
+        return calledNumber;
+    }
+
+    public void setCalledNumber(String calledNumber) {
+        this.calledNumber = calledNumber;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getLastIpAddress() {
+        return lastIpAddress;
+    }
+
+    public void setLastIpAddress(String lastIpAddress) {
+        this.lastIpAddress = lastIpAddress;
+    }
 
     public String getHost() {
         return host;

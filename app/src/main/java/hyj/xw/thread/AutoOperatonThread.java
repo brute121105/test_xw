@@ -69,8 +69,8 @@ public class AutoOperatonThread extends BaseThread {
     }
     private void intiParam(){
         AutoUtil.recordAndLog(record,"init");
-        loginSussDos.add("注册");
-        //loginSussDos.add("养号");
+        //loginSussDos.add("注册");
+        loginSussDos.add("养号");
         //loginSussDos.add("提取wxid");
         //loginSussDos.add("发圈");
         //loginSussDos.add("关手机号搜索");

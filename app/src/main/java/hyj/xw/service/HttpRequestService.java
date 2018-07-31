@@ -14,6 +14,7 @@ import hyj.xw.model.PixPoint;
 import hyj.xw.modelHttp.Device;
 import hyj.xw.modelHttp.PhoneQueryVO;
 import hyj.xw.modelHttp.ResponseData;
+import hyj.xw.modelHttp.SendSmsVO;
 import hyj.xw.util.OkHttpUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -82,6 +83,30 @@ public class HttpRequestService {
         return result;
     }
 
+    //发送短信
+    public String sendSms(String callNumber,String calledNumber,String content){
+        String result = "";
+        try {
+            String url =host+"/phone/sendsms";
+            System.out.println("HttpRequestService sendSms url-->"+url);
+            SendSmsVO sendSmsVO = new SendSmsVO(callNumber,calledNumber,content);
+            String postBody = JSON.toJSONString(sendSmsVO);
+            System.out.println("HttpRequestService sendSms postBody-->"+postBody);
+            String res = OkHttpUtil.okHttpPostBody(url,postBody);
+            System.out.println("Test HttpRequestService sendSms res-->"+res);
+            if(res.contains("success")){
+                ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+                if(responseData.isSuccess()){
+                    result = "成功";
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("Test HttpRequestService sendSms result-->"+result);
+        return result;
+    }
+
     //更新注册状态
     public String updateRegStatus(String phone,String loginResult){
         String result = "";
@@ -135,29 +160,44 @@ public class HttpRequestService {
     }
     //反馈维护结果
     public String updateMaintainStatus(String json){
-        String url =host+"/wxdata/complete-maintain";
-        System.out.println("HttpRequestService updateMaintainStatus url-->"+url);
-        String res = OkHttpUtil.okHttpPostBody(url,json);
-        System.out.println("HttpRequestService updateMaintainStatus res-->"+res);
+        String res = "";
+        try {
+            String url =host+"/wxdata/complete-maintain";
+            System.out.println("HttpRequestService updateMaintainStatus url-->"+url);
+            res = OkHttpUtil.okHttpPostBody(url,json);
+            System.out.println("HttpRequestService updateMaintainStatus res-->"+res);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return res;
     }
 
     //设备连接
     public String deviceConnectServer(){
-        String url =host+"/device/connect";
-        System.out.println("HttpRequestService deviceConnectServer url--->"+url);
-        Device device = new Device();
-        device.setNum(deviceNum);
-        String res = OkHttpUtil.okHttpPostBody(url,JSON.toJSONString(device));
-        System.out.println("HttpRequestService deviceConnectServer --->"+res);
+        String res = "";
+        try {
+            String url =host+"/device/connect";
+            System.out.println("HttpRequestService deviceConnectServer url--->"+url);
+            Device device = new Device();
+            device.setNum(deviceNum);
+            res = OkHttpUtil.okHttpPostBody(url,JSON.toJSONString(device));
+            System.out.println("HttpRequestService deviceConnectServer --->"+res);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return res;
     }
     //获取设备配置
     public String getStartConifgFromServer(String deviceNum){
-        String url =host+"/device/num/"+deviceNum;
-        System.out.println("HttpRequestService getStartConifgFromServer url--->"+url);
-        String res = OkHttpUtil.okHttpGet(url);
-        System.out.println("HttpRequestService getStartConifgFromServer res--->"+res);
+        String res = "";
+        try {
+            String url =host+"/device/num/"+deviceNum;
+            System.out.println("HttpRequestService getStartConifgFromServer url--->"+url);
+            res = OkHttpUtil.okHttpGet(url);
+            System.out.println("HttpRequestService getStartConifgFromServer res--->"+res);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return res;
     }
 
@@ -165,16 +205,33 @@ public class HttpRequestService {
 
     public String uploadPhoneData(String wx008DataStr){
         String result = "";
-        String url =host+"/wxdata/save";
-        System.out.println("提交数据 HttpRequestService uploadPhoneData wx008DataStr--->"+wx008DataStr);
-        System.out.println("HttpRequestService uploadPhoneData url--->"+url);
-        String res = OkHttpUtil.okHttpPostBody(url,wx008DataStr);
-        System.out.println("HttpRequestService uploadPhoneData res--->"+res);
-        if(res.contains("data")){
-            ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
-            result = responseData.getData();
+        try {
+            String url =host+"/wxdata/save";
+            System.out.println("提交数据 HttpRequestService uploadPhoneData wx008DataStr--->"+wx008DataStr);
+            System.out.println("HttpRequestService uploadPhoneData url--->"+url);
+            String res = OkHttpUtil.okHttpPostBody(url,wx008DataStr);
+            System.out.println("HttpRequestService uploadPhoneData res--->"+res);
+            if(res.contains("data")){
+                ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+                result = responseData.getData();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return result;
+    }
+
+    public String uploadPhoneDataReturnAll(String wx008DataStr){
+        String res = "";
+        try {
+            String url =host+"/wxdata/save";
+            System.out.println("提交数据 HttpRequestService uploadPhoneData wx008DataStr--->"+wx008DataStr);
+            System.out.println("HttpRequestService uploadPhoneData url--->"+url);
+            res = OkHttpUtil.okHttpPostBody(url,wx008DataStr);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return res;
     }
 
     public JSONObject getJSONObjectData(String json){

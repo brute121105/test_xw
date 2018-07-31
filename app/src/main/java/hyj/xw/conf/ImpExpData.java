@@ -67,7 +67,41 @@ public class ImpExpData {
         System.out.println("create008Data-->"+JSON.toJSONString(currentWx008Data));
         return currentWx008Data;
     }
-    public static Map<String,Object> import008Data()  {
+    public static Map<String,Object> import008DataAdd2()  {
+        int countAll=0,countExist=0,countSucc=0;
+        Map<String,Object> result = new HashMap<String,Object>();
+        System.out.println("importAData-->0");
+        File file = new File(FilePathCommon.sl008DataPath);
+        if(file.exists()){
+            File[] files = file.listFiles();
+            if(file!=null&&files.length>0){
+                countAll = files.length;
+                for(File f:files){
+                    String json = FileUtil.readAll(FilePathCommon.sl008DataPath+f.getName());
+                    String phone =f.getName().substring(0,11);
+                    String pwd = f.getName().substring(f.getName().indexOf(",")+1,f.getName().indexOf("."));
+                    System.out.println("sl008Data-->"+json);
+                    System.out.println("sl008Data-->phone:"+phone+" pwd:"+pwd);
+                    Wx008Data wx008Data = PhoneConf.createNew008DataStr(phone,pwd,"86","010",json);
+                    System.out.println("sl008Data-->"+JSON.toJSONString(wx008Data));
+                    List<Wx008Data> getData = DataSupport.where("phone=?", wx008Data.getPhone()).find(Wx008Data.class);
+                    if(getData!=null&&getData.size()>0){//判断已存在不导入
+                        countExist = countExist+1;
+                    }else {
+                        if(wx008Data.save()){//导入成功
+                            countSucc = countSucc+1;
+                        }
+                    }
+                }
+            }
+        }
+        result.put("countAll",countAll);
+        result.put("countSucc",countSucc);
+        result.put("countExist",countExist);
+        System.out.println("importAData-->result:"+result);
+        return result;
+    }
+    /*public static Map<String,Object> import008DataAdd()  {
         int countAll=0,countExist=0,countSucc=0;
         Map<String,Object> result = new HashMap<String,Object>();
         System.out.println("importAData-->0");
@@ -91,6 +125,33 @@ public class ImpExpData {
                             countSucc = countSucc+1;
                         }
                     }
+                }
+            }
+        }
+        result.put("countAll",countAll);
+        result.put("countSucc",countSucc);
+        result.put("countExist",countExist);
+        System.out.println("importAData-->result:"+result);
+        return result;
+    }*/
+    public static Map<String,Object> import008Data()  {
+        int countAll=0,countExist=0,countSucc=0;
+        Map<String,Object> result = new HashMap<String,Object>();
+        System.out.println("importAData-->0");
+        File file = new File(FilePathCommon.sl008DataPath);
+        if(file.exists()){
+            File[] files = file.listFiles();
+            if(file!=null&&files.length>0){
+                countAll = files.length;
+                for(File f:files){
+                    String json = FileUtil.readAllUtf8(FilePathCommon.sl008DataPath+f.getName());
+                    System.out.println("import008Data json:"+json);
+                    String phone = f.getName().substring(0,11);
+                    System.out.println("import008Data phone:"+phone);
+                    Wx008Data wx008Data = new Wx008Data();
+                    wx008Data.setPhoneStrs(json);
+                    int cn = wx008Data.updateAll("phone=?",phone);
+                    System.out.println("import008Data cn:"+cn);
                 }
             }
         }

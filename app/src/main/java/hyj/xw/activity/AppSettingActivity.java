@@ -112,7 +112,7 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
                     if(i>=startIndex&&i<=endIndex){
                         Wx008Data wx008Data = wx008Datas.get(i);
                         wx008Data.setId(null);
-                        String str = service.uploadPhoneData(JSON.toJSONString(wx008Data));
+                        String str = service.uploadPhoneDataReturnAll(JSON.toJSONString(wx008Data));
                         System.out.println("upload res--->"+str);
                         if(str.contains("成功")){
                             uploadCn = uploadCn+1;

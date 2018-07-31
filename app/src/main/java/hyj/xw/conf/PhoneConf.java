@@ -21,6 +21,7 @@ import hyj.xw.common.WxNickNameConstant;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.LitePalModel.Wx008Data;
+import hyj.xw.model.Obj008Data;
 import hyj.xw.model.PhoneInfo;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
@@ -254,6 +255,19 @@ public class PhoneConf {
         currentWx008Data.setPhoneStrsAw(phoneStrsAw);
         return currentWx008Data;
     }
+    public static Wx008Data createNew008DataStr(String phone,String pwd,String cnNum,String dataFlag,String data008Str){
+        Wx008Data currentWx008Data = new Wx008Data();
+        currentWx008Data.setGuid(AutoUtil.getUUID());
+        currentWx008Data.setPhone(phone);
+        currentWx008Data.setWxId(phone);
+        currentWx008Data.setWxPwd(pwd);
+        currentWx008Data.setCnNum(cnNum);
+        currentWx008Data.setCreateTime(new Date());
+        currentWx008Data.setDataFlag(dataFlag);
+        currentWx008Data.setPhoneStrs(data008Str);
+        //currentWx008Data.setPhoneStrsAw(phoneStrsAw);
+        return currentWx008Data;
+    }
     public static Wx008Data createReg008Data(String nickName,String phone,String pwd,String cnNum,String dataFlag,String phoneStrsAw){
         Wx008Data currentWx008Data = new Wx008Data();
         currentWx008Data.setGuid(AutoUtil.getUUID());
@@ -469,6 +483,98 @@ public class PhoneConf {
        npi.setBuildBoard("");
        return npi;
    }
+
+    public static Obj008Data npiTo008Data(NewPhoneInfo npi){
+        Obj008Data obj008Data = new Obj008Data();
+        obj008Data.setGetString(null2Str(npi.getAndroidId()));
+        obj008Data.setTAGS(null2Str(npi.getBuildTags()));
+        obj008Data.setTYPE(null2Str(npi.getBuildType()));
+        obj008Data.setUSER(null2Str(npi.getBuildUser()));
+        obj008Data.setBRAND(null2Str(npi.getBuildBrand()));
+        obj008Data.setID(null2Str(npi.getBuildId()));
+        String abi = npi.getBuildAbi();
+        if(!TextUtils.isEmpty(npi.getBuildAbi2())) abi = abi + npi.getBuildAbi2();
+        obj008Data.setARCH(abi);
+        obj008Data.setDEVICE(null2Str(npi.getBuildDevice()));
+        obj008Data.setPRODUCT(null2Str(npi.getBuildProduct()));
+        obj008Data.setGetDeviceId(null2Str(npi.getDeviceId()));
+        obj008Data.setFINGERPRINT(null2Str(npi.getBuildFingerprint()));
+        obj008Data.setDISPLAY(null2Str(npi.getDisplayId()));
+        obj008Data.setHARDWARE(null2Str(npi.getBuildHardware()));
+        obj008Data.setGetLine1Number(null2Str(npi.getLine1Number()));
+        obj008Data.setMANUFACTURER(null2Str(npi.getBuildManufacturer()));
+        obj008Data.setMODEL(null2Str(npi.getBuildModel()));
+        obj008Data.setGetNetworkCountryIso(null2Str(npi.getNetworkCountryIso()));
+        obj008Data.setGetNetworkOperator(null2Str(npi.getNetworkOperator()));
+        obj008Data.setGetNetworkOperatorName(null2Str(npi.getNetworkOperatorName()));
+        obj008Data.setGetNetworkType(npi.getNetworkType()+"");
+        obj008Data.setGetPhoneType(npi.getPhoneType()+"");
+        obj008Data.setGetRadioVersion(null2Str(npi.getBuildRadioVersion()));
+        obj008Data.setRELEASE(null2Str(npi.getBuildRelease()));
+        obj008Data.setSDK(null2Str(npi.getBuildSdk()));
+        obj008Data.setSERIAL(null2Str(npi.getSerialno()));
+        obj008Data.setGetSimCountryIso(null2Str(npi.getSimCountryIso()));
+        obj008Data.setGetSimOperator(null2Str(npi.getSimOperator()));
+        obj008Data.setGetSimOperatorName(null2Str(npi.getSimOperatorName()));
+        obj008Data.setGetSimSerialNumber(null2Str(npi.getSimSerialNumber()));
+        obj008Data.setGetSimState(npi.getSimState()+"");
+        obj008Data.setGetSubscriberId(null2Str(npi.getSubscriberId()));
+        obj008Data.setGetMacAddress(null2Str(npi.getMacAddress()));
+        obj008Data.setSetCpuName(null2Str(npi.getCpuName()));
+        obj008Data.setGetAddress(null2Str(npi.getIpAddress()));
+        obj008Data.setGetNetworkType(null2Str(npi.getNetworkTypeName()));
+        obj008Data.setHOST(null2Str(npi.getBuildHost()));
+        obj008Data.setGetBSSID(null2Str(npi.getBSSID()));
+        obj008Data.setGetSSID(null2Str(npi.getSSID()));
+
+        obj008Data.setConnect_mode("0");
+        obj008Data.setDensity("1.25");
+        obj008Data.setDensityDpi("200");
+        obj008Data.setGet("1.0.0.0");
+        obj008Data.setGetJiZhan("");
+        obj008Data.setGetMetrics("1080x1920");
+        obj008Data.setGetSubtypeName("LTE");
+        obj008Data.setGps("null");
+        obj008Data.setLocation_mode("0");
+        obj008Data.setScaledDensity("1.25");
+        obj008Data.setSign("");
+        obj008Data.setXdpi("200.0");
+        obj008Data.setYdpi("200.0");
+        return obj008Data;
+    }
+    public static String phoneStr2008Str(String phoneStr){
+        if(TextUtils.isEmpty(phoneStr)) return "";
+        NewPhoneInfo npi = JSONObject.parseObject(phoneStr,NewPhoneInfo.class);
+        if(npi==null) return "";
+        Obj008Data obj008Data = npiTo008Data(npi);
+        String json = JSON.toJSONString(obj008Data);//转换首字母部分变小写
+        return converUpperCase(json);
+    }
+
+    public static String converUpperCase(String str){
+        String newStr = str.replace("aRCH","ARCH").replace("bRAND","BRAND")
+                .replace("dEVICE","DEVICE")
+                .replace("fINGERPRINT","FINGERPRINT")
+                .replace("hARDWARE","HARDWARE")
+                .replace("hOST","HOST")
+                .replace("iD","ID")
+                .replace("dISPLAY","DISPLAY")
+                .replace("mANUFACTURER","MANUFACTURER")
+                .replace("mODEL","MODEL")
+                .replace("pRODUCT","PRODUCT")
+                .replace("rELEASE","RELEASE")
+                .replace("sDK","SDK")
+                .replace("sERIAL","SERIAL")
+                .replace("tAGS","TAGS")
+                .replace("tYPE","TYPE")
+                .replace("uSER","USER");
+        return newStr;
+    }
+
+    public static String null2Str(String str){
+        if(str==null) return "";
+        return str;
+    }
 
     public static Wx008Data createRegDataByPhone(String phone){
         NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);

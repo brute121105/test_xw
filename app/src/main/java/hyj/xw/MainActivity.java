@@ -40,6 +40,7 @@ import hyj.xw.activity.YhSettingActivity;
 import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
+import hyj.xw.conf.ImpExpData;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
@@ -403,6 +404,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 AutoUtil.killApp();
                 break;
             case R.id.test_conn:
+                Wx008Data currentWx008Data = PhoneConf.createRegDataByPhone("11111111111");
+                System.out.println("currentWx008Data-->"+JSON.toJSONString(currentWx008Data));
                 testConn();
                 break;
             case R.id.start_uiAuto:
@@ -454,6 +457,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,"1");//暂停标志 1、正常；2、暂停
             device.setSendFriends(1);
             device.setExtractWxId(2);
+            device.setAddFriend(1);
+            device.setHookType(2);
 
         }else {
             //服务器获取配置
@@ -513,6 +518,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         String res = httpRequestService.getStartConifgFromServer(deviceNum);
                         ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
                         Device device = JSONObject.parseObject(responseData.getData(),Device.class);
+                        if(3==device.getRunState()){//停止
+                            System.out.println("doAction--->停止am force-stop hyj.autooperation");
+                            AutoUtil.execShell("am force-stop hyj.autooperation");
+                            AutoUtil.sleep(2000);
+                            continue;
+                        }
                         FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,device.getRunState()+"");//暂停标志 1、正常；2、暂停
                         System.out.println("StopThread-->runState:"+device.getRunState());
                     }catch (Exception e){
@@ -537,7 +548,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                        AutoUtil.sleep(1000);
                        device = getDeviceConfig();
                        String tag = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
-                       System.out.println("main-->currentSrc:"+JSON.toJSONString(device)+" 当前tag:"+tag);
+                       System.out.println(Thread.currentThread().getName()+"main-->currentSrc:"+JSON.toJSONString(device)+" 当前tag:"+tag);
                        /**
                         * 获取008数据并 环境设置标志
                         */
@@ -603,13 +614,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                System.out.println("doAction--->上传wxid res："+res);
                            }
                            updateWxid(currentWx008Data,device);//更新wxid
+                       }else if("1".equals(device.getLastIpAddress())){
+                           String ip = getIp();
+                           device.setLastIpAddress(ip);
+                           saveDeviceConfig(device);
+                       }else if(!TextUtils.isEmpty(device.getCallNumber())){
+                           String res = httpRequestService.sendSms(device.getCallNumber(),device.getCalledNumber(),device.getContent());
+                           System.out.println("doAction--->发送短信返回res:"+res);
+                           device.setCallNumber("");
+                           saveDeviceConfig(device);
                        }
                    }catch (Exception e){
-                       System.out.println("main-->全局异常");
+                       System.out.println("doAction-->全局异常 mainActivity");
                        e.printStackTrace();
                    }
                }
 
+           }
+           public String getIp(){
+               String ipUrl = "http://pv.sohu.com/cityjson?ie=utf-8";
+               String ipStr = OkHttpUtil.okHttpGet(ipUrl);
+               System.out.println("doActioni--->res ipStr:"+ipStr);
+               String ip = "失败";
+               if(ipStr.contains("广东")){
+                   ip = "广东";
+               }else if(ipStr.contains("cip")){
+                   JSONObject jsonObject = JSONObject.parseObject(ipStr.substring(ipStr.indexOf("{"),ipStr.indexOf("}")+1));
+                   ip = jsonObject.getString("cname")+jsonObject.getString("cip");
+               }
+               //updateDeviceConfigIp(ip);
+               return ip;
            }
 
            public void updateWxid(Wx008Data currentWx008Data,Device device){
@@ -651,41 +685,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
            public String setWx008Data(String tag){
                String result = "";
-               if(1==device.getRunType()){
-                   if(tag.equals("next")||currentWx008Data==null){
-                       String phone = httpRequestService.getPhone("");
-                       if(TextUtils.isEmpty(phone)){
-                           return "获取手机号失败";
+               try {
+                   if(1==device.getRunType()){
+                       if(tag.equals("next")||currentWx008Data==null){
+                           String phone = httpRequestService.getPhone("");
+                           if(TextUtils.isEmpty(phone)){
+                               return "获取手机号失败";
+                           }
+                           if(device.getHookType()==2){
+                               String dataStr008 = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
+                               System.out.println("main-->doAction--->获取008device.txt数据dataStr008:"+dataStr008);
+                               currentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(phone,dataStr008);
+                           }else {
+                               System.out.println("main-->doAction--->生成内部改机数据");
+                               currentWx008Data = PhoneConf.createRegDataByPhone(phone);
+                           }
+                           currentWx008Data.save();
+                           System.out.println("main-->doAction--->获取一份新改机wxData并保存");
                        }
-                       if(device.getHookType()==2){
-                           String dataStr008 = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
-                           System.out.println("main-->doAction--->获取008device.txt数据dataStr008:"+dataStr008);
-                           currentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(phone,dataStr008);
+                   }else if(2==device.getRunType()) {
+                       if(isLocalSettingCheckBox.isChecked()){
+                           if(currentWx008Data==null){
+                               loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
+                               wx008Datas = DaoUtil.getWx008Datas();
+                               currentWx008Data = wx008Datas.get(loginIndex);
+                           }else if(tag.equals("next")){
+                               loginIndex = loginIndex+1;
+                               AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
+                               currentWx008Data = wx008Datas.get(loginIndex);
+                           }
+                           System.out.println("doAction--->获取本地维护数据:"+JSON.toJSONString(currentWx008Data));
                        }else {
-                           System.out.println("main-->doAction--->生成内部改机数据");
-                           currentWx008Data = PhoneConf.createRegDataByPhone(phone);
+                           currentWx008Data = httpRequestService.getMaintainData();
+                           if(currentWx008Data==null) System.out.println("doAction--->获取维护数据失败 或 数据没有置入维护界面");
+                           System.out.println("doAction--->获取远程维护数据:"+JSON.toJSONString(currentWx008Data));
                        }
-                       currentWx008Data.save();
-                       System.out.println("main-->doAction--->获取一份新改机wxData并保存");
-                   }
-               }else if(2==device.getRunType()) {
-                   if(isLocalSettingCheckBox.isChecked()){
-                       if(currentWx008Data==null){
-                           loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
-                           wx008Datas = DaoUtil.getWx008Datas();
-                           currentWx008Data = wx008Datas.get(loginIndex);
-                       }else if(tag.equals("next")){
-                           loginIndex = loginIndex+1;
-                           AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
-                           currentWx008Data = wx008Datas.get(loginIndex);
-                       }
-                       System.out.println("doAction--->获取本地维护数据:"+JSON.toJSONString(currentWx008Data));
-                   }else {
-                       currentWx008Data = httpRequestService.getMaintainData();
-                       if(currentWx008Data==null) System.out.println("doAction--->获取维护数据失败 或 数据没有置入维护界面");
-                       System.out.println("doAction--->获取远程维护数据:"+JSON.toJSONString(currentWx008Data));
-                   }
 
+                   }
+               }catch (Exception e){
+                   e.printStackTrace();
+                   System.out.println("doAction---Exception setWx008Data");
                }
                return result;
            }
@@ -709,9 +748,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        }).start();
     }
     private void set008Environment(Wx008Data currentWx008Data){
-        FileUtil.writeContent2FileForceUtf8(FilePathCommon.device008TxtPath,currentWx008Data.getPhoneStrs());
-        String strs = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
-        System.out.println("main-->008 str strs:"+strs);
+        try {
+            String data008Str = currentWx008Data.getPhoneStrs();//008原始数据
+            if(!TextUtils.isEmpty(currentWx008Data.getPhoneStrsAw())&&currentWx008Data.getPhoneStrsAw().contains("androidId")){
+                System.out.println("doAction--->npi数据");
+                data008Str = PhoneConf.phoneStr2008Str(currentWx008Data.getPhoneStrsAw());//内部改机数据转008原始数据
+                System.out.println("doAction--->npi数据phoneStr2008Str："+data008Str);
+            }
+            FileUtil.writeContent2FileForceUtf8(FilePathCommon.device008TxtPath,data008Str);
+            String strs = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
+            System.out.println("doAction-->008 str strs:"+strs);
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("doAction---Exception set008Environment");
+        }
     }
     private void set008Data(){
         new Thread(new Runnable() {
