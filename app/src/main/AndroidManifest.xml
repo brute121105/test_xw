@@ -83,6 +83,16 @@
         <activity android:name=".activity.YhSettingActivity" />
         <activity android:name=".activity.AfSettingActivity" />
         <activity android:name=".activity.DataImpExpActivity"></activity>
+
+
+        <!-- Declares the input method service -->
+        <service
+            android:name="hyj.xw.inputMethod.AndroidInputMethodService"
+            android:permission="android.permission.BIND_INPUT_METHOD" >
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

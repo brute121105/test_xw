@@ -512,10 +512,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 HttpRequestService httpRequestService = new HttpRequestService();
                 String deviceNum = deviceEditText.getText().toString();
+                int coutDisNet=0;
                 while (true){
+                    System.out.println("StopThread-->"+coutDisNet);
                     AutoUtil.sleep(1500);
                     try {
                         String res = httpRequestService.getStartConifgFromServer(deviceNum);
+                        if("".equals(res)){
+                            coutDisNet = coutDisNet+1;
+                            if(coutDisNet>15){
+                                System.out.println("StopThread-->start xw");
+                                coutDisNet = 0;
+                                AutoUtil.startAppByPackName("hyj.xw","hyj.xw.MainActivity");
+                            }
+                            continue;
+                        }
                         ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
                         Device device = JSONObject.parseObject(responseData.getData(),Device.class);
                         if(3==device.getRunState()){//停止
@@ -554,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         */
                        if("next".equals(tag)||"retry".equals(tag)){
                            String setWxDataResult = setWx008Data(tag);//获取008数据
-                           if(!"".equals(setWxDataResult)){
+                           if(!"".equals(setWxDataResult)||currentWx008Data==null){
                                System.out.println("doAction--->setWx008DataResult:"+setWxDataResult);
                                continue;
                            }
