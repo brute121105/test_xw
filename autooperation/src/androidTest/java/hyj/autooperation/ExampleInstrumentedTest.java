@@ -24,6 +24,7 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -313,6 +314,13 @@ public class ExampleInstrumentedTest {
     public void tesdot1(){
         while (true){
             String str = getAllWindowText("com.tencent.mm");
+            mDevice.pressEnter();
+            /*List<UiObject2> uos = findNodesByClaZZ(EditText.class);
+            if(uos!=null&&uos.size()==3) {
+                uos.get(0).setText(currentWx008Data.getNickName());
+                mDevice.pressEnter();
+                uos.get(1).setText(currentWx008Data.getPhone());
+            }*/
             AutoUtil.sleep(2000);
         }
         //doVpn2();
@@ -364,6 +372,10 @@ public class ExampleInstrumentedTest {
             List<UiObject2> uos = findNodesByClaZZ(EditText.class);
             if(uos!=null&&uos.size()==3){
                 uos.get(0).setText(currentWx008Data.getNickName());
+                String productName = mDevice.getProductName();
+                if("hermes".equals(productName)){
+                  mDevice.click(1006,1822);
+                }
                 uos.get(1).setText(currentWx008Data.getPhone());
                 try {
                     uos.get(2).setText(currentWx008Data.getWxPwd());//密码
@@ -449,6 +461,8 @@ public class ExampleInstrumentedTest {
                         wxid = currentWx008Data.getWxid19();
                     }
                     if(!windowText.contains(wxid)){
+                        uos.get(0).click();
+                        AutoUtil.sleep(200);
                         uos.get(0).setText(wxid);
                         String pwd1 = TextUtils.isEmpty(pwd)?"nullnull":pwd;
                         try {
@@ -505,12 +519,12 @@ public class ExampleInstrumentedTest {
             isOperationsSucc = true;
         }else if("自定义-发送短信".equals(wni.getOperation())){
 
-            /*UiObject2 sendMsg =  mDevice.findObject(By.text("发送短信"));
+            UiObject2 sendMsg =  mDevice.findObject(By.text("发送短信"));
             if(sendMsg!=null){
                 sendMsg.click();
                 AutoUtil.sleep(1000);
                 mDevice.pressBack();
-            }*/
+            }
 
             UiObject2 notReceiveMsg = mDevice.findObject(By.textContains("尚未收到你发送的短信验证码"));
             if(notReceiveMsg!=null){
@@ -573,7 +587,10 @@ public class ExampleInstrumentedTest {
             }
 
         }else if("自定义-长按拍照分享".equals(wni.getOperation())){
-            mDevice.findObject(By.desc("拍照分享")).longClick();
+            UiObject2 uiObject2 = mDevice.findObject(By.descContains("更多功能按钮"));
+            if(uiObject2!=null){
+                uiObject2.longClick();
+            }
             AutoUtil.sleep(800);
             isOperationsSucc = true;
             while (mDevice.findObject(By.text("拍摄"))!=null){
@@ -1544,15 +1561,22 @@ public class ExampleInstrumentedTest {
                 lastAction = "点击VPN";
                 System.out.println("doAction-->点击VPN"+flag);
             }else if(allText.contains("添加VPN")||allText.contains("开启VPN")){
-               mDevice.click(537,600);
+                if(!allText.contains("连接")){
+                    System.out.println("doAction-->点击VPN 537,600");
+                    mDevice.click(537,600);
+                }
             }
             UiObject2 uiObject2  = mDevice.findObject(By.text("连接"));
             if(uiObject2!=null){
-                uiObject2.click();
+                mDevice.click(1005,1215);
+                AutoUtil.sleep(800);
+                System.out.println("doAction-->点击连接前");
+                mDevice.findObject(By.text("连接")).click();
                 lastAction = "点击连接";
             }
             UiObject2 uiObject3  = mDevice.findObject(By.text("断开连接"));
             if(uiObject3!=null){
+                System.out.println("doAction-->点击断开连接");
                 uiObject3.click();
                 lastAction = "点击断开连接";
             }

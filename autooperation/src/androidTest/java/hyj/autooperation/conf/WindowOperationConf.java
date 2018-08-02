@@ -28,7 +28,7 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","注册","我已阅读并同意上述条款","自定义-点击同意条款下一步");
         setOps(ops,windowNodeInfo3,null);
 
-        WindowNodeInfo windowNodeInfo31 = new WindowNodeInfo("6.6.7","注册","微信隐私保护指引","自定义-点击同意条款下一步6.6");
+        WindowNodeInfo windowNodeInfo31 = new WindowNodeInfo("6.6.7","注册","当你使用一些功能时，我们会在获得你的同意后","自定义-点击同意条款下一步6.6");
         setOps(ops,windowNodeInfo31,null);
 
 
@@ -128,7 +128,7 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo70 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","自定义-进入朋友圈");
         setOps(ops,windowNodeInfo70,null);
 
-        WindowNodeInfo windowNodeInfo8 = new WindowNodeInfo("6.6.7","发圈","轻触更换主题照片|拍照分享","自定义-长按拍照分享");
+        WindowNodeInfo windowNodeInfo8 = new WindowNodeInfo("6.6.7","发圈","轻触更换主题照片","自定义-长按拍照分享");
         setOps(ops,windowNodeInfo8,null);
 
         WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","发圈","长按拍照按钮发文字，为内部体验功能","自定义-点我知道了");
