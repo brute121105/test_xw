@@ -116,6 +116,9 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo62 = new WindowNodeInfo("6.6.7","养号","微信团队邀请你参与内部体验","自定义-随机界面");
         setOps(ops,windowNodeInfo62,null);
 
+        WindowNodeInfo windowNodeInfo63 = new WindowNodeInfo("6.6.7","养号","当前所在页面,微信安全","自定义-过滑块");
+        setOps(ops,windowNodeInfo63,null);
+
 
         /*WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","点击发现");
         NodeInfo nodeInfo61 = new NodeInfo(1,"发现","","点击发现");
@@ -136,6 +139,9 @@ public class WindowOperationConf {
 
         WindowNodeInfo windowNodeInfo10 = new WindowNodeInfo("6.6.7","发圈","这一刻的想法...","自定义-输入发圈内容-结束");
         setOps(ops,windowNodeInfo10,null);
+
+        WindowNodeInfo windowNodeInfo101 = new WindowNodeInfo("6.6.7","发圈","照片或视频","自定义-随机界面");
+        setOps(ops,windowNodeInfo101,null);
 
         WindowNodeInfo windowNodeInfo11 = new WindowNodeInfo("6.6.7","提取wxid","通讯录|发现","自定义-提取wxid-结束");
         setOps(ops,windowNodeInfo11,null);
