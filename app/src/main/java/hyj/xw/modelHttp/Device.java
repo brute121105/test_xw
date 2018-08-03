@@ -141,6 +141,16 @@ public class Device {
     private String calledNumber;
     private String content;
 
+    private Integer changeIp;//1 不改变ip，2 执行改变ip
+
+
+    public Integer getChangeIp() {
+        return changeIp;
+    }
+
+    public void setChangeIp(Integer changeIp) {
+        this.changeIp = changeIp;
+    }
 
     public String getCallNumber() {
         return callNumber;

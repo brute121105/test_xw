@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;
@@ -15,6 +16,7 @@ import hyj.xw.modelHttp.Device;
 import hyj.xw.modelHttp.PhoneQueryVO;
 import hyj.xw.modelHttp.ResponseData;
 import hyj.xw.modelHttp.SendSmsVO;
+import hyj.xw.util.AutoUtil;
 import hyj.xw.util.OkHttpUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -45,7 +47,12 @@ public class HttpRequestService {
         String url = host+"/user/login";
         String postBody = "{\"name\":\""+username+"\",\"password\":\""+password+"\"}";//json数据.
         System.out.println("HttpRequestService postBody---->"+postBody);
-        String res  = OkHttpUtil.okHttpPostBody(url,postBody);
+        String res  = null;
+        try {
+            res = OkHttpUtil.okHttpPostBody(url,postBody);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("HttpRequestService res---->"+res);
         if(res.contains("success")){
             ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
@@ -153,7 +160,13 @@ public class HttpRequestService {
                 System.out.println("HttpRequestService getMaintainData wx008Data-->"+ JSON.toJSONString(wx008Data));
                 wx008Data.setPhoneInfo1(new PhoneInfo());
             }
-        }catch (Exception e){
+        }/*catch (ConnectException ce){
+            ce.printStackTrace();
+            System.out.println("HttpRequestService getMaintainData--doAction-->连接异常飞行");
+            AutoUtil.execShell("svc wifi disable");
+            AutoUtil.sleep(5000);
+            AutoUtil.execShell("svc wifi enable");
+        }*/catch (Exception e){
             e.printStackTrace();
         }
         return wx008Data;

@@ -1,6 +1,8 @@
 package hyj.xw.api;
 
 
+import java.io.IOException;
+
 import hyj.xw.common.CommonConstant;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.PhoneApi;
@@ -103,7 +105,12 @@ public class GetPhoneAndValidCodeThread implements Runnable{
     public String login(String apiId,String pwd){
         String token = "";
         String url = "http://api.jyzszp.com/Api/index/userlogin?uid="+apiId+"&pwd="+pwd;
-        String body = OkHttpUtil.okHttpGet(url);
+        String body = null;
+        try {
+            body = OkHttpUtil.okHttpGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("GetPhoneAndValidCodeThread login url hyj-->"+url);
         System.out.println("GetPhoneAndValidCodeThread login body hyj-->"+body);
         String[] strs = body.split("\\|");
@@ -114,7 +121,12 @@ public class GetPhoneAndValidCodeThread implements Runnable{
     }
     public String getPhone(String apiId,String token,String pjId){
         String phone = "";
-        String phones = OkHttpUtil.okHttpGet("http://api.jyzszp.com/Api/index/getMobilenum?pid="+pjId+"&uid="+apiId+"&token="+token+"&mobile=&size=1");
+        String phones = null;
+        try {
+            phones = OkHttpUtil.okHttpGet("http://api.jyzszp.com/Api/index/getMobilenum?pid="+pjId+"&uid="+apiId+"&token="+token+"&mobile=&size=1");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("GetPhoneAndValidCodeThread hyj--phoneBody hyj-->"+phones);
         //LogUtil.d("phoneBody",phones);
         String[] strs = phones.split("\\|");
@@ -127,7 +139,12 @@ public class GetPhoneAndValidCodeThread implements Runnable{
         String status = "";
         String url = "http://api.jyzszp.com/Api/index/sendSms?uid="+apiId+"&token="+token+"&pid="+pjid+"&mobile="+phoneNum+"&content="+msg+"&author_uid="+devId;
         System.out.println("sendMsg url hyj-->"+url);
-        String body = OkHttpUtil.okHttpGet(url);
+        String body = null;
+        try {
+            body = OkHttpUtil.okHttpGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("GetPhoneAndValidCodeThread hyj sendMsg body hyj-->"+body);
         if(body.indexOf("succ")>-1){
             status = body.substring(body.indexOf("|")+1);
@@ -138,7 +155,12 @@ public class GetPhoneAndValidCodeThread implements Runnable{
     public String getSendStatus(String apiId,String token,String pjid,String phoneNum,String status){
         String url= "http://api.jyzszp.com/Api/index/getSmsStatus?uid="+apiId+"&token="+token+"&pid="+pjid+"&mobile="+phoneNum+"&id="+status;
         System.out.println("hyj getSendStatus url hyj-->"+url);
-        String body = OkHttpUtil.okHttpGet(url);
+        String body = null;
+        try {
+            body = OkHttpUtil.okHttpGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("hyj getSendStatus body hyj-->"+body);
         return body;
     }
@@ -146,7 +168,12 @@ public class GetPhoneAndValidCodeThread implements Runnable{
         String validCode = "";
         String url = "http://api.jyzszp.com/Api/index/getVcodeAndReleaseMobile?uid="+apiId+"&token="+token+"&mobile="+phone+"&pid="+pjId;
         LogUtil.d("GetPhoneAndValidCodeThread getValidCode url",url);
-        String veryCodeBody = OkHttpUtil.okHttpGet(url);
+        String veryCodeBody = null;
+        try {
+            veryCodeBody = OkHttpUtil.okHttpGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         LogUtil.d("GetPhoneAndValidCodeThread veryCodeBody",veryCodeBody);
         String[] codeStr = veryCodeBody.split("\\|");
         if(codeStr!=null&&codeStr.length==3&&codeStr[0].matches("[\\d]{11}")){

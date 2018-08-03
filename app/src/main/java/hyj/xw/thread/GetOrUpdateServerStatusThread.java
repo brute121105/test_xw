@@ -2,6 +2,7 @@ package hyj.xw.thread;
 
 import android.text.TextUtils;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -25,7 +26,12 @@ public class GetOrUpdateServerStatusThread implements Callable<String> {
     }
     @Override
     public String  call() {
-        String status= OkHttpUtil.okHttpGet(url);
+        String status= null;
+        try {
+            status = OkHttpUtil.okHttpGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("GetOrUpdateServerStatusThread status get-->"+status);
         return status;
     }

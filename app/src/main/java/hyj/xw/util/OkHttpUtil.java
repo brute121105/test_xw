@@ -26,20 +26,16 @@ public class OkHttpUtil {
        return AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_WY_TOKEN);
    }
     //http get请求
-    public static String okHttpGet(String url){
+    public static String okHttpGet(String url) throws IOException {
         String reponseData = "";
         OkHttpClient mOkHttpClient = new OkHttpClient();
-        try {
-            Request request = new Request.Builder()
-                    .addHeader("token",getToken())
-                    .url(url)
-                    .build();
-            Response response = mOkHttpClient.newCall(request).execute();
-            byte[]  reponseBytes = response.body().bytes();
-            reponseData = new String(reponseBytes,"utf-8");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Request request = new Request.Builder()
+                .addHeader("token",getToken())
+                .url(url)
+                .build();
+        Response response = mOkHttpClient.newCall(request).execute();
+        byte[]  reponseBytes = response.body().bytes();
+        reponseData = new String(reponseBytes,"utf-8");
         return reponseData;
     }
     //http post请求
@@ -67,24 +63,20 @@ public class OkHttpUtil {
     }
 
     //http post请求
-    public static String okHttpPostBody(String url,String postBody){
+    public static String okHttpPostBody(String url,String postBody) throws IOException {
         String reponseData = "";
         OkHttpClient mOkHttpClient = new OkHttpClient();
         FormBody.Builder builder = new FormBody.Builder();
 
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
-        try {
-            RequestBody requestBody = RequestBody.create(JSON, postBody);
-            Request request = new Request.Builder()
-                    .addHeader("token",getToken())
-                    .url(url)
-                    .post(requestBody)
-                    .build();
-            Response response = mOkHttpClient.newCall(request).execute();
-            reponseData = response.body().string();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        RequestBody requestBody = RequestBody.create(JSON, postBody);
+        Request request = new Request.Builder()
+                .addHeader("token",getToken())
+                .url(url)
+                .post(requestBody)
+                .build();
+        Response response = mOkHttpClient.newCall(request).execute();
+        reponseData = response.body().string();
         return  reponseData;
     }
 

@@ -4,6 +4,8 @@ package hyj.xw.thread;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.IOException;
+
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.model.StartRunningConfig;
 import hyj.xw.modelHttp.Device;
@@ -32,7 +34,12 @@ public class MonitorStatusThread  extends Thread {
         String url =host+"/device/connect";
         Device device = new Device();
         device.setNum("A001");
-        String res = OkHttpUtil.okHttpPostBody(url,JSON.toJSONString(device));
+        String res = null;
+        try {
+            res = OkHttpUtil.okHttpPostBody(url, JSON.toJSONString(device));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("OkHttpUtil deviceConnectServer url--->"+url);
         System.out.println("OkHttpUtil deviceConnectServer --->"+res);
         return res;

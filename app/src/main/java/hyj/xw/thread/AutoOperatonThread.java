@@ -536,7 +536,12 @@ public class AutoOperatonThread extends BaseThread {
             calledNumber = phoneNodeValue.substring(phoneNodeValue.indexOf(" ")+1);
             String url = WindowNodeInfoConf.sendPhoneMsgUrl+"&callNumber="+callNumber+"&calledNumber="+calledNumber+"&content="+content;
             System.out.println("doActions sendPhoneMsg url-->"+url);
-            String resBody = OkHttpUtil.okHttpGet(url);
+            String resBody = null;
+            try {
+                resBody = OkHttpUtil.okHttpGet(url);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             System.out.println("doActions resBody sendPhoneMsg url-->"+resBody);
             if(resBody.contains("提交成功")){
                 resMsg = "提交成功";

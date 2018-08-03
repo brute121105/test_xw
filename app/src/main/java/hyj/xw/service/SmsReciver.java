@@ -6,11 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.OkHttpUtil;
+
+import static hyj.xw.util.OkHttpUtil.okHttpGet;
 
 /**
  * Created by Administrator on 2017/12/27.
@@ -44,7 +47,12 @@ public class SmsReciver extends BroadcastReceiver {
                                 String HOST = "120.78.134.230:80";
                                 String url = "http://"+HOST+"/sendValidCode?code="+validCode;
                                 LogUtil.d("url",url);
-                                String str = OkHttpUtil.okHttpGet(url);
+                                String str = null;
+                                try {
+                                    str = okHttpGet(url);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                                 LogUtil.d("resBody",str);
                             }
                         }).start();

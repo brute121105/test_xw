@@ -3,6 +3,7 @@ package hyj.xw.api;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -102,7 +103,12 @@ public class ZYGetPhoneAndValidCodeThread implements Runnable{
     public String cancelAllRecv(String token){
         String url ="http://zhiyuan.quanhuini.com/AllRelease?Token="+token;
         LogUtil.d("ZYGetPhoneAndValidCodeThread cancelAllRecvUrl",url);
-        String cancelAllRecvBody = OkHttpUtil.okHttpGet(url);
+        String cancelAllRecvBody = null;
+        try {
+            cancelAllRecvBody = OkHttpUtil.okHttpGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         LogUtil.d("ZYGetPhoneAndValidCodeThread cancelAllRecvBody",cancelAllRecvBody);
         return cancelAllRecvBody;
     }
@@ -110,11 +116,16 @@ public class ZYGetPhoneAndValidCodeThread implements Runnable{
     private void releasePhone(String token,String phone){
         String url  = "http://zhiyuan.quanhuini.com/ReleasePhone?Token="+token+"&MSGID="+phone;
         LogUtil.d("ZYGetPhoneAndValidCodeThread releasePhone",url);
-        String releasePhoneBody = OkHttpUtil.okHttpGet(url);
+        String releasePhoneBody = null;
+        try {
+            releasePhoneBody = OkHttpUtil.okHttpGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         LogUtil.d("ZYGetPhoneAndValidCodeThread releasePhone",releasePhoneBody);
     }
 
-    public String login(String apiId,String pwd){
+    public String login(String apiId,String pwd) throws IOException {
         String token = "";
         String url ="http://zhiyuan.quanhuini.com/Login?User="+apiId+"&Password="+pwd+"&Logintype=0";
         LogUtil.d(" ZYGetPhoneAndValidCodeThread loginBody url",url);
@@ -133,7 +144,12 @@ public class ZYGetPhoneAndValidCodeThread implements Runnable{
 
         JSONObject phone = null;
         String url = "http://zhiyuan.quanhuini.com/GetPhoneNumber?Token="+token+"&ItemId="+pjId+"&Phone=&Operator=0&Developer=brute121105";
-        String phones = OkHttpUtil.okHttpGet(url);
+        String phones = null;
+        try {
+            phones = OkHttpUtil.okHttpGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("-->hyj ZYGetPhoneAndValidCodeThread getPhone url-->"+url);
         System.out.println("-->hyj ZYGetPhoneAndValidCodeThread phoneBody-->"+phones);
         //LogUtil.d("phoneBody",phones);
@@ -147,7 +163,12 @@ public class ZYGetPhoneAndValidCodeThread implements Runnable{
     }
     public String getValidCode(String apiId,String phone,String token,String pjId){
         String validCode = "";
-        String veryCodeBody = OkHttpUtil.okHttpGet("http://zhiyuan.quanhuini.com/GetMessage?Token="+token+"&MSGID="+phone);
+        String veryCodeBody = null;
+        try {
+            veryCodeBody = OkHttpUtil.okHttpGet("http://zhiyuan.quanhuini.com/GetMessage?Token="+token+"&MSGID="+phone);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println(" ZYGetPhoneAndValidCodeThread hyj veryCodeBody-->"+veryCodeBody);
         JSONObject jb = JSON.parseObject(veryCodeBody);
         if("0".equals(jb.getString("code"))){

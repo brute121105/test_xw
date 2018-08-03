@@ -1,5 +1,6 @@
 package hyj.xw.api;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,7 +80,12 @@ public class ALZGetPhoneAndValidCodeThread extends BaseThread{
         //String url = "http://api.jyzszp.com/Api/index/loginIn?uid="+apiId+"&pwd="+pwd;
         String url ="http://api.xingjk.cn/api/do.php?action=loginIn&name="+apiId+"&password="+pwd;
         LogUtil.d(TAG,"loginUrl:"+url);
-        String body = OkHttpUtil.okHttpGet(url);
+        String body = null;
+        try {
+            body = OkHttpUtil.okHttpGet(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         LogUtil.d(TAG,"loginBody:"+body);
         String[] strs = body.split("\\|");
         if(strs.length==2&&strs[0].equals("1")){
@@ -90,7 +96,12 @@ public class ALZGetPhoneAndValidCodeThread extends BaseThread{
     public String getPhone(String apiId,String token,String pjId){
         String phone = "";
         //String phones = OkHttpUtil.okHttpGet("http://api.jyzszp.com/Api/index/getMobilenum?pid="+pjId+"&uid="+apiId+"&token="+token+"&mobile=&size=1");
-        String phones = OkHttpUtil.okHttpGet("http://api.xingjk.cn/api/do.php?action=getPhone&sid="+pjId+"&token="+token);
+        String phones = null;
+        try {
+            phones = OkHttpUtil.okHttpGet("http://api.xingjk.cn/api/do.php?action=getPhone&sid="+pjId+"&token="+token);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println(" TAG phoneBody-->"+phones);
         //LogUtil.d("phoneBody",phones);
         String[] strs = phones.split("\\|");
@@ -102,7 +113,12 @@ public class ALZGetPhoneAndValidCodeThread extends BaseThread{
     public String getValidCode(String apiId,String phone,String token,String pjId){
         String validCode = "";
         //String veryCodeBody = OkHttpUtil.okHttpGet("http://api.jyzszp.com/Api/index/getVcodeAndReleaseMobile?uid="+apiId+"&token="+token+"&mobile="+phone+"&pid="+pjId);
-        String veryCodeBody = OkHttpUtil.okHttpGet("http://api.xingjk.cn/api/do.php?action=getMessage&sid="+pjId+"&phone="+phone+"&token="+token);
+        String veryCodeBody = null;
+        try {
+            veryCodeBody = OkHttpUtil.okHttpGet("http://api.xingjk.cn/api/do.php?action=getMessage&sid="+pjId+"&phone="+phone+"&token="+token);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //LogUtil.d("veryCodeBody",veryCodeBody);
         String[] codeStr = veryCodeBody.split("\\|");
         if(codeStr!=null&&codeStr.length==2&&codeStr[0].matches("1")){
