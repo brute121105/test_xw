@@ -24,6 +24,7 @@ public class FilePathCommon {
     public static final String startRunninConfigTxtPath;
     public static final String device008TxtPath;
     public static final String stopTxtPath;
+    public static final String logPath;
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
         baseAppPathAW= Environment.getExternalStorageDirectory().getAbsolutePath()+"/.money/";
@@ -41,5 +42,6 @@ public class FilePathCommon {
         wx008DataFilePath = baseAppPath+"/wx008Data.txt";
         startRunninConfigTxtPath = baseAppPath+"/startRunningConfig.txt";
         device008TxtPath = "/sdcard/.system/xposeDevice.txt";
+        logPath = baseAppPath+"/log/";
     }
 }

@@ -63,5 +63,12 @@
         android:text="修改密码"
         android:textSize="18sp" />
 
+    <Button
+        android:id="@+id/open_assist2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="开启辅助"
+        android:textSize="18sp" />
+
 
 </LinearLayout>

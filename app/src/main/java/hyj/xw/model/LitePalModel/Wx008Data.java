@@ -41,6 +41,35 @@ public class Wx008Data  extends DataSupport{
     private String wxid19;
     private String dataType;//0所有 1早期的477个
 
+    private String regDevice;//注册设备
+    private String regIp;//注册ip
+    private Integer regHookType;//注册改机类型
+
+
+    public String getRegDevice() {
+        return regDevice;
+    }
+
+    public void setRegDevice(String regDevice) {
+        this.regDevice = regDevice;
+    }
+
+    public String getRegIp() {
+        return regIp;
+    }
+
+    public void setRegIp(String regIp) {
+        this.regIp = regIp;
+    }
+
+    public Integer getRegHookType() {
+        return regHookType;
+    }
+
+    public void setRegHookType(Integer regHookType) {
+        this.regHookType = regHookType;
+    }
+
     public void setPhoneInfo(PhoneInfo phoneInfo) {
         this.phoneInfo = phoneInfo;
     }

@@ -1,6 +1,5 @@
 package hyj.xw;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -21,26 +20,17 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import org.litepal.crud.DataSupport;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.NetworkInterface;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
 import hyj.xw.activity.AutoLoginSettingActivity;
 import hyj.xw.activity.DataImpExpActivity;
-import hyj.xw.activity.YhSettingActivity;
 import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
-import hyj.xw.conf.ImpExpData;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.flowWindow.MyWindowManager;
@@ -48,14 +38,11 @@ import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.DeviceInfo;
 import hyj.xw.model.LitePalModel.AppConfig;
 import hyj.xw.model.LitePalModel.Wx008Data;
-import hyj.xw.model.StartRunningConfig;
 import hyj.xw.modelHttp.Device;
 import hyj.xw.modelHttp.MaintainResultVO;
-import hyj.xw.modelHttp.PhoneQueryVO;
 import hyj.xw.modelHttp.ResponseData;
 import hyj.xw.service.HttpRequestService;
 import hyj.xw.service.SmsReciver;
-import hyj.xw.thread.MonitorStatusThread;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
@@ -63,12 +50,6 @@ import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetPermissionUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.OkHttpUtil;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -302,7 +283,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return srConfig;
     }
     public  void saveDeviceConfig(Device device){
-        FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath, JSON.toJSONString(device));
+        if(device!=null){
+            FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath, JSON.toJSONString(device));
+        }
     }
 
     public void testMethod() {
@@ -392,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 AutoUtil.killApp();
                 break;
             case R.id.test_conn:
-                AutoUtil.getRunningApp();
+                //AutoUtil.getRunningApp();
                 testConn();
                 break;
             case R.id.start_uiAuto:
@@ -526,13 +509,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         String res = httpRequestService.getStartConifgFromServer(deviceNum);
                         if("".equals(res)){
                             coutDisNet = coutDisNet+1;
-                            if(coutDisNet>40){
+                            if(coutDisNet>12){
                                 coutDisNet = 0;
                                 System.out.println("HttpRequestService getPhone--doAction-->连接异常飞行");
                                 AutoUtil.execShell("svc wifi disable");
                                 AutoUtil.sleep(5000);
                                 AutoUtil.execShell("svc wifi enable");
                                 AutoUtil.startAppByPackName("hyj.xw","hyj.xw.MainActivity");
+                                AutoUtil.sleep(3000);
+                                new StartChangeIpThread().start();
                             }
                             continue;
                         }
@@ -560,6 +545,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
            List<Wx008Data> wx008Datas=null ;
            Device device = null;
            Wx008Data currentWx008Data=null;
+           long activeTimeLength=0;
            @Override
            public void run() {
                if(!isLocalSettingCheckBox.isChecked()) new StopThread().start();
@@ -569,7 +555,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                        AutoUtil.sleep(1000);
                        device = getDeviceConfig();
                        String tag = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
-                       System.out.println(Thread.currentThread().getName()+"main-->currentSrc:"+JSON.toJSONString(device)+" 当前tag:"+tag);
+                       if(device.getRefreshTime()!=null) activeTimeLength = System.currentTimeMillis() - device.getRefreshTime();
+                       System.out.println(Thread.currentThread().getName()+"main-->activeTimeLength:"+activeTimeLength+" currentSrc:"+JSON.toJSONString(device)+" 当前tag:"+tag);
+                       if(device==null) continue;
+                       if(activeTimeLength>5*60000){//超过5分钟，重试
+                           tag = "retry";
+                           String msg = "doAction--->超时，超过5*60000，重置状态tag：retry";
+                           System.out.println(msg);
+                           LogUtil.log(msg);
+                       }
                        /**
                         * 回写登录结果
                         */
@@ -590,7 +584,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                }else if(device.getRunType()==1){
                                    String loginResult = device.getLoginResult();
                                    System.out.println("main-->doAction--->zc完成："+loginResult);
-                                   if(loginResult.contains("success")){//zc成功
+                                   /*if(loginResult.contains("success")){//zc成功
                                        currentWx008Data.setId(null);
                                        String json = JSON.toJSONString(currentWx008Data);
                                        System.out.println("main-->doAction--->注册完成上传数据currentWx008Data："+json);
@@ -599,7 +593,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                            currentWx008Data.setId(Long.parseLong(res));
                                        }
                                        System.out.println("main-->doAction--->注册完成上传数据res："+res);
-                                   }
+                                   }*/
                                    String res1 = httpRequestService.updateRegStatus(currentWx008Data.getPhone(),loginResult);
                                    System.out.println("main-->doAction--->更新手机注册状态res："+res1);
                                }
@@ -624,6 +618,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                        }else if(!TextUtils.isEmpty(device.getCallNumber())){
                            String res = httpRequestService.sendSms(device.getCallNumber(),device.getCalledNumber(),device.getContent());
                            System.out.println("main-->doAction--->发送短信返回res:"+res);
+                           if(res.contains("成功")){
+                               saveRegData2Server();
+                           }
                            device.setCallNumber("");
                            saveDeviceConfig(device);
                        }else if(device.getChangeIp()==2){
@@ -651,6 +648,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                            FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"done");
                            System.out.println("main-->doAction--->mainActivity环境和currentData已准备，写入done标志完成");
                            //new StartUiautoThread().start();
+                           device.setRefreshTime(System.currentTimeMillis());
+                           saveDeviceConfig(device);
                            new StartChangeIpThread().start();
                        }
 
@@ -662,6 +661,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                }
 
            }
+
+           public void saveRegData2Server(){
+               String phoneStrs = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
+               currentWx008Data.setRegIp(device.getIpAddress());
+               currentWx008Data.setId(null);
+               currentWx008Data.setPhoneStrs(phoneStrs);
+               String json = JSON.toJSONString(currentWx008Data);
+               System.out.println("main-->doAction--->发送短信成功上传数据currentWx008Data："+json);
+               if(!TextUtils.isEmpty(currentWx008Data.getPhone())){
+                   String res = httpRequestService.uploadPhoneData(json);
+                   if(!"".equals(res)&&AutoUtil.isValidLong(res)){//返回更新成功id，update wxid用到
+                       currentWx008Data.setId(Long.parseLong(res));
+                   }
+                   System.out.println("main-->doAction--->发送短信成功上传数据res："+res);
+                   int cn = currentWx008Data.updateAll("phone=?",currentWx008Data.getPhone());
+                   System.out.println("main-->doAction--->更新phoneStrs到数据库："+cn);
+               }
+           }
+
            public String getIp(){
                String ipUrl = "http://pv.sohu.com/cityjson?ie=utf-8";
                String ipStr = null;
@@ -730,13 +748,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                return "获取手机号失败";
                            }
                            if(device.getHookType()==2){
-                               String dataStr008 = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
-                               System.out.println("main-->doAction--->获取008device.txt数据dataStr008:"+dataStr008);
-                               currentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(phone,dataStr008);
+                               //String dataStr008 = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
+                               //System.out.println("main-->doAction--->获取008device.txt数据dataStr008:"+dataStr008);
+                               //008机型数据在发送短信成功后获取
+                               currentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(phone,"");
                            }else {
                                System.out.println("main-->doAction--->生成内部改机数据");
                                currentWx008Data = PhoneConf.createRegDataByPhone(phone);
                            }
+                           currentWx008Data.setRegDevice(device.getNum());
+                           currentWx008Data.setRegHookType(device.getHookType());
                            currentWx008Data.save();
                            System.out.println("main-->doAction--->获取一份新改机wxData并保存");
                        }

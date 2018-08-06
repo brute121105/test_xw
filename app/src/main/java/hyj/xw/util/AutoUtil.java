@@ -607,4 +607,13 @@ public class AutoUtil {
         cmds.add("rm -r -f /sdcard/tencent" );
         return cmds;
     }
+
+    public static boolean isValidLong(String str){
+        try{
+            long _v = Long.parseLong(str);
+            return true;
+        }catch(NumberFormatException e){
+            return false;
+        }
+    }
 }

@@ -1,6 +1,8 @@
 package hyj.xw.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -59,6 +61,9 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
         //上传数据
         Button uploadDataBtn = (Button)this.findViewById(R.id.uploadData);
         uploadDataBtn.setOnClickListener(this);
+        //开启辅助
+        Button openAssist2Btn = (Button)this.findViewById(R.id.open_assist2);
+        openAssist2Btn.setOnClickListener(this);
     }
 
     @Override
@@ -84,6 +89,9 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.uploadData:
                 uploadData();
+                break;
+            case R.id.open_assist2:
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                 break;
         }
     }

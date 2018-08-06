@@ -6,6 +6,8 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import hyj.xw.common.FilePathCommon;
+
 /**
  * Created by Administrator on 2017/5/15.
  */
@@ -45,6 +47,14 @@ public class LogUtil {
         String dateTime = sdf.format(new Date());
         //以天为单位生成日志文件
         FileUtil.writeContent2File("/sdcard/A_hyj_008data/","008data.txt",msg);
+    }
+
+    //记录008数据到sd卡
+    public static void log(String msg){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dateTime = sdf.format(new Date());
+        //以天为单位生成日志文件
+        FileUtil.writeContent2File(FilePathCommon.logPath,"log_"+dateTime+".txt",AutoUtil.getCurrentDate()+"-"+msg);
     }
     //记录008数据到sd卡
     public static void export(String path,String msg){

@@ -214,6 +214,22 @@ public class HttpRequestService {
         return res;
     }
 
+    //获取异常消息
+    public String getOneExpMsg(){
+        String res = "";
+        try {
+            String url =host+"/message/getone";
+            res = OkHttpUtil.okHttpGet(url);
+            if(res.contains("data")){
+                ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+                res = responseData.getData();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return res;
+    }
+
 
 
     public String uploadPhoneData(String wx008DataStr){

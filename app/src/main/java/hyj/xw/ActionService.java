@@ -36,7 +36,11 @@ public class ActionService  extends AccessibilityService {
         super.onServiceConnected();
         AutoUtil.execShell("input keyevent 3");
         parameters.setIsStop(0);
-        parameters.setStartLoginIndex(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
+
+        executorService.submit(ThreadFactory.getThread("monitorMessageThread",this,record,parameters));
+
+        //2018年8月3日15:58:16 住宿
+        /*parameters.setStartLoginIndex(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
         System.out.println("008-->extValue:"+extValue);
         //养号
         if("008".equals(extValue)){//生成数据
@@ -54,7 +58,10 @@ public class ActionService  extends AccessibilityService {
             if(extValue.contains("0082")){
                 executorService.submit(ThreadFactory.getThread("recover008Data",this,record,parameters));
             }
-        }
+        }*/
+
+
+        //很早前注释
         //AutoUtil.startWx();
        /* if("008".equals(extValue)){
             executorService.submit(ThreadFactory.getThread("fetch008Data",this,record,parameters));
