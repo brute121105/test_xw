@@ -160,11 +160,12 @@ public class ExampleInstrumentedTest {
 
         while (true){
             try {
-                AutoUtil.sleep(300);
+                AutoUtil.sleep(600);
                 instrumentation = InstrumentationRegistry.getInstrumentation();
                 mDevice = UiDevice.getInstance(instrumentation);
                 mDevice.waitForIdle(50);
                 deviceConfig = getDeviceConfig();
+                saveRefreshTime2Device();
                 System.out.println("running-->autoType："+autoType+" currentOperation:"+currentWindowNodeInfo.getOperation()+" stopState:"+stopState);
                 if(!mDevice.isScreenOn()){
                     mDevice.wakeUp();
@@ -257,7 +258,7 @@ public class ExampleInstrumentedTest {
                     FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
                     //initAuto("retry");
                     return;
-                }else if(wni.getWindowOperationDesc().contains("发送短信失败或超过最大尝试次数")&&wni.isWindowOperatonSucc()){
+                }else if((wni.getWindowOperationDesc().contains("发送短信失败或超过最大尝试次数")||wni.getOperation().contains("尚未收到短信"))&&wni.isWindowOperatonSucc()){
                     updateDeviceConfig("regExp发送短信失败或超过最大尝试次数");
                     FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
                     //initAuto("next");
@@ -358,13 +359,23 @@ public class ExampleInstrumentedTest {
         //doVpn2();
     }
 
+    //每30s刷新一次，记录活跃状态
+    public void saveRefreshTime2Device(){
+        long currentTime = System.currentTimeMillis();
+        if(deviceConfig.getRefreshTime()==null||currentTime-deviceConfig.getRefreshTime()>30000){
+            deviceConfig.setRefreshTime(currentTime);
+            saveDeviceConfig(deviceConfig);
+        }
+    }
     public  Device getDeviceConfig(){
         String srConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
         Device srConfig = JSONObject.parseObject(srConfigStr,Device.class);
         return srConfig;
     }
     public  void saveDeviceConfig(Device device){
-        FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath, JSON.toJSONString(device));
+        if(device!=null){
+            FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath, JSON.toJSONString(device));
+        }
     }
 
     //自定义、通用两种
@@ -423,8 +434,7 @@ public class ExampleInstrumentedTest {
             operationDesc = "输入账号"+currentWx008Data.getPhone()+"，输入密码"+currentWx008Data.getWxPwd()+"，点击【注册】"+isOperationsSucc+" uosSize:"+(uos==null?"null":uos.size());
         }else if("自定义-过滑块".equals(wni.getOperation())){
             if(validEnviroment()){//008不校验改机
-                delAllFile();
-                AutoUtil.sleep(2000);
+                //delAllFile();
                 System.out.println("doAction--->改机成功");
                 /**
                  * 服务器获取
@@ -453,15 +463,16 @@ public class ExampleInstrumentedTest {
                  */
                 int waitPic = 0;
                 //等待5s图片生成
-                while (waitPic<5&&!windowText.contains("https")){
+                while (waitPic<5&&!windowText.contains("拖动下方滑块完成拼图")){
+                    System.out.println("doAction--->windowText:"+windowText);
                     System.out.println("doAction--->等待滑块生成"+waitPic);
                     AutoUtil.sleep(1000);
                     waitPic = waitPic+1;
+                    windowText = getAllWindowText("com.tencent.mm");
                 }
-                cmdScrrenShot();//截图
+                //cmdScrrenShot();//截图
                 Bitmap bi = newWaitAndBitmap();
                 Integer[] dragEndX = DragImageUtil2.newGetPic2LocXAndDrapX(bi);
-                //Integer[] dragEndX = DragImageUtil2.getPic2LocXAndDrapX(bi);
                 if(dragEndX[1]>300){
                     Point[] points = getSwipePoints(dragEndX[0],dragEndX[1]+63,50,100,70,5,10,1000,1050);//63为方块半宽度 dragEndX[0] 为拖动点x起始位置  dragEndX[1] 为方块二边沿起始位置
                     System.out.println("doAction--->拖动滑块开始1");
@@ -469,13 +480,9 @@ public class ExampleInstrumentedTest {
                     System.out.println("doAction--->拖动滑块结束1");
                 }else {
                     mDevice.click(1000,1150);
-                    /*Point[] points2 = getDargPoins(dragEndX[0],dragEndX[1]+66,1029);
-                    mDevice.swipe(points2,50);*/
                 }
                 AutoUtil.sleep(4000);
                 operationDesc="new 拖动dragEndX"+JSON.toJSONString(dragEndX);
-
-
             }else {
                 operationDesc="改机失败";
             }
@@ -602,11 +609,33 @@ public class ExampleInstrumentedTest {
             operationDesc = "发送短信验证"+sendContentUiObj.getText()+receiveUiObj.getText();
         }else if("自定义-尚未收到短信".equals(wni.getOperation())){
             operationDesc = "尚未收到短信,返回:"+mDevice.pressBack();
-            isOperationsSucc = true;
+            System.out.println("doAction--->"+operationDesc);
+            UiObject2 uiObject2 = mDevice.findObject(By.text("确定"));
+            mDevice.waitForIdle(20);
+            if(uiObject2!=null) uiObject2.click();
+            int i = 0;
+            while (i<45){
+                AutoUtil.sleep(1000);
+                System.out.println("doAction--->尚未收到短信 等待已发送短信，下一步"+i);
+                UiObject2 nextUiObj = mDevice.findObject(By.textContains("已发送短信，下一步"));
+                if(nextUiObj!=null){
+                    isOperationsSucc = true;
+                    nextUiObj.click();
+                    AutoUtil.sleep(5000);
+                    break;
+                }else {
+                    System.out.println("doAction--->尚未收到短信 已发送短信，下一步"+i);
+                }
+                i++;
+            }
+            if(i>43){
+                isOperationsSucc = true;
+            }
         }else if("自定义-提取wxid-结束".equals(wni.getOperation())){
             //UiObject2 uiObject2 = mDevice.findObject(By.textStartsWith("微信号：wxid"));
             int count = 0;
             while (!windowText.contains("微信号：wxid")&&count<5){
+                mDevice.waitForIdle(10);
                 if(!mDevice.getCurrentPackageName().contains("tencent")){
                     startWx();
                     AutoUtil.sleep(1000);
@@ -617,6 +646,7 @@ public class ExampleInstrumentedTest {
                 //uiObject2 = mDevice.findObject(By.textStartsWith("微信号：wxid"));
             }
             UiObject uiObject2 = new UiObject(new UiSelector().textStartsWith("微信号：wxid"));
+            mDevice.waitForIdle(10);
             if(uiObject2!=null&&uiObject2.exists()){
                 try {
                     String text = uiObject2.getText();
@@ -756,6 +786,13 @@ public class ExampleInstrumentedTest {
                 }
             }
             operationDesc = wni.getOperation();
+        }else if("自定义-无响应等待".equals(wni.getOperation())){
+            UiObject2 uiObject2 = mDevice.findObject(By.text("等待"));
+            if(uiObject2!=null){
+                uiObject2.click();
+                isOperationsSucc = true;
+            }
+            operationDesc = wni.getOperation();
         }
         wni.setWindowOperationDesc(operationDesc);
         wni.setWindowOperatonSucc(isOperationsSucc);
@@ -780,7 +817,7 @@ public class ExampleInstrumentedTest {
     private boolean clickUiObject1(UiObject uiObject){
         if(uiObject==null) return false;
         try {
-            return uiObject.clickAndWaitForNewWindow(100);
+            return uiObject.clickAndWaitForNewWindow(500);
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
         }
@@ -1031,89 +1068,15 @@ public class ExampleInstrumentedTest {
             }
         }
     }
-   /* private File delAllFiles(String path){
-        File picFile = null;
-        File[] files = new File(path).listFiles();
-        for(File f:files){
-            f.delete();
-        }
-        return picFile;
-    }*/
 
-    public void testScreenShot(UiDevice mUIDevice) {
-        //UiDevice mUIDevice =  UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        if(mUIDevice!=null){
-            while (true){
-                System.out.println("版本1 开始截图1 imgName-->");
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                File file3s = new File("/sdcard/azy/aa.txt");
-                try {
-                    file3s.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String imgName = "16666new1"+System.currentTimeMillis()+".png";
-                File files = new File("/sdcard/azy/"+imgName);
-                mUIDevice.takeScreenshot(files);
-                System.out.println("截图成功2 imgName-->"+imgName);
-            }
-        }
+   private void delAllFilesInDir(String dir){
+        File[] files = new File(dir).listFiles();
+       if(files!=null&&files.length>80){
+           for(File f:files){
+               boolean flag = f.delete();
+           }
+       }
     }
-
-   /* String action="";
-    @Test
-    public void useAppContext2() {
-
-        killAndClearWxData();
-        startWx();
-
-        while (true){
-            System.out.println("running...."+mDevice.getCurrentPackageName()+" traver:"+mDevice.getLastTraversedText()+" pdName:"+mDevice.getProductName()+" action:"+action);
-            boolean flag1 = clickUiObjectByText("注册");
-            System.out.println("running点击注册1："+flag1);
-            List<UiObject2> uos = findNodesByClaZZ(EditText.class);
-            if(uos!=null&&uos.size()==3){
-                uos.get(0).setText("1123");
-                uos.get(1).setText("136521598"+new Random().nextInt(10)+new Random().nextInt(10));
-                uos.get(2).setText("789lkjmnhikj");//密码
-                boolean clickFlag2 = clickUiObjectByText("注册");
-                System.out.println("running点击注册2："+clickFlag2);
-            }
-            boolean clickFlag3 = clickNodeByDesContain("我已阅读并同意上述条款");
-            boolean clickFlag4 = clickUiObjectByDesc("下一步");
-            System.out.println("running点击同意条款下一步："+clickFlag4);
-            boolean clickFlag5 = clickUiObjectByDesc("开始");
-            System.out.println("running点击开始安全验证："+clickFlag5);
-
-            UiObject2  tdText = mDevice.findObject(By.desc("拖动下方滑块完成拼图"));
-            if(tdText!=null){
-                int dragEndX=0;
-                while (dragEndX==0){
-                    System.out.println("running-->tdText:"+tdText.getContentDescription());
-                    cmdScrrenShot();//截图
-                    Bitmap bi = waitAndGetBitmap();
-                    dragEndX = DragImageUtil2.getPic2LocX(bi);
-                    System.out.println("doAction-->new dragEndX:"+dragEndX);
-                    if(dragEndX>300){
-                        Point[] points = getSwipePoints(235,dragEndX+63,50,80,70,5,10,1000,1050);
-                        mDevice.swipe(points,10);
-                    }else {//无效距离
-                        Point[] points2 = getDargPoins(235,dragEndX+63,1029);
-                        mDevice.swipe(points2,10);
-                    }
-                }
-            }
-            UiObject2 qrWindow = mDevice.findObject(By.descContains("联系符合以下条件的"));
-            if(qrWindow!=null){
-                killAndClearWxData();
-                startWx();
-            }
-        }
-    }*/
 
     public Bitmap waitAndGetBitmap(){
         String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
@@ -1134,25 +1097,8 @@ public class ExampleInstrumentedTest {
 
         return bi;
     }
-    /*public void copyFile(File fromFile) {
-        System.out.println("doAction-->copyFile:"+fromFile.getName());
-        File toFile = new File("/sdcard/azy/"+fromFile.getName());
-        FileInputStream ins = null;
-        try {
-            ins = new FileInputStream(fromFile);
-            FileOutputStream out = new FileOutputStream(toFile);
-            byte[] b = new byte[1024];
-            int n=0;
-            while((n=ins.read(b))!=-1){
-                out.write(b, 0, n);
-            }
-            ins.close();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
-    public Bitmap newWaitAndBitmap(){
+
+   /* public Bitmap newWaitAndBitmap(){
         File file = newWaitAndGetFile();
         System.out.println("doAction----->获取到文件："+file.getName()+" length:"+file.length());
         String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
@@ -1168,14 +1114,14 @@ public class ExampleInstrumentedTest {
             }
         }
         return bi;
-    }
-    /*public Bitmap newWaitAndBitmap(){
+    }*/
+     public Bitmap newWaitAndBitmap(){
+         delAllFilesInDir(FilePathCommon.fkPngPath);
         File file = new File(FilePathCommon.fkPngPath);
         if(!file.exists()){
             file.mkdir();
         }
-        String pngName = System.currentTimeMillis()+".png";
-        String pathName = FilePathCommon.fkPngPath+File.separator+pngName;
+        String pathName = FilePathCommon.fkPngPath+File.separator+System.currentTimeMillis()+".png";;
         File pngFile = new File(pathName);
         boolean flag = mDevice.takeScreenshot(pngFile);
         System.out.println("doAction--->takeScreenshot flag:"+flag+" pathName:"+pathName);
@@ -1188,7 +1134,7 @@ public class ExampleInstrumentedTest {
             e.printStackTrace();
         }
         return bi;
-    }*/
+    }
     public File newWaitAndGetFile(){
         String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
         File file = waitAndGetFile(path);
@@ -1319,9 +1265,9 @@ public class ExampleInstrumentedTest {
             }else if(mDevice.findObject(By.text("注册"))==null){
                 AutoUtil.sleep(1000);
                 ++i;
-                if(i>15){
+                if(i>30){
                     System.out.println("doAction-->上次清楚失败，继续清除");
-                    //killAndClearWxData();
+                    AutoUtil.killAndClearWxData();
                     startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
                 }
             }
@@ -1350,7 +1296,8 @@ public class ExampleInstrumentedTest {
             AutoUtil.sleep(500);
         }*/
         if(deviceConfig.getHookType()==2){//如果008改机
-            if(deviceConfig.getRunType()==1) do008();//生成随机数据，zc才需要
+            //if(deviceConfig.getRunType()==1)
+                do008();//生成随机数据，zc才需要
         }
         String wx008DataSstr = FileUtil.readAllUtf8(FilePathCommon.wx008DataFilePath);
         Wx008Data currentWx008Data = JSON.parseObject(wx008DataSstr,Wx008Data.class);
@@ -1362,13 +1309,22 @@ public class ExampleInstrumentedTest {
         do008();
     }
 
+
+    String  action008="init";
     public boolean do008(){
         System.out.println("doAction-->设置008开始");
         while (true){
+            String allText = getAllWindowText("com.soft.apk008v");
             instrumentation = InstrumentationRegistry.getInstrumentation();
             mDevice = UiDevice.getInstance(instrumentation);
-            if(!mDevice.getCurrentPackageName().contains("apk008v")){
-                System.out.println("doAction-->打开008 pgName:"+mDevice.getCurrentPackageName());
+            String pnName = mDevice.getCurrentPackageName();
+            //确保init状态在主界面
+            if("init".equals(action008)&&pnName.contains("apk008v")&&!allText.contains("工具箱")){
+                mDevice.pressBack();
+                AutoUtil.sleep(300);
+                continue;
+            }
+            if(!pnName.contains("apk008v")){
                 AutoUtil.startAppByPackName(appContext,"com.soft.apk008v","com.soft.apk008.LoadActivity");
                 AutoUtil.sleep(2000);
                 if(mDevice.getCurrentPackageName().equals("com.miui.home")){
@@ -1378,15 +1334,44 @@ public class ExampleInstrumentedTest {
                 System.out.println("doAction-->打开008 pgName2");
                 continue;
             }
-            UiObject2 uiObject2 = mDevice.findObject(By.textStartsWith("ID:"));
-            if(uiObject2!=null){
-                int x = uiObject2.getVisibleBounds().centerX();
-                int y = uiObject2.getVisibleBounds().top-80;
-                System.out.println("doAction--->点击修改数据x:"+x+" y:"+y);
-                mDevice.click(x,y);
-                mDevice.waitForWindowUpdate("com.soft.apk008v",10);
-                if(saveAndGenerate()) return true;
-            }else {
+
+            if(allText.contains("工具箱")&&!"一键操作".equals(action008)){
+                boolean flag1 = clickUiObject1ByText("工具箱");
+                System.out.println("doAction--->点击工具箱"+flag1);
+                action008 = "工具箱";
+                continue;
+            }
+            if(allText.contains("快捷操作")){
+                boolean flag1 = clickUiObject1ByText("快捷操作");
+                System.out.println("doAction--->点击快捷操作"+flag1);
+                action008 = "快捷操作";
+                continue;
+            }
+
+            if(allText.contains("一键操作")){
+                boolean flag1 = clickUiObject1ByText("一键操作");
+                System.out.println("doAction--->一键操作"+flag1);
+                AutoUtil.sleep(1000);
+                mDevice.pressBack();
+                mDevice.pressBack();
+                AutoUtil.sleep(500);
+                action008 = "一键操作";
+                continue;
+            }
+
+            if(allText.contains("工具箱")&&"一键操作".equals(action008)){
+                UiObject2 uiObject2 = mDevice.findObject(By.textStartsWith("ID:"));
+                if(uiObject2!=null){
+                    int x = uiObject2.getVisibleBounds().centerX();
+                    int y = uiObject2.getVisibleBounds().top-80;
+                    System.out.println("doAction--->点击修改数据x:"+x+" y:"+y);
+                    mDevice.click(x,y);
+                    AutoUtil.sleep(500);
+                    action008 = "点击修改数据";
+                }
+                continue;
+            }
+            if("点击修改数据".equals(action008)){
                 if(saveAndGenerate()) return true;
             }
 
@@ -1397,12 +1382,17 @@ public class ExampleInstrumentedTest {
         UiObject2 uiObject22 = mDevice.findObject(By.text("随机生成"));
         UiObject2 uiObject21 = mDevice.findObject(By.text("保存"));
         if(uiObject21!=null&&uiObject22!=null){
-            uiObject22.click();
-            AutoUtil.sleep(2000);
+            if(deviceConfig.getRunType()==1){
+                uiObject22.click();
+                System.out.println("doAction--->点击随机生成");
+                AutoUtil.sleep(2000);
+            }
             uiObject21.click();
-            System.out.println("doAction--->点击保存008数据");
+            System.out.println("doAction--->点击保存");
+            AutoUtil.sleep(500);
             mDevice.pressBack();
             mDevice.pressHome();
+            action008 = "点击保存";
             return true;
         }
         return false;
@@ -1418,16 +1408,7 @@ public class ExampleInstrumentedTest {
         System.out.println("doAction-->结束截图");
         AutoUtil.sleep(1000);
     }
-    /*public String exeShell(String cmd){
-        try {
-            String result =  mDevice.executeShellCommand(cmd);
-            System.out.println("running-->cmd:"+cmd+"  ret:"+result);
-            return result;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }*/
+
     public String exeShell(String cmd){
         AutoUtil.execShell(cmd);
         System.out.println("running-->cmd:"+cmd);

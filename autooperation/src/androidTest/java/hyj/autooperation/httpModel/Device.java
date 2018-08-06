@@ -169,6 +169,15 @@ public class Device {
 
     private Integer changeIp;//1 不改变ip，2 执行改变ip
 
+    private Long refreshTime;//刷新时间，uiauto脚本没30S分钟刷新一次
+
+    public Long getRefreshTime() {
+        return refreshTime;
+    }
+
+    public void setRefreshTime(Long refreshTime) {
+        this.refreshTime = refreshTime;
+    }
 
     public Integer getChangeIp() {
         return changeIp;

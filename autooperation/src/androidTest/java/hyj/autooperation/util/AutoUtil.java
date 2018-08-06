@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -477,5 +478,32 @@ public class AutoUtil {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateTime = sdf.format(new Date());
         return dateTime;
+    }
+
+    public static void killAndClearWxData(){
+        System.out.println("main-->doAction-->关闭、清楚数据");
+        List<String> cmds = getKillAndClearWxCmds();
+        for(String cmd:cmds){
+            execShell(cmd);
+        }
+    }
+    public static List<String> getKillAndClearWxCmds(){
+        List<String> cmds = new ArrayList<String>();
+        cmds.add("am force-stop com.tencent.mm" );
+        cmds.add("pm clear com.tencent.mm" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/MicroMsg" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/app_cache" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/app_dex" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/app_font" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/app_lib" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/app_recover_lib" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/app_tbs" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/cache" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/databases" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/face_detect" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/files" );
+        //cmds.add("rm -r -f /data/data/com.tencent.mm/shared_prefs" );
+        cmds.add("rm -r -f /sdcard/tencent" );
+        return cmds;
     }
 }

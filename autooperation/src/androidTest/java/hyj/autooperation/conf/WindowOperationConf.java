@@ -28,7 +28,7 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo3 = new WindowNodeInfo("6.6.7","注册","我已阅读并同意上述条款","自定义-点击同意条款下一步");
         setOps(ops,windowNodeInfo3,null);
 
-        WindowNodeInfo windowNodeInfo31 = new WindowNodeInfo("6.6.7","注册","当你使用一些功能时，我们会在获得你的同意后","自定义-点击同意条款下一步6.6");
+        WindowNodeInfo windowNodeInfo31 = new WindowNodeInfo("6.6.7","注册","微信隐私保护指引|不同意","自定义-点击同意条款下一步6.6");
         setOps(ops,windowNodeInfo31,null);
 
 
@@ -55,8 +55,8 @@ public class WindowOperationConf {
         //WindowNodeInfo windowNodeInfo7 = new WindowNodeInfo("6.6.7","注册","发送短信后请回到本界面继续下一步","自定义-发送短信");
         setOps(ops,windowNodeInfo7,null);
 
-        /*WindowNodeInfo windowNodeInfo8 = new WindowNodeInfo("6.6.7","注册","尚未收到你发送的短信验证码","自定义-尚未收到短信");
-        setOps(ops,windowNodeInfo8,null);*/
+        WindowNodeInfo windowNodeInfo8 = new WindowNodeInfo("6.6.7","注册","尚未收到你发送的短信验证码","自定义-尚未收到短信");
+        setOps(ops,windowNodeInfo8,null);
 
         WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","注册","通讯录|发现","自定义-判断登录成功-结束");
         setOps(ops,windowNodeInfo9,null);
@@ -67,6 +67,9 @@ public class WindowOperationConf {
 
         WindowNodeInfo windowNodeInfo100 = new WindowNodeInfo("6.6.7","注册","网络错误，请稍后再试","自定义-网络错误");
         setOps(ops,windowNodeInfo100,null);
+
+        WindowNodeInfo windowNodeInfo64 = new WindowNodeInfo("6.6.7","注册","无响应。要将其关闭吗","自定义-无响应等待");
+        setOps(ops,windowNodeInfo64,null);
 
         /*WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","注册","通讯录|发现","自定义-提取wxid-结束");
         setOps(ops,windowNodeInfo9,null);*/
@@ -115,6 +118,9 @@ public class WindowOperationConf {
 
         WindowNodeInfo windowNodeInfo62 = new WindowNodeInfo("6.6.7","养号","微信团队邀请你参与内部体验","自定义-随机界面");
         setOps(ops,windowNodeInfo62,null);
+
+        WindowNodeInfo windowNodeInfo64 = new WindowNodeInfo("6.6.7","养号","无响应。要将其关闭吗","自定义-无响应等待");
+        setOps(ops,windowNodeInfo64,null);
 
         WindowNodeInfo windowNodeInfo63 = new WindowNodeInfo("6.6.7","养号","当前所在页面,微信安全","自定义-过滑块");
         setOps(ops,windowNodeInfo63,null);
