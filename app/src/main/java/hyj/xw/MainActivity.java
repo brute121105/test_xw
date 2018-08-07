@@ -43,6 +43,7 @@ import hyj.xw.modelHttp.MaintainResultVO;
 import hyj.xw.modelHttp.ResponseData;
 import hyj.xw.service.HttpRequestService;
 import hyj.xw.service.SmsReciver;
+import hyj.xw.task.DownLoadAPkListener;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
@@ -72,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         GetPermissionUtil.getReadAndWriteContactPermision(this, MainActivity.this);
+        DownLoadAPkListener downLoadAPkListener = new DownLoadAPkListener(this);
+        downLoadAPkListener.checkVersion();
         /*if (Build.VERSION.SDK_INT >= 23) {
             if (!Settings.canDrawOverlays(this)) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
