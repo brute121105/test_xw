@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -27,7 +28,9 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
@@ -280,6 +283,25 @@ public class AutoUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static List<String>  execShellRet(String cmd)  {
+        Process process = null;
+        List<String> processList = new ArrayList<String>();
+        try {
+            process = Runtime.getRuntime().exec("su \n"+cmd);
+            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            System.out.println("doAction-->input:"+input);
+            String line = "";
+            while ((line = input.readLine()) != null) {
+                System.out.println("doAction-->line:"+line);
+                processList.add(line);
+            }
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return processList;
     }
     public static void clickXY(int x,int y){
         execShell("input tap "+x+" "+y);
@@ -536,7 +558,7 @@ public class AutoUtil {
     public static void killApp(){
         AutoUtil.execShell("am force-stop hyj.xw");
         AutoUtil.execShell("am force-stop hyj.weixin_008");
-        AutoUtil.execShell("am force-stop com.soft.apk008v");
+        //AutoUtil.execShell("am force-stop com.soft.apk008v");
     }
     public static String getLocalMacAddress() {
         String macSerial = null;
@@ -615,5 +637,13 @@ public class AutoUtil {
         }catch(NumberFormatException e){
             return false;
         }
+    }
+
+    public static void installApk(String dir,String fileName) {
+        //安装应用
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(new File(dir, fileName)),"application/vnd.android.package-archive");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        GlobalApplication.getContext().startActivity(intent);
     }
 }

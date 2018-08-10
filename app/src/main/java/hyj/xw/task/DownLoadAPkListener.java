@@ -5,9 +5,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 
+import org.json.JSONObject;
+
 import hyj.xw.R;
+import hyj.xw.common.CommonConstant;
+import hyj.xw.dao.AppConfigDao;
+import hyj.xw.modelHttp.Apk;
+import hyj.xw.service.HttpRequestService;
+import hyj.xw.util.AutoUtil;
 import hyj.xw.view.CommonProgressDialog;
 
 
@@ -16,11 +24,18 @@ import hyj.xw.view.CommonProgressDialog;
  */
 
 public class DownLoadAPkListener implements DialogInterface.OnClickListener {
-    private CommonProgressDialog pBar;
+    private CommonProgressDialog pBar=null;
     private Context context;
-    String url = "http://120.78.134.230:8080/apk/download/2";
-    public DownLoadAPkListener(Context context){
+    private String downloadPath;
+    private String apkType;
+    //private Long newVersionCode;
+    private Apk apk;
+    String apkDownloadUrl = "http://"+AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_HOST)+"/apk/download/";
+    public DownLoadAPkListener(Context context,String downloadPath,String apkType,Apk apk){
+        this.downloadPath = downloadPath;
         this.context = context;
+        this.apkType = apkType;
+        this.apk = apk;
     }
     @Override
     public void onClick(DialogInterface dialog, int which) {
@@ -33,8 +48,8 @@ public class DownLoadAPkListener implements DialogInterface.OnClickListener {
         pBar.setIndeterminate(true);
         pBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         pBar.setCancelable(true);
-        final DownloadTask downloadTask = new DownloadTask(context,pBar);
-        downloadTask.execute(url);
+        final DownloadTask downloadTask = new DownloadTask(context,pBar,downloadPath,apkType,apk);
+        downloadTask.execute(apkDownloadUrl);
         pBar.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
@@ -45,19 +60,27 @@ public class DownLoadAPkListener implements DialogInterface.OnClickListener {
     }
 
     // 获取更新版本号
-    public void checkVersion() {
-        int currentVersion = getVersion(context);
-        String newversion = "2.1";//更新新的版本号
-        String content = "更新版本";
-        double newversioncode = Double.parseDouble(newversion);
-        int cc = (int) (newversioncode);
-        System.out.println("newversioncode:"+newversioncode+" cc:"+cc+" currentVersion:"+currentVersion);
-        if (cc != currentVersion) {
-            if (currentVersion < cc) {
-                showDwnloadApkDialog(content);
-            }
+    public void checkVersion(){
+        //int currentVersion = getVersion(context);
+        //System.out.println("doAction--->currentVersion:"+currentVersion);
+        apkDownloadUrl = apkDownloadUrl+apk.getId();
+        System.out.println("doAction--->apkDownloadUrl:"+apkDownloadUrl);
+        String content = "版本"+apk.getVersionCode()+"\n发布时间"+apk.getCreateTime();
+        showDwnloadApkDialog(content);
+    }
+
+    public void downloadAttach(boolean isAlertWindow){
+        apkDownloadUrl = apkDownloadUrl+apk.getId();
+        System.out.println("doAction--->apkDownloadUrl:"+apkDownloadUrl);
+        String content = "附件版本"+apk.getVersionCode()+"\n发布时间"+String.valueOf(apk.getCreateTime());
+        if(isAlertWindow){
+            showDwnloadApkDialog(content);
+        }else {
+            DownloadTask downloadTask = new DownloadTask(context,pBar,downloadPath,apkType,apk);
+            downloadTask.execute(apkDownloadUrl);
         }
     }
+
 
     public void showDwnloadApkDialog(String content) {
         new android.app.AlertDialog.Builder(context)
@@ -73,16 +96,5 @@ public class DownLoadAPkListener implements DialogInterface.OnClickListener {
                 .show();
     }
 
-    public int getVersion(Context context) {
-        try {
-            PackageManager manager = context.getPackageManager();
-            PackageInfo info = manager.getPackageInfo(context.getPackageName(),0);
-            String version = info.versionName;
-            int versioncode = info.versionCode;
-            return versioncode;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
+
 }

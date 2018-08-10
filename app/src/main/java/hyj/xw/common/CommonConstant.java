@@ -58,5 +58,8 @@ public class CommonConstant {
     public static String APPCONFIG_SENDMSG= "发送短信";
     public static String APPCONFIG_GHK= "过滑块";
 
+    public static String APPCONFIG_UIAUTO_VERSION= "uiautoVersonCode";
+
+
     public static int index=0;
 }

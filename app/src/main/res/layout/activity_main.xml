@@ -92,6 +92,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -124,6 +125,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -169,6 +171,7 @@
 
 
     <LinearLayout
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -187,6 +190,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -226,6 +230,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -315,6 +320,46 @@
             android:textSize="18sp" />
     </LinearLayout>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/reqRoot"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="申请root1"
+            android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/reqRoot2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="申请root2"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:id="@+id/downloadAttach"
+            android:layout_height="wrap_content"
+            android:text="附件下载"
+            android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:id="@+id/updateApk"
+            android:layout_height="wrap_content"
+            android:text="版本更新"
+            android:textSize="18sp" />
+    </LinearLayout>
+
 
 
     <!--<LinearLayout
@@ -337,6 +382,7 @@
             android:textSize="18sp" />
     </LinearLayout>-->
     <Button
+        android:visibility="gone"
         android:id="@+id/btn_data_impExp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

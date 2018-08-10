@@ -214,6 +214,26 @@ public class HttpRequestService {
         return res;
     }
 
+    //版本检测
+    public String checkUpdate(String apkType,int version){
+        String res = "";
+        try {
+            String url =host+"/apk/check-update?apkType="+apkType+"&versionCode="+version;
+            System.out.println("HttpRequestService checkUpdate url--->"+url);
+            res = OkHttpUtil.okHttpGet(url);
+            System.out.println("HttpRequestService checkUpdate res--->"+res);
+            if(res.contains("success")){
+                ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+                if(responseData.isSuccess()){
+                    res = responseData.getData();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return res;
+    }
+
     //获取异常消息
     public String getOneExpMsg(){
         String res = "";

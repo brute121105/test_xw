@@ -1,5 +1,6 @@
 package hyj.xw.util;
 
+import android.content.res.AssetManager;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -11,11 +12,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
+
+import hyj.xw.GlobalApplication;
 
 /**
  * Created by Administrator on 2017/5/15.
@@ -387,6 +392,52 @@ public class FileUtil {
 
     }
 
+    public static void copyFileByStream(InputStream is, File newFile) {
+        // TODO Auto-generated method stub
+        BufferedInputStream bis = new BufferedInputStream(is);
+        BufferedOutputStream bos= null;
+        try {
+            bos = new BufferedOutputStream(new FileOutputStream(newFile));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        byte[] bys=new byte[1024];
+        int len=0;
+        try {
+            bos.write(bys,0,len);
+            bos.close();
+            bis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public static void copyAssetFile(String filename,String destinationPath) {
+        AssetManager assetManager = GlobalApplication.getContext().getAssets();
+        InputStream in = null;
+        OutputStream out = null;
+        String newFileName = null;
+        try {
+            Log.i("tag", "copyFile() "+filename);
+            in = assetManager.open(filename);
+            newFileName = destinationPath + filename;
+            out = new FileOutputStream(newFileName);
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            in.close();
+            in = null;
+            out.flush();
+            out.close();
+            out = null;
+        } catch (Exception e) {
+            Log.e("tag", "Exception in copyFile() of "+newFileName);
+            Log.e("tag", "Exception in copyFile() "+e.toString());
+        }
+    }
     //读取文件夹
     public static File readFolderByPath(String path){
         File file = new File(path);

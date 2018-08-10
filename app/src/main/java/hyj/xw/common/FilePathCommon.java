@@ -25,6 +25,8 @@ public class FilePathCommon {
     public static final String device008TxtPath;
     public static final String stopTxtPath;
     public static final String logPath;
+    public static final String downAPk1Path;
+    public static final String downAPk2Path;
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
         baseAppPathAW= Environment.getExternalStorageDirectory().getAbsolutePath()+"/.money/";
@@ -43,5 +45,7 @@ public class FilePathCommon {
         startRunninConfigTxtPath = baseAppPath+"/startRunningConfig.txt";
         device008TxtPath = "/sdcard/.system/xposeDevice.txt";
         logPath = baseAppPath+"/log/";
+        downAPk1Path = "/sdcard/azyfile";
+        downAPk2Path = "/sdcard/hyj.autooperation.test";
     }
 }

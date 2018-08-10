@@ -292,7 +292,6 @@ public class PhoneConf {
         currentWx008Data.setCnNum(cnNum);
         currentWx008Data.setCreateTime(new Date());
         currentWx008Data.setDataFlag(dataFlag);
-        //currentWx008Data.setPhoneStrsAw(phoneStrsAw);
         currentWx008Data.setPhoneStrs(phoneStrsAw);
         return currentWx008Data;
     }
@@ -576,6 +575,7 @@ public class PhoneConf {
         return str;
     }
 
+
     public static Wx008Data createRegDataByPhone(String phone){
         NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);
         String pwd = WxNickNameConstant.getZmByCount(3)+phone.substring(phone.length()-6);
@@ -583,7 +583,10 @@ public class PhoneConf {
         System.out.println("createRegData--->"+JSON.toJSONString(data));
         return data;
     }
-    public static Wx008Data createRegDataByPhoneAndDeviceTxt(String phone,String dataStr008){
+    //1 创建内部改机数据  2 内部改机数据转成008
+    public static Wx008Data createRegDataByPhoneAndDeviceTxt(String phone){
+        NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);
+        String dataStr008 = JSON.toJSONString(npiTo008Data(npi));
         String pwd = WxNickNameConstant.getZmByCount(3)+phone.substring(phone.length()-6);
         Wx008Data data = createReg008DataDeviceTxt(WxNickNameConstant.getName1(),phone,pwd,"86","011",dataStr008);
         System.out.println("createRegData--->"+JSON.toJSONString(data));
