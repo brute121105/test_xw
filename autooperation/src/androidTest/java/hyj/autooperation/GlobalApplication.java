@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.widget.Toast;
 
-import org.litepal.LitePalApplication;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,7 +28,7 @@ public class GlobalApplication extends Application {
         //程序崩溃错误捕捉
         CrashHandler crashHandler = CrashHandler.getInstance();
         crashHandler.init(context);
-        LitePalApplication.initialize(context);
+        //LitePalApplication.initialize(context);
         //EventBus.getDefault().register(this);
     }
 

@@ -4,7 +4,6 @@ package hyj.autooperation.model;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import org.litepal.crud.DataSupport;
 
 import java.util.Arrays;
 import java.util.Date;

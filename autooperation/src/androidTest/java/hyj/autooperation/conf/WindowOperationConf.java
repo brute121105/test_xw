@@ -61,6 +61,9 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo9 = new WindowNodeInfo("6.6.7","注册","通讯录|发现","自定义-判断登录成功-结束");
         setOps(ops,windowNodeInfo9,null);
 
+        WindowNodeInfo windowNodeInfo91 = new WindowNodeInfo("6.6.7","注册","本次登录已失效","自定义-登录异常");
+        setOps(ops,windowNodeInfo91,null);
+
         WindowNodeInfo windowNodeInfo10 = new WindowNodeInfo("6.6.7","注册","该手机号已经绑定以上微信帐号","点击不是我的，继续注册");
         NodeInfo nodeInfo101 = new NodeInfo(1,"不是我的，继续注册","","点击不是我的，继续注册");
         setOps(ops,windowNodeInfo10,nodeInfo101);
@@ -105,6 +108,9 @@ public class WindowOperationConf {
         setOps(ops,windowNodeInfo44,null);
 
         WindowNodeInfo windowNodeInfo45 = new WindowNodeInfo("6.6.7","养号","该微信帐号因使用了微信外挂","自定义-登录异常");
+        setOps(ops,windowNodeInfo45,null);
+
+        WindowNodeInfo windowNodeInfo46 = new WindowNodeInfo("6.6.7","养号","本次登录已失效","自定义-登录异常");
         setOps(ops,windowNodeInfo45,null);
 
         WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","养号","通讯录|发现","自定义-判断登录成功-结束");

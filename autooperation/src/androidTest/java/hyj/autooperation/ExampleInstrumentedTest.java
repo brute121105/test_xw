@@ -112,6 +112,12 @@ public class ExampleInstrumentedTest {
     }
 
     @Test
+    public void installTest(){
+        AutoUtil.clickXY(0,0);
+        System.out.println("doAction--->install success666");
+    }
+
+    @Test
     public void changeIp(){
         System.out.println("doAction-->开始修改ip");
         if(deviceConfig.getChangeIpMode()==1){
@@ -166,7 +172,7 @@ public class ExampleInstrumentedTest {
                 mDevice.waitForIdle(50);
                 deviceConfig = getDeviceConfig();
                 saveRefreshTime2Device();
-                System.out.println("running-->autoType："+autoType+" currentOperation:"+currentWindowNodeInfo.getOperation()+" stopState:"+stopState);
+                System.out.println("v1020 running-->autoType："+autoType+" currentOperation:"+currentWindowNodeInfo.getOperation()+" stopState:"+stopState);
                 if(!mDevice.isScreenOn()){
                     mDevice.wakeUp();
                     System.out.println("doAction-->亮屏幕");
@@ -191,7 +197,7 @@ public class ExampleInstrumentedTest {
                 System.out.println("ops-->ops:"+JSON.toJSONString(ops));
                 WindowNodeInfo wni = getWniByWindowText(ops,windowText);
                 if(wni==null){
-                    if(windowText.contains("正在载入数据...")||windowText.contains("progressBar")||windowText.contains("正在完成注册")) continue;
+                    if(windowText.contains("progressBar")||windowText.contains("正在完成注册")) continue;
                     /**
                      * 处理微信不在当前窗口
                      */
@@ -585,6 +591,8 @@ public class ExampleInstrumentedTest {
             UiObject2 receiveUiObj = mDevice.findObject(By.textStartsWith("到 "));
             int wt = 0;
             while ((sendContentUiObj==null||receiveUiObj==null)&&wt<30){
+                mDevice.click(70,128);
+                System.out.println("doAction--->sendContentUiObj is null"+wt);
                 AutoUtil.sleep(1000);
                 sendContentUiObj = mDevice.findObject(By.textStartsWith("发送 zc"));
                 receiveUiObj = mDevice.findObject(By.textStartsWith("到 "));
@@ -1314,6 +1322,7 @@ public class ExampleInstrumentedTest {
     public boolean do008(){
         System.out.println("doAction-->设置008开始");
         while (true){
+            System.out.println("doAction-->action008:"+action008);
             String allText = getAllWindowText("com.soft.apk008v");
             instrumentation = InstrumentationRegistry.getInstrumentation();
             mDevice = UiDevice.getInstance(instrumentation);
@@ -1371,7 +1380,8 @@ public class ExampleInstrumentedTest {
                 }
                 continue;
             }
-            if("点击修改数据".equals(action008)){
+            if("点击修改数据".equals(action008)||"工具箱".equals(action008)){
+                System.out.println("doAction--->点击修改数据");
                 if(saveAndGenerate()) return true;
             }
 
@@ -1379,14 +1389,16 @@ public class ExampleInstrumentedTest {
     }
 
     public boolean saveAndGenerate(){
-        UiObject2 uiObject22 = mDevice.findObject(By.text("随机生成"));
+        //UiObject2 uiObject22 = mDevice.findObject(By.text("随机生成"));
         UiObject2 uiObject21 = mDevice.findObject(By.text("保存"));
-        if(uiObject21!=null&&uiObject22!=null){
-            if(deviceConfig.getRunType()==1){
+        //System.out.println("doAction-->uiObject22:"+uiObject22);
+        System.out.println("doAction-->uiObject21:"+uiObject21);
+        if(uiObject21!=null){
+            /*if(deviceConfig.getRunType()==1){
                 uiObject22.click();
                 System.out.println("doAction--->点击随机生成");
                 AutoUtil.sleep(2000);
-            }
+            }*/
             uiObject21.click();
             System.out.println("doAction--->点击保存");
             AutoUtil.sleep(500);
@@ -1580,7 +1592,7 @@ public class ExampleInstrumentedTest {
         String lastAction="init";
         while (true){
             //System.out.println("doAction----------------------------------------------------->action:"+lastAction);
-            if("点击连接".equals(lastAction)&&waitVpnConn(70)){
+            if("点击连接".equals(lastAction)&&waitVpnConn(35)){
                 System.out.println("doAction--->vpn连接成功");
                 if(waitAndCheckIp())  return;
             }
