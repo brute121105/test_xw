@@ -111,7 +111,10 @@ public class WindowOperationConf {
         setOps(ops,windowNodeInfo45,null);
 
         WindowNodeInfo windowNodeInfo46 = new WindowNodeInfo("6.6.7","养号","本次登录已失效","自定义-登录异常");
-        setOps(ops,windowNodeInfo45,null);
+        setOps(ops,windowNodeInfo46,null);
+
+        WindowNodeInfo windowNodeInfo47 = new WindowNodeInfo("6.6.7","养号","系统检测到你的帐号有异常","自定义-登录异常");
+        setOps(ops,windowNodeInfo47,null);
 
         WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","养号","通讯录|发现","自定义-判断登录成功-结束");
         setOps(ops,windowNodeInfo5,null);
