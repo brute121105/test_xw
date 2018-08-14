@@ -46,6 +46,7 @@ import hyj.xw.service.HttpRequestService;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.task.DownLoadAPkListener;
 import hyj.xw.util.AutoUtil;
+import hyj.xw.util.ContactUtil;
 import hyj.xw.util.DaoUtil;
 import hyj.xw.util.DeviceParamUtil;
 import hyj.xw.util.FileUtil;
@@ -381,9 +382,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 AutoUtil.killApp();
                 break;
             case R.id.test_conn:
-                //AutoUtil.getRunningApp();
-                Wx008Data currentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt("88888888888"); //008机型数据在发送短信成功后获取
-                System.out.println("currentWx008Data-->"+JSON.toJSONString(currentWx008Data));
                 testConn();
                 break;
             case R.id.start_uiAuto:
@@ -585,6 +583,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if(3==device.getRunState()){//停止
                         System.out.println("doAction--->停止am force-stop hyj.autooperation");
                         AutoUtil.execShell("am force-stop hyj.autooperation");
+                        AutoUtil.execShell("am force-stop hyj.xw");
                         AutoUtil.sleep(2000);
                         continue;
                     }if(4==device.getRunState()){//重启手机
@@ -639,7 +638,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                        }
                        if(activeTimeLength>2*60000){//超过5分钟，重试
                            tag = "retry";
-                           String msg = "doAction--->超时，超过5*60000，重置状态tag：retry";
+                           String msg = "doAction--->超时，超过2*60000，重置状态tag：retry";
                            System.out.println(msg);
                            LogUtil.log(msg);
                        }
@@ -648,33 +647,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         */
                        if(!TextUtils.isEmpty(device.getLoginResult())){
                            currentWx008Data.setExpMsg(device.getLoginResult());
-                           //if(!TextUtils.isEmpty(device.getWxid())) currentWx008Data.setWxid19(device.getWxid());
                            int cn = DaoUtil.updateExpMsg(currentWx008Data,currentWx008Data.getExpMsg()+"-"+AutoUtil.getCurrentDate());
                            String recordTxt = loginIndex+" msg:"+currentWx008Data.getExpMsg()+" "+currentWx008Data.getPhone()+" "+currentWx008Data.getWxPwd()+" ip:"+device.getIpAddress();
                            LogUtil.login("",recordTxt);
                            System.out.println("main-->doAction--->main-->updateExpMsg:"+device.getLoginResult()+" cn:"+cn+" recordTxt:"+recordTxt);
                            if(!isLocalSettingCheckBox.isChecked()){//服务器
                                if(device.getRunType()==2){
-                                   MaintainResultVO maintainResultVO = createMaintainResult(currentWx008Data,device);
-                                   String json = JSON.toJSONString(maintainResultVO);
-                                   System.out.println("main-->doAction-->修改维护状态req:"+json);
-                                   String res = httpRequestService.updateMaintainStatus(json);
-                                   System.out.println("main-->doAction--->修改维护状态res："+res);
+                                   updateMaintainStatus();
                                }else if(device.getRunType()==1){
                                    String loginResult = device.getLoginResult();
-                                   System.out.println("main-->doAction--->zc完成："+loginResult);
-                                   /*if(loginResult.contains("success")){//zc成功
-                                       currentWx008Data.setId(null);
-                                       String json = JSON.toJSONString(currentWx008Data);
-                                       System.out.println("main-->doAction--->注册完成上传数据currentWx008Data："+json);
-                                       String res = httpRequestService.uploadPhoneData(json);
-                                       if(!"".equals(res)){//返回更新成功id，update wxid用到
-                                           currentWx008Data.setId(Long.parseLong(res));
-                                       }
-                                       System.out.println("main-->doAction--->注册完成上传数据res："+res);
-                                   }*/
-                                   String res1 = httpRequestService.updateRegStatus(currentWx008Data.getPhone(),loginResult);
-                                   System.out.println("main-->doAction--->更新手机注册状态res："+res1);
+                                   if("本次登录已失效".equals(loginResult)){
+                                       updateMaintainStatus();
+                                   }else {
+                                       System.out.println("main-->doAction--->zc完成："+loginResult);
+                                       String res1 = httpRequestService.updateRegStatus(currentWx008Data.getPhone(),loginResult);
+                                       System.out.println("main-->doAction--->更新手机注册状态res："+res1);
+                                   }
                                }
                            }
                            device.setLoginResult("");
@@ -697,7 +685,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                        }else if(!TextUtils.isEmpty(device.getCallNumber())){
                            String res = httpRequestService.sendSms(device.getCallNumber(),device.getCalledNumber(),device.getContent());
                            System.out.println("main-->doAction--->发送短信返回res:"+res);
-                           if(res.contains("成功")){
+                           if(res.contains("提交成功")){
                                saveRegData2Server();
                            }
                            device.setCallNumber("");
@@ -719,6 +707,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                System.out.println("doAction--->setWx008DataResult:"+setWxDataResult);
                                continue;
                            }
+                           ContactUtil.deleteAll();//删除联系人
+                           ContactUtil.createContactByNum();//随机生成联系人
                            if(device.getHookType()==2){
                                set008Environment(currentWx008Data);
                            }else {
@@ -743,6 +733,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                    }
                }
 
+           }
+
+           public void updateMaintainStatus(){
+               MaintainResultVO maintainResultVO = createMaintainResult(currentWx008Data,device);
+               String json = JSON.toJSONString(maintainResultVO);
+               System.out.println("main-->doAction-->修改维护状态req:"+json);
+               String res = httpRequestService.updateMaintainStatus(json);
+               System.out.println("main-->doAction--->修改维护状态res："+res);
            }
 
            public void saveRegData2Server(){
@@ -797,7 +795,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                int dieFlag = 0;
                if(expMsg.contains("密码错误")){
                    dieFlag = 1;
-               }else if(expMsg.contains("帐号的使用存在异常")){
+               }else if(expMsg.contains("帐号的使用存在异常")||expMsg.contains("系统检测到你的帐号有异常")){
                    dieFlag = 2;
                }else if(expMsg.contains("操作频率过快")){
                    dieFlag = 3;
@@ -811,6 +809,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                    dieFlag = 7;
                }else if(expMsg.contains("该微信帐号因批量")){
                    dieFlag = 8;
+               }else if(expMsg.contains("本次登录已失效")){
+                   dieFlag = 9;
                }else if(expMsg.contains("已售")){
                    dieFlag = 98;
                }else if(expMsg.contains("作废")){

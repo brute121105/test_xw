@@ -578,7 +578,7 @@ public class PhoneConf {
 
     public static Wx008Data createRegDataByPhone(String phone){
         NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);
-        String pwd = WxNickNameConstant.getZmByCount(3)+phone.substring(phone.length()-6);
+        String pwd = WxNickNameConstant.getZmByCount(8);
         Wx008Data data = createReg008Data(WxNickNameConstant.getName1(),phone,pwd,"86","011",JSON.toJSONString(npi));
         System.out.println("createRegData--->"+JSON.toJSONString(data));
         return data;
@@ -587,7 +587,7 @@ public class PhoneConf {
     public static Wx008Data createRegDataByPhoneAndDeviceTxt(String phone){
         NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);
         String dataStr008 = JSON.toJSONString(npiTo008Data(npi));
-        String pwd = WxNickNameConstant.getZmByCount(3)+phone.substring(phone.length()-6);
+        String pwd = WxNickNameConstant.getZmByCount(8);
         Wx008Data data = createReg008DataDeviceTxt(WxNickNameConstant.getName1(),phone,pwd,"86","011",dataStr008);
         System.out.println("createRegData--->"+JSON.toJSONString(data));
         return data;

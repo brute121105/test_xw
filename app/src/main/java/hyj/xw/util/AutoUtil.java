@@ -614,19 +614,26 @@ public class AutoUtil {
         List<String> cmds = new ArrayList<String>();
         cmds.add("am force-stop com.tencent.mm" );
         cmds.add("pm clear com.tencent.mm" );
-        //cmds.add("rm -r -f /data/data/com.tencent.mm/MicroMsg" );
-        //cmds.add("rm -r -f /data/data/com.tencent.mm/app_cache" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/MicroMsg" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/app_cache" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/app_dex" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/app_font" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/app_lib" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/app_recover_lib" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/app_tbs" );
-        //cmds.add("rm -r -f /data/data/com.tencent.mm/cache" );
-        //cmds.add("rm -r -f /data/data/com.tencent.mm/databases" );
-        //cmds.add("rm -r -f /data/data/com.tencent.mm/face_detect" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/app_webview" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/app_webviewcache" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/app_xwalk_155" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/app_xwalkconfig" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/cache" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/dex.lock" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/face_detect" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/files" );
-        //cmds.add("rm -r -f /data/data/com.tencent.mm/shared_prefs" );
-        cmds.add("rm -r -f /sdcard/tencent" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/shared_prefs" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/tinker" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/tinker_temp" );
+        cmds.add("rm -r -f /data/data/com.tencent.mm/databases" );
+        //cmds.add("rm -r -f /sdcard/tencent" );
         return cmds;
     }
 

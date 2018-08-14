@@ -229,26 +229,6 @@
             android:textSize="18sp" />
     </LinearLayout>
 
-    <LinearLayout
-        android:visibility="gone"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:layout_weight="1"
-            android:id="@+id/btn_yh_setting"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="运行配置"
-            android:textSize="18sp" />
-        <Button
-            android:layout_weight="1"
-            android:id="@+id/del_upload_file"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="其他操作"
-            android:textSize="18sp" />
-    </LinearLayout>
 
 
     <TextView
@@ -396,5 +376,25 @@
         android:layout_height="wrap_content"
         android:text="开始运行"
         android:textSize="18sp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:visibility="gone"
+            android:id="@+id/btn_yh_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="运行配置"
+            android:textSize="18sp" />
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/del_upload_file"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="其他操作"
+            android:textSize="18sp" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -37,6 +37,7 @@ public class MonitorMessageThread extends BaseThread {
     public static final String receiveMsgLinearLayoutNodesId = "com.tencent.mm:id/apt";//列表android.widget.ListView的直接下级android.widget.LinearLayout
     public static final String receiveMsgRedNodeId = "com.tencent.mm:id/jj";//消息红色点
     public static final String receiveMsgNodeId = "com.tencent.mm:id/apx";//消息内容节点
+    HttpRequestService service = new HttpRequestService();
 
     public  List<String> sendMsgList = Collections.synchronizedList(new ArrayList<String>());
     @Override
@@ -109,7 +110,11 @@ public class MonitorMessageThread extends BaseThread {
            replyContent = "2";
        }else if("exit".equals(recMsg)){
            AutoUtil.execShell("input keyevent 3");
+       }else {
+           replyContent = service.gjQuery(recMsg);
+           System.out.println("doAction-->replyContent:"+replyContent);
        }
+
        if(!"".equals(replyContent)){
            clickNodeAndSendMsg(nodeInfo,replyContent);
        }
@@ -173,7 +178,7 @@ public class MonitorMessageThread extends BaseThread {
                     continue;
                 }
                 String res = service.getOneExpMsg();
-                System.out.println("doAction-->"+res);
+                System.out.println("doAction getOneExpMsg res-->"+res);
                 if(!"".equals(res)){
                     ExpPntMessage expPntMessage = JSONObject.parseObject(res,ExpPntMessage.class);
                     if(!TextUtils.isEmpty(expPntMessage.getMessage())){

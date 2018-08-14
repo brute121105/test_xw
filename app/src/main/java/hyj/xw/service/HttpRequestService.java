@@ -103,9 +103,10 @@ public class HttpRequestService {
             System.out.println("Test HttpRequestService sendSms res-->"+res);
             if(res.contains("success")){
                 ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
-                if(responseData.isSuccess()){
+                result = responseData.getData();
+                /*if(responseData.isSuccess()){
                     result = "成功";
-                }
+                }*/
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -249,6 +250,23 @@ public class HttpRequestService {
         }
         return res;
     }
+
+    //管家接受消息并推送到服务器
+    public String gjQuery(String recMsg){
+        String res = "";
+        try {
+            String url =host+"/query/"+recMsg;
+            res = OkHttpUtil.okHttpGet(url);
+            if(res.contains("data")){
+                ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+                res = responseData.getData();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return res;
+    }
+
 
 
 
