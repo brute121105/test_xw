@@ -383,6 +383,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.test_conn:
                 testConn();
+                new StopThread().start();
                 break;
             case R.id.start_uiAuto:
                 startUiAuto();

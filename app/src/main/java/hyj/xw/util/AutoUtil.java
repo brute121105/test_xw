@@ -633,7 +633,7 @@ public class AutoUtil {
         cmds.add("rm -r -f /data/data/com.tencent.mm/tinker" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/tinker_temp" );
         cmds.add("rm -r -f /data/data/com.tencent.mm/databases" );
-        //cmds.add("rm -r -f /sdcard/tencent" );
+        cmds.add("rm -r -f /sdcard/tencent" );
         return cmds;
     }
 
