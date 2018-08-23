@@ -769,7 +769,7 @@ public class ExampleInstrumentedTest {
         }else if("自定义-输入微信号".equals(wni.getOperation())){
             mDevice.click(583,333);
             System.out.println("doAction---->点击坐标583,333");
-            AutoUtil.sleep(1000);
+            AutoUtil.sleep(1200);
             UiObject2 uiObject2 = mDevice.findObject(By.textContains("微信号/QQ号/手机号"));
             if(uiObject2!=null){
                 uiObject2.setText(currentWx008Data.getFriends());
@@ -816,7 +816,7 @@ public class ExampleInstrumentedTest {
                     uiObject21.click();
                     System.out.println("doAction--->输入内容-点击发送");
                     httpRequestService.setFriendsNull(currentWx008Data.getId());
-                    AutoUtil.sleep(2000);
+                    AutoUtil.sleep(8000);
                     isOperationsSucc = true;
                 }
             }else {
@@ -1640,6 +1640,80 @@ public class ExampleInstrumentedTest {
                 System.out.println("doAction-->点击VPN"+flag);
             }else if(allText.contains("添加VPN")||allText.contains("开启VPN")){
                 if(!allText.contains("连接")){
+                    System.out.println("doAction-->点击弹出窗口 537,600");
+                    mDevice.click(537,600);
+                    lastAction = "点击弹出窗口";
+                }
+            }
+            UiObject2 uiObject2  = mDevice.findObject(By.text("连接"));
+            if(uiObject2!=null){
+                UiObject2 uiObject21 = mDevice.findObject(By.res("com.android.settings:id/username"));
+                UiObject2 uiObject22 = mDevice.findObject(By.res("com.android.settings:id/password"));
+                if(uiObject21!=null&&uiObject22!=null){
+                    delAndSetVpnAccount(uiObject21,deviceConfig.getVpnAccount());
+                    delAndSetVpnPwd(uiObject22,deviceConfig.getVpnPassword());
+                    mDevice.pressBack();
+                    System.out.println("doAction-->pressBack去掉输入法");
+                    mDevice.findObject(By.text("连接")).click();
+                    lastAction = "点击连接";
+                }
+
+            }
+            UiObject2 uiObject3  = mDevice.findObject(By.text("断开连接"));
+            if(uiObject3!=null){
+                System.out.println("doAction-->点击断开连接");
+                uiObject3.click();
+                lastAction = "点击断开连接";
+            }
+
+        }
+    }
+
+    public void delAndSetVpnAccount(UiObject2 uiObject2,String inputText){
+        uiObject2.click();
+        String text = uiObject2.getText();
+        if(text!=null){
+            for(int i=0;i<text.length();i++){
+                mDevice.pressDelete();
+            }
+        }
+        AutoUtil.inputText(inputText);
+    }
+    public void delAndSetVpnPwd(UiObject2 uiObject2,String inputText){
+        uiObject2.click();
+        for(int i=0;i<5;i++){
+            mDevice.pressDelete();
+        }
+        AutoUtil.inputText(inputText);
+    }
+    /*public void doVpn(){
+        String lastAction="init";
+        while (true){
+            //System.out.println("doAction----------------------------------------------------->action:"+lastAction);
+            if("点击连接".equals(lastAction)&&waitVpnConn(35)){
+                System.out.println("doAction--->vpn连接成功");
+                if(waitAndCheckIp())  return;
+            }
+            String pkg = mDevice.getCurrentPackageName();
+            String allText = getAllWindowText(pkg);
+            if(allText.contains("是否上传此错误报告")){
+                UiObject2 uiObject2 = mDevice.findObject(By.text("取消"));
+                if(uiObject2!=null){
+                    uiObject2.click();
+                    System.out.println("doAction--->008错误取消");
+                }
+            }
+            if(!"com.android.settings".equals(pkg)&&!"com.android.vpndialogs".equals(pkg)){
+                System.out.println("doAction-->打开vpn:"+pkg);
+                opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+                lastAction = "打开vpn界面";
+                continue;
+            }else if(allText.contains("网络共享")||allText.contains("与显示设备无线连接")){
+                boolean flag = mDevice.click(584,410);
+                lastAction = "点击VPN";
+                System.out.println("doAction-->点击VPN"+flag);
+            }else if(allText.contains("添加VPN")||allText.contains("开启VPN")){
+                if(!allText.contains("连接")){
                     System.out.println("doAction-->点击VPN 537,600");
                     mDevice.click(537,600);
                 }
@@ -1660,7 +1734,7 @@ public class ExampleInstrumentedTest {
             }
 
         }
-    }
+    }*/
     @Test
     public void testVpdpnNote2()  {
         doVpnNote2();
