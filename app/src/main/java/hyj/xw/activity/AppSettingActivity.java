@@ -113,7 +113,7 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
         new Thread(new Runnable() {
             @Override
             public void run() {
-                HttpRequestService service = new HttpRequestService();
+                HttpRequestService service = new HttpRequestService(3);
                 List<Wx008Data> wx008Datas = DaoUtil.findByDataBydataFlag();
                 int uploadCn=0,failCn = 0;
                 for(int i=0,l=wx008Datas.size();i<l;i++){

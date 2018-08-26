@@ -79,6 +79,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".service.UiAutoReciver">
+            <intent-filter android:priority="9999">
+                <action android:name="hyj.auto.test" />
+            </intent-filter>
+        </receiver>
+
         <activity android:name=".activity.AutoLoginSettingActivity" />
         <activity android:name=".activity.ApiSettingActivity" />
         <activity android:name=".activity.AppSettingActivity" />

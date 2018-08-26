@@ -21,7 +21,7 @@ import hyj.xw.thread.GetOrUpdateServerStatusThread;
 
 public class GetFutureResultUtil {
 
-    public static Apk checkVersion(String apkType){
+    public static Apk checkVersion1(String apkType){
         String uiautoVersionCodeStr = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_UIAUTO_VERSION);
         int currentVersionCode = Integer.parseInt(TextUtils.isEmpty(uiautoVersionCodeStr) ? "0" : uiautoVersionCodeStr);
         if("1".equals(apkType)){

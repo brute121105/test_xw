@@ -64,15 +64,16 @@ public class DownLoadAPkListener implements DialogInterface.OnClickListener {
         //int currentVersion = getVersion(context);
         //System.out.println("doAction--->currentVersion:"+currentVersion);
         apkDownloadUrl = apkDownloadUrl+apk.getId();
-        System.out.println("doAction--->apkDownloadUrl:"+apkDownloadUrl);
+        //System.out.println("doAction--->apkDownloadUrl:"+apkDownloadUrl);
         String content = "版本"+apk.getVersionCode()+"\n发布时间"+apk.getCreateTime();
         showDwnloadApkDialog(content);
     }
 
     public void downloadAttach(boolean isAlertWindow){
         apkDownloadUrl = apkDownloadUrl+apk.getId();
-        System.out.println("doAction--->apkDownloadUrl:"+apkDownloadUrl);
+        //System.out.println("doAction--->apkDownloadUrl:"+apkDownloadUrl);
         String content = "附件版本"+apk.getVersionCode()+"\n发布时间"+String.valueOf(apk.getCreateTime());
+        System.out.println("main--->content:"+content);
         if(isAlertWindow){
             showDwnloadApkDialog(content);
         }else {

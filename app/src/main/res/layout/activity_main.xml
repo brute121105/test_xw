@@ -161,6 +161,7 @@
             android:text="测试连接"
             android:textSize="18sp" />
         <Button
+            android:visibility="gone"
             android:layout_weight="1"
             android:id="@+id/start_uiAuto"
             android:layout_width="0dp"

@@ -48,7 +48,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 
     @Override
     protected String doInBackground(String... sUrl) {
-        System.out.println("doAction-->sUrl:"+sUrl[0]);
+        System.out.println("main-->doInBackground sUrl:"+sUrl[0]);
         InputStream input = null;
         OutputStream output = null;
         HttpURLConnection connection = null;
@@ -58,14 +58,14 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("token",AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_WY_TOKEN));
             connection.connect();
-            System.out.println("doAction-->getResponseCode:"+connection.getResponseCode());
-            System.out.println("doAction-->getResponseMessage:"+connection.getResponseMessage());
+            System.out.println("main-->getResponseCode:"+connection.getResponseCode());
+            System.out.println("main-->getResponseMessage:"+connection.getResponseMessage());
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 String res = "Server returned HTTP " + connection.getResponseCode() + " "+ connection.getResponseMessage();
                 return res;
             }
             int fileLength = connection.getContentLength();
-            System.out.println("doA-->fileLength:"+fileLength);
+            System.out.println("main-->fileLength:"+fileLength);
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 file = new File(downloadPath);
                 if (!file.exists()) {

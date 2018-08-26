@@ -34,12 +34,15 @@ public class HttpRequestService {
     String deviceNum;
     String username;
     String password;
-    public HttpRequestService(){
+    String token;
+    public HttpRequestService(int tag){
         //host = "http://lizq.ngrok.xiaomiqiu.cn";
+        System.out.println("AppConfigDao-->new HttpRequestService "+tag);
         host = "http://"+AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_HOST);
         deviceNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_DEVICE);
         username = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_USERNAME);
         password = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_PWD);
+        token = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_WY_TOKEN);
     }
 
     public String login(){
@@ -49,7 +52,7 @@ public class HttpRequestService {
         System.out.println("HttpRequestService postBody---->"+postBody);
         String res  = null;
         try {
-            res = OkHttpUtil.okHttpPostBody(url,postBody);
+            res = OkHttpUtil.okHttpPostBodyByToken(url,postBody,token);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,7 +80,7 @@ public class HttpRequestService {
             String url =host+"/phone/query";
             System.out.println("HttpRequestService getPhone url-->"+url);
             System.out.println("HttpRequestService getPhone reqBody-->"+reqBody);
-            String res = OkHttpUtil.okHttpPostBody(url,reqBody);
+            String res = OkHttpUtil.okHttpPostBodyByToken(url,reqBody,token);
             System.out.println("HttpRequestService getPhone res-->"+res);
             if(res.contains("phone")){
                 JSONObject jsonObject = getJSONObjectData(res);
@@ -99,7 +102,7 @@ public class HttpRequestService {
             SendSmsVO sendSmsVO = new SendSmsVO(callNumber,calledNumber,content);
             String postBody = JSON.toJSONString(sendSmsVO);
             System.out.println("HttpRequestService sendSms postBody-->"+postBody);
-            String res = OkHttpUtil.okHttpPostBody(url,postBody);
+            String res = OkHttpUtil.okHttpPostBodyByToken(url,postBody,token);
             System.out.println("Test HttpRequestService sendSms res-->"+res);
             if(res.contains("success")){
                 ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
@@ -135,7 +138,7 @@ public class HttpRequestService {
         try {
             String url =host+"/phone/update-reg-status/"+phone+"/"+status;
             System.out.println("Test HttpRequestService updateRegStatus url-->"+url);
-            result = OkHttpUtil.okHttpPostBody(url,getTestJSON());
+            result = OkHttpUtil.okHttpPostBodyByToken(url,getTestJSON(),token);
             System.out.println("Test HttpRequestService updateRegStatus res-->"+result);
         }catch (Exception e){
             e.printStackTrace();
@@ -153,7 +156,7 @@ public class HttpRequestService {
         try {
             String url =host+"/wxdata/get-maintain/"+deviceNum;
             System.out.println("HttpRequestService getMaintainData url-->"+url);
-            String res = OkHttpUtil.okHttpGet(url);
+            String res = OkHttpUtil.okHttpGetByToken(url,token);
             System.out.println("HttpRequestService getMaintainData res-->"+res);
             if(res.contains("data")){
                 ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
@@ -178,7 +181,7 @@ public class HttpRequestService {
         try {
             String url =host+"/wxdata/complete-maintain";
             System.out.println("HttpRequestService updateMaintainStatus url-->"+url);
-            res = OkHttpUtil.okHttpPostBody(url,json);
+            res = OkHttpUtil.okHttpPostBodyByToken(url,json,token);
             System.out.println("HttpRequestService updateMaintainStatus res-->"+res);
         }catch (Exception e){
             e.printStackTrace();
@@ -194,7 +197,7 @@ public class HttpRequestService {
             System.out.println("HttpRequestService deviceConnectServer url--->"+url);
             Device device = new Device();
             device.setNum(deviceNum);
-            res = OkHttpUtil.okHttpPostBody(url,JSON.toJSONString(device));
+            res = OkHttpUtil.okHttpPostBodyByToken(url,JSON.toJSONString(device),token);
             System.out.println("HttpRequestService deviceConnectServer --->"+res);
         }catch (Exception e){
             e.printStackTrace();
@@ -207,7 +210,7 @@ public class HttpRequestService {
         try {
             String url =host+"/device/num/"+deviceNum;
             System.out.println("HttpRequestService getStartConifgFromServer url--->"+url);
-            res = OkHttpUtil.okHttpGet(url);
+            res = OkHttpUtil.okHttpGetByToken(url,token);
             System.out.println("HttpRequestService getStartConifgFromServer res--->"+res);
         }catch (Exception e){
             e.printStackTrace();
@@ -221,7 +224,7 @@ public class HttpRequestService {
         try {
             String url =host+"/apk/check-update?apkType="+apkType+"&versionCode="+version;
             System.out.println("HttpRequestService checkUpdate url--->"+url);
-            res = OkHttpUtil.okHttpGet(url);
+            res = OkHttpUtil.okHttpGetByToken(url,token);
             System.out.println("HttpRequestService checkUpdate res--->"+res);
             if(res.contains("success")){
                 ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
@@ -240,7 +243,7 @@ public class HttpRequestService {
         String res = "";
         try {
             String url =host+"/message/getone";
-            res = OkHttpUtil.okHttpGet(url);
+            res = OkHttpUtil.okHttpGetByToken(url,token);
             if(res.contains("data")){
                 ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
                 res = responseData.getData();
@@ -256,7 +259,7 @@ public class HttpRequestService {
         String res = "";
         try {
             String url =host+"/query/"+recMsg;
-            res = OkHttpUtil.okHttpGet(url);
+            res = OkHttpUtil.okHttpGetByToken(url,token);
             if(res.contains("data")){
                 ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
                 res = responseData.getData();
@@ -276,7 +279,7 @@ public class HttpRequestService {
             String url =host+"/wxdata/save";
             System.out.println("提交数据 HttpRequestService uploadPhoneData wx008DataStr--->"+wx008DataStr);
             System.out.println("HttpRequestService uploadPhoneData url--->"+url);
-            String res = OkHttpUtil.okHttpPostBody(url,wx008DataStr);
+            String res = OkHttpUtil.okHttpPostBodyByToken(url,wx008DataStr,token);
             System.out.println("HttpRequestService uploadPhoneData res--->"+res);
             if(res.contains("data")){
                 ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
@@ -294,7 +297,7 @@ public class HttpRequestService {
             String url =host+"/wxdata/save";
             System.out.println("提交数据 HttpRequestService uploadPhoneData wx008DataStr--->"+wx008DataStr);
             System.out.println("HttpRequestService uploadPhoneData url--->"+url);
-            res = OkHttpUtil.okHttpPostBody(url,wx008DataStr);
+            res = OkHttpUtil.okHttpPostBodyByToken(url,wx008DataStr,token);
         }catch (Exception e){
             e.printStackTrace();
         }

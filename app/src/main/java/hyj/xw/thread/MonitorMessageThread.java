@@ -37,7 +37,7 @@ public class MonitorMessageThread extends BaseThread {
     public static final String receiveMsgLinearLayoutNodesId = "com.tencent.mm:id/apt";//列表android.widget.ListView的直接下级android.widget.LinearLayout
     public static final String receiveMsgRedNodeId = "com.tencent.mm:id/jj";//消息红色点
     public static final String receiveMsgNodeId = "com.tencent.mm:id/apx";//消息内容节点
-    HttpRequestService service = new HttpRequestService();
+    HttpRequestService service = new HttpRequestService(6);
 
     public  List<String> sendMsgList = Collections.synchronizedList(new ArrayList<String>());
     @Override
@@ -57,6 +57,7 @@ public class MonitorMessageThread extends BaseThread {
                     LogUtil.d(TAG,"暂停....");
                     continue;
                 }
+                AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"　取消　"),record,"点击取消");
                 //ParseRootUtil.debugRoot(root);
                 if(AutoUtil.findNodeInfosById(root,setSendTextNodeId)!=null){
                     AutoUtil.clickXY(67,133);//点击左上角返回,避免上次返回不成功
@@ -168,7 +169,7 @@ public class MonitorMessageThread extends BaseThread {
     }
 
     class GetMsgThread extends Thread{
-        HttpRequestService service = new HttpRequestService();
+        HttpRequestService service = new HttpRequestService(7);
         @Override
         public void run() {
             while (true){

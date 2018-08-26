@@ -22,15 +22,28 @@ public class OkHttpUtil {
     //static String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwibmlja25hbWUiOiLnrqHnkIblkZgiLCJhdmF0YXIiOiIyMDE4MDcwMjA0NTAyMy5wbmciLCJpYXQiOjE1MzA0NzgyMzMsImV4cCI6MTUzODI1NDIzM30.2Ji5dmWTpKKZAW15vli7Of4ggjgzvB5zPFq7PlpsP1GkTG-F0U6Joqsu_HkSEbl5iIwpqT3hY-J5fpuPgOwOAA";
     //static String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwibmlja25hbWUiOiLnrqHnkIblkZgiLCJhdmF0YXIiOiIyMDE4MDcwMjA0NTAyMy5wbmciLCJpYXQiOjE1MzE1NzY2MDMsImV4cCI6MTUzOTM1MjYwM30.cJebY9np-nObKxVJhBnQDPl1zJZJdpqO5h9LHAU5XJRCDeQW_ghblrqnlrGj6gQZ97G-wvi7uUc0mIU3bOV8ug";
 
-   public static String getToken(){
+
+   /*public static String getToken(){
        return AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_WY_TOKEN);
-   }
+   }*/
     //http get请求
+    public static String okHttpGetByToken(String url,String token) throws IOException {
+        String reponseData = "";
+        OkHttpClient mOkHttpClient = new OkHttpClient();
+        Request request = new Request.Builder()
+                .addHeader("token",token)
+                .url(url)
+                .build();
+        Response response = mOkHttpClient.newCall(request).execute();
+        byte[]  reponseBytes = response.body().bytes();
+        reponseData = new String(reponseBytes,"utf-8");
+        return reponseData;
+    }
+
     public static String okHttpGet(String url) throws IOException {
         String reponseData = "";
         OkHttpClient mOkHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
-                .addHeader("token",getToken())
                 .url(url)
                 .build();
         Response response = mOkHttpClient.newCall(request).execute();
@@ -63,7 +76,7 @@ public class OkHttpUtil {
     }
 
     //http post请求
-    public static String okHttpPostBody(String url,String postBody) throws IOException {
+    public static String okHttpPostBodyByToken(String url,String postBody,String token) throws IOException {
         String reponseData = "";
         OkHttpClient mOkHttpClient = new OkHttpClient();
         FormBody.Builder builder = new FormBody.Builder();
@@ -71,7 +84,7 @@ public class OkHttpUtil {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
         RequestBody requestBody = RequestBody.create(JSON, postBody);
         Request request = new Request.Builder()
-                .addHeader("token",getToken())
+                .addHeader("token",token)
                 .url(url)
                 .post(requestBody)
                 .build();
@@ -81,7 +94,7 @@ public class OkHttpUtil {
     }
 
     //上次图片
-    public static String upload(String url,File file){
+    /*public static String upload(String url,File file){
         String reponseData = "";
         OkHttpClient mOkHttpClient = new OkHttpClient();
         RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), file);
@@ -104,5 +117,5 @@ public class OkHttpUtil {
         }
         return  reponseData;
 
-    }
+    }*/
 }

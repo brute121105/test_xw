@@ -24,7 +24,7 @@ public class CheckVersionCodeThread implements Callable<String> {
     }
     @Override
     public String  call() {
-        HttpRequestService service = new HttpRequestService();
+        HttpRequestService service = new HttpRequestService(5);
         res = service.checkUpdate(apkType,currentVersionCode);
         return res;
     }
