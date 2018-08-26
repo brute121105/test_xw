@@ -142,6 +142,7 @@ public class ExampleInstrumentedTest {
         }
         deviceConfig.setChangeIp(2);//标志修改ip完成
         saveDeviceConfig(deviceConfig);
+        sendBroadcastByShell("end ip");
         System.out.println("doAction-->结束修改ip");
     }
 
@@ -219,7 +220,8 @@ public class ExampleInstrumentedTest {
                     if(waitMs>90000){
                         System.out.println("doAction--->匹配null等待超过90秒，重试");
                         if(deviceConfig.getRunType()==1) updateDeviceConfig("regExp匹配null等待超过90秒1");
-                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
+                        tellTag("retry");
+                        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
                         return;
                         //initAuto("retry");
                     }
@@ -232,7 +234,8 @@ public class ExampleInstrumentedTest {
                     if(windowText.contains("找不到网页")){
                         System.out.println("doAction-->网络加载失败，重试");
                         if(deviceConfig.getRunType()==1) updateDeviceConfig("regExp找不到网页");
-                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
+                        tellTag("retry");
+                        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
                         //initAuto("retry");
                         return;
                     }
@@ -245,7 +248,8 @@ public class ExampleInstrumentedTest {
                     if(waitMs>90000){
                         System.out.println("doAction--->静止等待超过90秒，重试");
                         if(deviceConfig.getRunType()==1) updateDeviceConfig("regExp匹配null等待超过90秒2");
-                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
+                        tellTag("retry");
+                        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
                         //initAuto("retry");
                         return;
                         //continue;
@@ -260,22 +264,26 @@ public class ExampleInstrumentedTest {
                 doAction(wni);
                 if("自定义-登录异常".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
                     updateDeviceConfig("fail"+windowText);
-                    FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
+                    tellTag("next");
+                    //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
                     //initAuto("next");
                     return;
                 }else if("自定义-注册异常二维码出现".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
                     updateDeviceConfig("regExp注册出现二维码");
-                    FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
+                    tellTag("next");
+                    //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
                     //initAuto("next");
                     return;
                 }else if("改机失败".equals(wni.getWindowOperationDesc())&&wni.isWindowOperatonSucc()){
                     if(deviceConfig.getRunType()==1)  updateDeviceConfig("regExp改机失败");
-                    FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
+                    tellTag("retry");
+                    //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
                     //initAuto("retry");
                     return;
                 }else if((wni.getWindowOperationDesc().contains("发送短信失败或超过最大尝试次数")||wni.getOperation().contains("尚未收到短信"))&&wni.isWindowOperatonSucc()){
                     updateDeviceConfig("regExp发送短信失败或超过最大尝试次数");
-                    FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
+                    tellTag("next");
+                    //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
                     //initAuto("next");
                     return;
                 }
@@ -291,7 +299,8 @@ public class ExampleInstrumentedTest {
                             System.out.println("doAction-->登录成功等待秒数 "+i);
                             ++i;
                         }
-                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
+                        tellTag("next");
+                        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
                         //initAuto("next");//没有其他动作，下一个
                         return;
                     }else {
@@ -307,7 +316,8 @@ public class ExampleInstrumentedTest {
                                 }else {
                                     UiObject2 uiObject2 = mDevice.findObject(By.text("用短信验证码登录"));
                                     if(uiObject2!=null){//处理登录被退出登录界面情况
-                                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
+                                        tellTag("retry");
+                                        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
                                         //initAuto("retry");
                                         return;
                                     }else {
@@ -317,7 +327,8 @@ public class ExampleInstrumentedTest {
                                 AutoUtil.sleep(1000);
                             }
                         }else {
-                            FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
+                            tellTag("next");
+                            //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
                             //initAuto("next");//执行完所有动作，下一个
                             return;
                         }
@@ -330,10 +341,31 @@ public class ExampleInstrumentedTest {
             }
         }
     }
+    public void tellTag(String tag){
+        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,tag);//next登录下一个，retry新登录,首次开启也是retry
+        startAppByPackName("hyj.xw","hyj.xw.MainActivity");
+        AutoUtil.sleep(500);
+        AutoUtil.execShell("am broadcast -a hyj.auto.test --es tag \""+tag+"\"");
+    }
+
+    public void sendBroadcastByShell(String param){
+        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,tag);//next登录下一个，retry新登录,首次开启也是retry
+        String cmd = "am broadcast -a hyj.auto.test --es param \""+param+"\"";
+        System.out.println("doAction--->发送广播："+cmd);
+        AutoUtil.execShell(cmd);
+    }
+
+    public void sendSmsBroadcastByShell(String callNumber,String calledNumber,String content){
+        String cmd = "am broadcast -a hyj.auto.test --es callNumber \""+callNumber+"\" --es calledNumber \""+calledNumber+"\" --es content \""+content+"\" ";
+        System.out.println("doAction--->发送广播："+cmd);
+        AutoUtil.execShell(cmd);
+    }
+
     public void updateDeviceConfig(String msg){
         deviceConfig = getDeviceConfig();
         deviceConfig.setLoginResult(msg);
         saveDeviceConfig(deviceConfig);
+        sendBroadcastByShell("updateDeviceConfig msg:"+msg);
     }
 
     public void updateDeviceConfigIp(String ip){
@@ -491,7 +523,7 @@ public class ExampleInstrumentedTest {
                 Bitmap bi = newWaitAndBitmap();
                 Integer[] dragEndX = DragImageUtil2.newGetPic2LocXAndDrapX(bi);
                 if(dragEndX[1]>300){
-                    Point[] points = getSwipePoints(dragEndX[0],dragEndX[1]+63,50,100,70,5,10,1000,1050);//63为方块半宽度 dragEndX[0] 为拖动点x起始位置  dragEndX[1] 为方块二边沿起始位置
+                    Point[] points = getSwipePoints(dragEndX[0],dragEndX[1]+63,50,100,60,5,10,980,1070);//63为方块半宽度 dragEndX[0] 为拖动点x起始位置  dragEndX[1] 为方块二边沿起始位置
                     System.out.println("doAction--->拖动滑块开始1");
                     mDevice.swipe(points,15);
                     System.out.println("doAction--->拖动滑块结束1");
@@ -615,7 +647,7 @@ public class ExampleInstrumentedTest {
                 System.out.println("doAction--->等待已发送短信，下一步"+i);
                 UiObject2 nextUiObj = mDevice.findObject(By.textContains("已发送短信，下一步"));
                 if(nextUiObj!=null){
-                    AutoUtil.sleep(15000);
+                    AutoUtil.sleep(4000);
                     isOperationsSucc = true;
                     nextUiObj.click();
                     System.out.println("doAction--->点击已发送短信，下一步"+i);
@@ -680,6 +712,7 @@ public class ExampleInstrumentedTest {
                     deviceConfig = getDeviceConfig();
                     deviceConfig.setWxid(wxid);
                     saveDeviceConfig(deviceConfig);
+                    sendBroadcastByShell("wxid");
                     isOperationsSucc = true;
                     operationDesc = "获取wxid："+wxid;
                 } catch (UiObjectNotFoundException e) {
@@ -879,10 +912,11 @@ public class ExampleInstrumentedTest {
             content = content.substring(content.indexOf(" ")+1);
             calledNumber = calledNumber.substring(calledNumber.indexOf(" ")+1);
             System.out.println("doAction--->告诉对方发送短信callNumber:"+callNumber+" calledNumber:"+calledNumber+" content:"+content);
-            deviceConfig.setCallNumber(callNumber);//告诉对方发送短信
+            /*deviceConfig.setCallNumber(callNumber);//告诉对方发送短信
             deviceConfig.setCalledNumber(calledNumber);
             deviceConfig.setContent(content);
-            saveDeviceConfig(deviceConfig);
+            saveDeviceConfig(deviceConfig);*/
+            sendSmsBroadcastByShell(callNumber,calledNumber,content);
             //resMsg = httpRequestService.sendSms(callNumber,calledNumber,content);
         }
     }
@@ -1614,70 +1648,86 @@ public class ExampleInstrumentedTest {
     }
     public void doVpn(){
         String lastAction="init";
-        while (true){
-            //System.out.println("doAction----------------------------------------------------->action:"+lastAction);
-            if("点击连接".equals(lastAction)&&waitVpnConn(35)){
-                System.out.println("doAction--->vpn连接成功");
-                if(waitAndCheckIp())  return;
-            }
-            String pkg = mDevice.getCurrentPackageName();
-            String allText = getAllWindowText(pkg);
-            if(allText.contains("是否上传此错误报告")){
-                UiObject2 uiObject2 = mDevice.findObject(By.text("取消"));
+        try {
+            while (true){
+                //System.out.println("doAction----------------------------------------------------->action:"+lastAction);
+                if("点击连接".equals(lastAction)&&waitVpnConn(35)){
+                    System.out.println("doAction--->vpn连接成功");
+                    if(waitAndCheckIp())  return;
+                }
+                String pkg = mDevice.getCurrentPackageName();
+                String allText = getAllWindowText(pkg);
+                if(allText.contains("是否上传此错误报告")){
+                    UiObject2 uiObject2 = mDevice.findObject(By.text("取消"));
+                    if(uiObject2!=null){
+                        uiObject2.click();
+                        System.out.println("doAction--->008错误取消");
+                    }
+                }
+                if(!"com.android.settings".equals(pkg)&&!"com.android.vpndialogs".equals(pkg)){
+                    System.out.println("doAction-->打开vpn:"+pkg);
+                    opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+                    lastAction = "打开vpn界面";
+                    continue;
+                }else if(allText.contains("网络共享")||allText.contains("与显示设备无线连接")){
+                    boolean flag = mDevice.click(584,410);
+                    lastAction = "点击VPN";
+                    System.out.println("doAction-->点击VPN"+flag);
+                }else if(allText.contains("添加VPN")||allText.contains("开启VPN")){
+                    if(!allText.contains("连接")){
+                        System.out.println("doAction-->点击弹出窗口 537,600");
+                        mDevice.click(537,600);
+                        lastAction = "点击弹出窗口";
+                    }
+                }
+                UiObject2 uiObject2  = mDevice.findObject(By.text("连接"));
                 if(uiObject2!=null){
-                    uiObject2.click();
-                    System.out.println("doAction--->008错误取消");
+                    UiObject2 uiObject21 = mDevice.findObject(By.res("com.android.settings:id/username"));
+                    UiObject2 uiObject22 = mDevice.findObject(By.res("com.android.settings:id/password"));
+                    if(uiObject21!=null&&uiObject22!=null){
+                        delAndSetVpnAccount(uiObject21,deviceConfig.getVpnAccount());
+                        AutoUtil.sleep(300);
+                        //delAndSetVpnPwd(uiObject22,deviceConfig.getVpnPassword());
+                        System.out.println("doAction-->点击vpn密码聚焦535,620");
+                        mDevice.click(535,620);
+                        //uiObject22.click();
+                        if(uiObject22.isFocused()){
+                            for(int i=0;i<5;i++){
+                                mDevice.pressDelete();
+                            }
+                            AutoUtil.inputText(deviceConfig.getVpnPassword());
+                            mDevice.pressBack();
+                            System.out.println("doAction-->pressBack去掉输入法");
+                            mDevice.findObject(By.text("连接")).click();
+                            lastAction = "点击连接";
+                        }
+                    }
+
                 }
-            }
-            if(!"com.android.settings".equals(pkg)&&!"com.android.vpndialogs".equals(pkg)){
-                System.out.println("doAction-->打开vpn:"+pkg);
-                opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
-                lastAction = "打开vpn界面";
-                continue;
-            }else if(allText.contains("网络共享")||allText.contains("与显示设备无线连接")){
-                boolean flag = mDevice.click(584,410);
-                lastAction = "点击VPN";
-                System.out.println("doAction-->点击VPN"+flag);
-            }else if(allText.contains("添加VPN")||allText.contains("开启VPN")){
-                if(!allText.contains("连接")){
-                    System.out.println("doAction-->点击弹出窗口 537,600");
-                    mDevice.click(537,600);
-                    lastAction = "点击弹出窗口";
-                }
-            }
-            UiObject2 uiObject2  = mDevice.findObject(By.text("连接"));
-            if(uiObject2!=null){
-                UiObject2 uiObject21 = mDevice.findObject(By.res("com.android.settings:id/username"));
-                UiObject2 uiObject22 = mDevice.findObject(By.res("com.android.settings:id/password"));
-                if(uiObject21!=null&&uiObject22!=null){
-                    delAndSetVpnAccount(uiObject21,deviceConfig.getVpnAccount());
-                    delAndSetVpnPwd(uiObject22,deviceConfig.getVpnPassword());
-                    mDevice.pressBack();
-                    System.out.println("doAction-->pressBack去掉输入法");
-                    mDevice.findObject(By.text("连接")).click();
-                    lastAction = "点击连接";
+                UiObject2 uiObject3  = mDevice.findObject(By.text("断开连接"));
+                if(uiObject3!=null){
+                    System.out.println("doAction-->点击断开连接");
+                    uiObject3.click();
+                    lastAction = "点击断开连接";
                 }
 
             }
-            UiObject2 uiObject3  = mDevice.findObject(By.text("断开连接"));
-            if(uiObject3!=null){
-                System.out.println("doAction-->点击断开连接");
-                uiObject3.click();
-                lastAction = "点击断开连接";
-            }
-
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     public void delAndSetVpnAccount(UiObject2 uiObject2,String inputText){
         uiObject2.click();
         String text = uiObject2.getText();
-        if(text!=null){
+        if(text!=null&&!inputText.equals(text)){
             for(int i=0;i<text.length();i++){
                 mDevice.pressDelete();
             }
         }
-        AutoUtil.inputText(inputText);
+        if(!inputText.equals(text)){
+            AutoUtil.inputText(inputText);
+        }
     }
     public void delAndSetVpnPwd(UiObject2 uiObject2,String inputText){
         uiObject2.click();
@@ -1831,6 +1881,7 @@ public class ExampleInstrumentedTest {
         deviceConfig = getDeviceConfig();
         deviceConfig.setLastIpAddress("1");//告诉对方获取ip
         saveDeviceConfig(deviceConfig);
+        sendBroadcastByShell("ip");
         int i = 0;
         while (i<50){
             System.out.println("doAction--->等待获取ip "+i);
