@@ -61,6 +61,7 @@ import hyj.autooperation.common.FilePathCommon;
 import hyj.autooperation.common.WxNickNameConstant;
 import hyj.autooperation.conf.WindowOperationConf;
 import hyj.autooperation.httpModel.Device;
+import hyj.autooperation.httpModel.MaintainResultVO;
 import hyj.autooperation.model.NodeInfo;
 import hyj.autooperation.model.WindowNodeInfo;
 import hyj.autooperation.model.Wx008Data;
@@ -89,7 +90,6 @@ public class ExampleInstrumentedTest {
     private Context appContext;
     Instrumentation instrumentation;
     Device deviceConfig;
-    HttpRequestService httpRequestService;
 
 
     @Before
@@ -99,8 +99,7 @@ public class ExampleInstrumentedTest {
         mDevice = UiDevice.getInstance(instrumentation);
         String deviceConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
         deviceConfig = JSONObject.parseObject(deviceConfigStr,Device.class);
-        httpRequestService = new HttpRequestService(deviceConfig);
-        System.out.println("doAction--->srConfig:"+JSON.toJSONString(deviceConfig));
+        System.out.println("doAction--->ExampleInstrumentedTest init srConfig:"+JSON.toJSONString(deviceConfig));
     }
 
     public List<String> getAutoTypes(Device device){
@@ -131,7 +130,6 @@ public class ExampleInstrumentedTest {
         System.out.println("doAction-->开始修改ip");
         if(deviceConfig.getChangeIpMode()==1){
             String productName = mDevice.getProductName();
-            System.out.println("doAction--->productName:"+productName);
             if("hermes".equals(productName)){
                 doVpnNote2();
             }else {
@@ -140,9 +138,9 @@ public class ExampleInstrumentedTest {
         }else if(deviceConfig.getChangeIpMode()==2){
             startAriPlaneMode(1000);
         }
-        deviceConfig.setChangeIp(2);//标志修改ip完成
-        saveDeviceConfig(deviceConfig);
-        sendBroadcastByShell("end ip");
+        /*deviceConfig.setChangeIp(2);//标志修改ip完成
+        saveDeviceConfig(deviceConfig);*/
+        sendBroadcastByShell("endChangeip");
         System.out.println("doAction-->结束修改ip");
     }
 
@@ -344,7 +342,7 @@ public class ExampleInstrumentedTest {
     public void tellTag(String tag){
         //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,tag);//next登录下一个，retry新登录,首次开启也是retry
         startAppByPackName("hyj.xw","hyj.xw.MainActivity");
-        AutoUtil.sleep(500);
+        AutoUtil.sleep(1000);
         AutoUtil.execShell("am broadcast -a hyj.auto.test --es tag \""+tag+"\"");
     }
 
@@ -361,11 +359,49 @@ public class ExampleInstrumentedTest {
         AutoUtil.execShell(cmd);
     }
 
-    public void updateDeviceConfig(String msg){
-        deviceConfig = getDeviceConfig();
-        deviceConfig.setLoginResult(msg);
-        saveDeviceConfig(deviceConfig);
-        sendBroadcastByShell("updateDeviceConfig msg:"+msg);
+    public void sendWxidBroadcastByShell(String wxid,String data008Id){
+        String cmd = "am broadcast -a hyj.auto.test --es wxid \""+wxid+"\" --es data008Id \""+data008Id+"\"  ";
+        System.out.println("doAction--->发送广播："+cmd);
+        AutoUtil.execShell(cmd);
+    }
+
+    public void updateDeviceConfig(String expMsg){
+        //deviceConfig = getDeviceConfig();
+        //deviceConfig.setLoginResult(expMsg);
+        int dieFlag = 0;
+        if(expMsg.contains("密码错误")){
+            dieFlag = 1;
+        }else if(expMsg.contains("帐号的使用存在异常")||expMsg.contains("系统检测到你的帐号有异常")){
+            dieFlag = 2;
+        }else if(expMsg.contains("操作频率过快")){
+            dieFlag = 3;
+        }else if(expMsg.contains("登录环境异常")){
+            dieFlag = 4;
+        }else if(expMsg.contains("新设备")){
+            dieFlag = 5;
+        }else if(expMsg.contains("外挂")){
+            dieFlag = 6;
+        }else if(expMsg.contains("长期未登录")||expMsg.contains("长期没有使用")){
+            dieFlag = 7;
+        }else if(expMsg.contains("该微信帐号因批量")){
+            dieFlag = 8;
+        }else if(expMsg.contains("本次登录已失效")){
+            dieFlag = 9;
+        }else if(expMsg.contains("已售")){
+            dieFlag = 98;
+        }else if(expMsg.contains("作废")){
+            dieFlag = 99;
+        }
+        //deviceConfig.setDieFlag(dieFlag);
+        //saveDeviceConfig(deviceConfig);
+
+        MaintainResultVO maintainResultVO = new MaintainResultVO();
+        maintainResultVO.setDieFlag(dieFlag);
+        maintainResultVO.setExpMsg(expMsg);
+        String mainTainJson = JSON.toJSONString(maintainResultVO);
+        System.out.println("doAction--->maintainResultVO:"+mainTainJson);
+        FileUtil.writeContent2FileForceUtf8(FilePathCommon.loginMaintainResultTxt,mainTainJson);
+        sendBroadcastByShell("updateMaintainResultVO dieFlag:"+dieFlag);
     }
 
     public void updateDeviceConfigIp(String ip){
@@ -393,18 +429,7 @@ public class ExampleInstrumentedTest {
     }
     @Test
     public void tesdot1(){
-        while (true){
-            String str = getAllWindowText("com.tencent.mm");
-            mDevice.pressEnter();
-            /*List<UiObject2> uos = findNodesByClaZZ(EditText.class);
-            if(uos!=null&&uos.size()==3) {
-                uos.get(0).setText(currentWx008Data.getNickName());
-                mDevice.pressEnter();
-                uos.get(1).setText(currentWx008Data.getPhone());
-            }*/
-            AutoUtil.sleep(2000);
-        }
-        //doVpn2();
+      mDevice.swipe(967,135,1022,135,50);
     }
 
     //每30s刷新一次，记录活跃状态
@@ -605,7 +630,10 @@ public class ExampleInstrumentedTest {
             if(uiObject2!=null){
                 if(setUiObject1Text(uiObject2,inputText)){
                     if(clickUiObject1ByText("发表")){
-                        if(otherAutoTypes.indexOf("发圈")==otherAutoTypes.size()-1) AutoUtil.sleep(5000);
+                        if(otherAutoTypes.indexOf("发圈")==otherAutoTypes.size()-1) {
+                            System.out.println("doAction--->点击发表，休眠8s");
+                            AutoUtil.sleep(8000);
+                        }
                     }
                 }
                 //mDevice.findObject(By.text("发表")).click();
@@ -709,10 +737,16 @@ public class ExampleInstrumentedTest {
                 try {
                     String text = uiObject2.getText();
                     String wxid = text.substring(text.indexOf("：")+1);
-                    deviceConfig = getDeviceConfig();
+                    /*deviceConfig = getDeviceConfig();
                     deviceConfig.setWxid(wxid);
                     saveDeviceConfig(deviceConfig);
-                    sendBroadcastByShell("wxid");
+                    sendBroadcastByShell("wxid");*/
+                    if(deviceConfig.getRunType()==1){
+                        String wx008DataSstr = FileUtil.readAllUtf8(FilePathCommon.wx008DataFilePath);
+                        currentWx008Data = JSON.parseObject(wx008DataSstr,Wx008Data.class);
+                        System.out.println("doAction--->读取currentWx008Data获取 id，sendWxidBroadcastByShell传参数用到");
+                    }
+                    sendWxidBroadcastByShell(wxid,currentWx008Data.getId()+"");
                     isOperationsSucc = true;
                     operationDesc = "获取wxid："+wxid;
                 } catch (UiObjectNotFoundException e) {
@@ -723,11 +757,14 @@ public class ExampleInstrumentedTest {
             }
 
         }else if("自定义-长按拍照分享".equals(wni.getOperation())){
-            UiObject2 uiObject2 = mDevice.findObject(By.descContains("更多功能按钮"));
+            System.out.println("doAction---->长按相机 swipe(967,135,1022,135,50)");
+            mDevice.swipe(967,135,1022,135,50);
+             //mDevice.swipe()
+            /*UiObject2 uiObject2 = mDevice.findObject(By.descContains("更多功能按钮"));
             if(uiObject2!=null){
                 uiObject2.longClick();
             }
-            AutoUtil.sleep(800);
+            AutoUtil.sleep(800);*/
             isOperationsSucc = true;
         }else if("自定义-点击开始安全校验".equals(wni.getOperation())){
             UiObject2 uiObject2 = mDevice.findObject(By.descContains("开始"));
@@ -848,7 +885,8 @@ public class ExampleInstrumentedTest {
                 if(uiObject21!=null){
                     uiObject21.click();
                     System.out.println("doAction--->输入内容-点击发送");
-                    httpRequestService.setFriendsNull(currentWx008Data.getId());
+                    //httpRequestService.setFriendsNull(currentWx008Data.getId());
+                    sendBroadcastByShell("addFriend");
                     AutoUtil.sleep(8000);
                     isOperationsSucc = true;
                 }
@@ -1331,7 +1369,7 @@ public class ExampleInstrumentedTest {
             System.out.println("doAction-->等待微信启动成功");
             AutoUtil.sleep(1000);
             String pgName  = mDevice.getCurrentPackageName();
-            System.out.println("doAction-->"+mDevice.getProductName()+" "+pgName);
+            //System.out.println("doAction-->"+mDevice.getProductName()+" "+pgName);
             if(pgName==null) continue;
             if(!pgName.contains("tencent")){
                 if(waitStartNum>25){
@@ -1450,7 +1488,6 @@ public class ExampleInstrumentedTest {
 
     public boolean saveAndGenerate(){
         UiObject2 uiObject21 = mDevice.findObject(By.text("保存"));
-        System.out.println("doAction-->uiObject21:"+uiObject21);
         if(uiObject21!=null){
             uiObject21.click();
             System.out.println("doAction--->点击保存");
@@ -1878,10 +1915,10 @@ public class ExampleInstrumentedTest {
     //获取当前ip
     public String getIp(){
         System.out.println("doAction--->告诉对方获取ip");
-        deviceConfig = getDeviceConfig();
+        /*deviceConfig = getDeviceConfig();
         deviceConfig.setLastIpAddress("1");//告诉对方获取ip
-        saveDeviceConfig(deviceConfig);
-        sendBroadcastByShell("ip");
+        saveDeviceConfig(deviceConfig);*/
+        sendBroadcastByShell("getIp");
         int i = 0;
         while (i<50){
             System.out.println("doAction--->等待获取ip "+i);

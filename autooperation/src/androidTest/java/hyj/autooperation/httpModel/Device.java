@@ -167,9 +167,20 @@ public class Device {
     private String calledNumber;
     private String content;
 
+
     private Integer changeIp;//1 不改变ip，2 执行改变ip
 
     private Long refreshTime;//刷新时间，uiauto脚本没30S分钟刷新一次
+
+    private int dieFlag;
+
+    public int getDieFlag() {
+        return dieFlag;
+    }
+
+    public void setDieFlag(int dieFlag) {
+        this.dieFlag = dieFlag;
+    }
 
     public Long getRefreshTime() {
         return refreshTime;

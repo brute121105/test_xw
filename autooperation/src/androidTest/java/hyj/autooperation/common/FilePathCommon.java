@@ -26,6 +26,7 @@ public class FilePathCommon {
     public static final String logErrorPath;
     public static final String fkPngPath;
     public static final String device008TxtPath;
+    public static final String loginMaintainResultTxt;
 
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
@@ -44,6 +45,7 @@ public class FilePathCommon {
         setEnviromentFilePath = baseAppPath+"/enviroment.txt";
         wx008DataFilePath = baseAppPath+"/wx008Data.txt";
         startRunninConfigTxtPath = baseAppPath+"/startRunningConfig.txt";
+        loginMaintainResultTxt = baseAppPath+"/loginMaintainResult.txt";
         stopTxtPath = baseAppPath+"/stop.txt";
         device008TxtPath = "/sdcard/.system/xposeDevice.txt";
     }
