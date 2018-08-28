@@ -27,6 +27,9 @@ public class FilePathCommon {
     public static final String logPath;
     public static final String downAPk1Path;
     public static final String downAPk2Path;
+    public static final String serverConfigTxtPath;
+    public static final String loginMaintainResultTxt;
+    public static final String refreshTimeTxt;
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
         baseAppPathAW= Environment.getExternalStorageDirectory().getAbsolutePath()+"/.money/";
@@ -43,9 +46,12 @@ public class FilePathCommon {
         setEnviromentFilePath = baseAppPath+"/enviroment.txt";
         wx008DataFilePath = baseAppPath+"/wx008Data.txt";
         startRunninConfigTxtPath = baseAppPath+"/startRunningConfig.txt";
+        loginMaintainResultTxt = baseAppPath+"/loginMaintainResult.txt";
+        refreshTimeTxt = baseAppPath+"/refreshTime.txt";
         device008TxtPath = "/sdcard/.system/xposeDevice.txt";
         logPath = baseAppPath+"/log/";
         downAPk1Path = "/sdcard/azyfile";
         downAPk2Path = "/sdcard/hyj.autooperation.test";
+        serverConfigTxtPath = "/sdcard/serverConfig.txt";
     }
 }

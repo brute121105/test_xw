@@ -18,11 +18,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import hyj.xw.GlobalApplication;
+import hyj.xw.GlobalValue;
 import hyj.xw.aw.sysFileRp.CreatePhoneEnviroment;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
+import hyj.xw.hook.Phone;
 import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.modelHttp.Device;
@@ -34,6 +36,7 @@ import hyj.xw.util.DaoUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.OkHttpUtil;
+import hyj.xw.util.StringUtilHyj;
 
 import static hyj.xw.util.OkHttpUtil.okHttpGet;
 
@@ -45,7 +48,7 @@ public class UiAutoReciver extends BroadcastReceiver {
     HttpRequestService httpRequestService ;
     int loginIndex;
     List<Wx008Data> wx008Datas=null ;
-    Device device = null;
+    //Device device = null;
     Wx008Data currentWx008Data=null;
     long activeTimeLength=0;
     String token=null;
@@ -66,13 +69,14 @@ public class UiAutoReciver extends BroadcastReceiver {
         if(token==null){
             init();
         }
-        System.out.println("doAction--->onReceive");
+        System.out.println("UiAutoReciver doAction--->onReceive");
         final String tag = intent.getStringExtra("tag");
         final String param = intent.getStringExtra("param");
         final String callNumber = intent.getStringExtra("callNumber");
         final String calledNumber = intent.getStringExtra("calledNumber");
         final String smsContent = intent.getStringExtra("content");
-        System.out.println("doAction-->tag:"+tag+" param:"+param+" callNumber:"+callNumber+" calledNumber:"+calledNumber+" smsContent:"+smsContent);
+        final String wxid = intent.getStringExtra("wxid");
+        System.out.println("UiAutoReciver doAction-->tag:"+tag+" param:"+param+" callNumber:"+callNumber+" calledNumber:"+calledNumber+" smsContent:"+smsContent+ "wxid:"+wxid);
 
         new Thread(new Runnable() {
             @Override
@@ -80,41 +84,119 @@ public class UiAutoReciver extends BroadcastReceiver {
 
                 while (true){
                     try {
-                        device = getDeviceConfig();
-                        String wx008DataSstr = FileUtil.readAllUtf8(FilePathCommon.wx008DataFilePath);
-                        currentWx008Data = JSON.parseObject(wx008DataSstr,Wx008Data.class);
-                        if(device==null&&!TextUtils.isEmpty(param)){
-                            System.out.println("doAction--->onReceive device is null");
-                            AutoUtil.sleep(1000);
+                        //device = getDeviceConfig();
+                        /*String wx008DataSstr = FileUtil.readAllUtf8(FilePathCommon.wx008DataFilePath);
+                        currentWx008Data = JSON.parseObject(wx008DataSstr,Wx008Data.class);*/
+                        /*if(device==null&&!TextUtils.isEmpty(param)){
+                            System.out.println("UiAutoReciver doAction--->onReceive device is null");
+                            AutoUtil.sleep(3000);
                             continue;
-                        }
+                        }*/
 
                         /**
                          * 发送短信
                          */
                         if(!TextUtils.isEmpty(callNumber)){
+                            String wx008DataSstr = FileUtil.readAllUtf8(FilePathCommon.wx008DataFilePath);
+                            Wx008Data currentWx008Data = JSON.parseObject(wx008DataSstr,Wx008Data.class);
+                            if(currentWx008Data == null) continue;
                             String res = httpRequestService.sendSms(callNumber,calledNumber,smsContent);
-                            System.out.println("main-->doAction--->发送短信返回res:"+res);
+                            System.out.println("UiAutoReciver main-->doAction--->发送短信返回res:"+res);
                             if(res.contains("提交成功")){
-                                saveRegData2Server();
+                                saveRegData2Server(currentWx008Data);
                             }
+                            return;
+                        }else if("getIp".equals(param)){//获取ip并告诉对方
+                            Device device = getDeviceConfig();
+                            if(device==null){
+                                System.out.println("UiAutoReciver doAction--->getIp device device null");
+                                AutoUtil.sleep(3000);
+                                continue;
+                            }
+                            String ip = getIp();
+                            device.setLastIpAddress(ip);
+                            saveDeviceConfig(device);
+                            return;
+                        }else if("endChangeip".equals(param)){//收到对方修改ip完成，开启uiauto
+                            Device device = getDeviceConfig();
+                            if(device==null){
+                                System.out.println("UiAutoReciver doAction--->getIp device device null");
+                                AutoUtil.sleep(3000);
+                                continue;
+                            }
+
+                            device.setChangeIp(1);
+                            saveDeviceConfig(device);
+                            startUiautoThread = null;
+                            startUiautoThread = new StartUiautoThread();
+                            startUiautoThread.start();
+                            return;
+                        } else if("addFriend".equals(param)){
+                            String friends = "添加好友"+GlobalValue.data008Friends+"成功";
+                            System.out.println("UiAutoReciver doAction--->添加好友GlobalValue.friends:"+friends);
+                            String res = httpRequestService.setFriendsNull(GlobalValue.data008Id,friends);
+                            System.out.println("UiAutoReciver doAction--->添加好友res:"+res);
+                            return;
+                        }else if(param!=null&&param.contains("updateMaintainResultVO")){
+                            String maintainResultVOStr = FileUtil.readAllUtf8(FilePathCommon.loginMaintainResultTxt);
+                            System.out.println("UiAutoReciver doAction--->读取MaintainResultVOStr:"+maintainResultVOStr);
+                            MaintainResultVO maintainResultVO = JSONObject.parseObject(maintainResultVOStr,MaintainResultVO.class);
+                            if(maintainResultVO!=null){
+                                maintainResultVO.setIp(GlobalValue.ip);
+                                maintainResultVO.setId(GlobalValue.data008Id);
+                                if(GlobalValue.deviceRunType==2){
+                                    updateMaintain(maintainResultVO);
+                                }else if(GlobalValue.deviceRunType==1){
+                                    if(maintainResultVO.getExpMsg()!=null&&maintainResultVO.getExpMsg().contains("本次登录已失效")){
+                                        updateMaintain(maintainResultVO);
+                                    }
+                                    System.out.println("UiAutoReciver main-->doAction--->zc完成："+maintainResultVO.getExpMsg()+" GlobalValue.data008Phone:"+GlobalValue.data008Phone);
+                                    String res1 = httpRequestService.updateRegStatus(GlobalValue.data008Phone,maintainResultVO.getExpMsg());
+                                    System.out.println("UiAutoReciver main-->doAction--->更新手机注册状态res："+res1);
+                                }
+                            }
+
+                            return;
+                        }
+                        else if(!TextUtils.isEmpty(wxid)){
+                            Wx008Data wx008Data = new Wx008Data();
+                            wx008Data.setId(GlobalValue.data008Id);
+                            wx008Data.setWxid19(wxid);
+                            String json = JSON.toJSONString(wx008Data);
+                            System.out.println("UiAutoReciver main-->doAction--->上传wxid json："+json);
+                            String res = httpRequestService.uploadPhoneData(json);
+                            System.out.println("UiAutoReciver main-->doAction--->上传wxid res："+res);
                             return;
                         }
 
                         if("next".equals(tag)||"retry".equals(tag)){
+                            refreshUiautoReveiverTime();
                             currentWx008Data = null;
                             String setWxDataResult = setWx008Data(tag);//获取008数据
                             if(!"".equals(setWxDataResult)||currentWx008Data==null){
-                                System.out.println("doAction--->setWx008DataResult:"+setWxDataResult);
-                                AutoUtil.sleep(1000);
+                                System.out.println("UiAutoReciver doAction--->setWx008DataResult:"+setWxDataResult+" 休眠10秒");
+                                AutoUtil.startAppByPackName("hyj.xw","hyj.xw.MainActivity");
+                                AutoUtil.sleep(3000);
+                                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),setWxDataResult);
+                                AutoUtil.sleep(5000);
                                 continue;
                             }
+                            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"关闭、清除数据");
                             AutoUtil.killAndClearWxData();
-                            System.out.println("doAction--->删除联系人 随机生成联系人");
-                            ContactUtil.deleteAll();//删除联系人
-                            ContactUtil.createContactByNum();//随机生成联系人
-                            System.out.println("doAction--->设置环境setEnviroment");
-                            if(device.getHookType()==2){
+
+                            if(GlobalValue.deviceRunType==1){
+                                System.out.println("UiAutoReciver doAction--->删除联系人");
+                                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"删除联系人");
+                                ContactUtil.deleteAll();//删除联系人
+                                System.out.println("UiAutoReciver doAction--->随机生成联系人");
+                                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"随机生成联系人");
+                                ContactUtil.createContactByNum();//随机生成联系人
+                            }
+
+
+                            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"设置手机环境setEnviroment");
+                            System.out.println("UiAutoReciver doAction--->设置手机环境setEnviroment");
+                            if(GlobalValue.deviceHookType==2){
                                 set008Environment(currentWx008Data);
                             }else {
                                 setEnviroment(currentWx008Data);//修改hook文件
@@ -123,11 +205,10 @@ public class UiAutoReciver extends BroadcastReceiver {
                             FileUtil.writeContent2FileForceUtf8(FilePathCommon.wx008DataFilePath,currentWx008DataStr);//写入008j数据，供对方用
                             currentWx008DataStr = null;
                             FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"done");
-                            System.out.println("main-->doAction--->mainActivity环境和currentData已准备，写入done标志完成");
-                            device.setRefreshTime(System.currentTimeMillis());
-                            saveDeviceConfig(device);
-                            File file = new File(FilePathCommon.downAPk2Path);//监测新版本更新
-                            if(file.exists()){
+                            System.out.println("UiAutoReciver main-->doAction--->mainActivity环境和currentData已准备，写入done标志完成");
+                            //device.setRefreshTime(System.currentTimeMillis());
+                            //saveDeviceConfig(device);
+                            if(GlobalValue.isHaveNewAttach){
                                 installUiauto();
                             }
                             startChangeIpThread = null;
@@ -141,31 +222,32 @@ public class UiAutoReciver extends BroadcastReceiver {
                          * 回写登录结果
                          */
                         if(!TextUtils.isEmpty(param)){
-                            if(!TextUtils.isEmpty(device.getLoginResult())){
+
+                            /*if(!TextUtils.isEmpty(device.getLoginResult())){
                                 currentWx008Data.setExpMsg(device.getLoginResult());
                                 //int cn = DaoUtil.updateExpMsg(currentWx008Data,currentWx008Data.getExpMsg()+"-"+AutoUtil.getCurrentDate());
                                 //String recordTxt = loginIndex+" msg:"+currentWx008Data.getExpMsg()+" "+currentWx008Data.getPhone()+" "+currentWx008Data.getWxPwd()+" ip:"+device.getIpAddress();
                                 //LogUtil.login("",recordTxt);
                                 //System.out.println("main-->doAction--->main-->updateExpMsg:"+device.getLoginResult()+" cn:"+cn+" recordTxt:"+recordTxt);
-                                System.out.println("main-->doAction--->main-->updateExpMsg:"+device.getLoginResult());
+                                System.out.println("UiAutoReciver main-->doAction--->main-->updateExpMsg:"+device.getLoginResult());
                                 if("0".equals(isLocalSettingValue)){//服务器
                                     if(device.getRunType()==2){
                                         updateMaintainStatus();
                                     }else if(device.getRunType()==1){
                                         String loginResult = device.getLoginResult();
-                                        if("本次登录已失效".equals(loginResult)){
+                                        if(loginResult!=null&&loginResult.contains("本次登录已失效")){
                                             updateMaintainStatus();
                                         }else {
-                                            System.out.println("main-->doAction--->zc完成："+loginResult);
+                                            System.out.println("UiAutoReciver main-->doAction--->zc完成："+loginResult);
                                             String res1 = httpRequestService.updateRegStatus(currentWx008Data.getPhone(),loginResult);
-                                            System.out.println("main-->doAction--->更新手机注册状态res："+res1);
+                                            System.out.println("UiAutoReciver main-->doAction--->更新手机注册状态res："+res1);
                                         }
                                     }
                                 }
                                 device.setLoginResult("");
                                 saveDeviceConfig(device);
-                            }
-                            if(!TextUtils.isEmpty(device.getWxid())&&currentWx008Data.getId()!=null){
+                            }*/
+                            /*if(!TextUtils.isEmpty(device.getWxid())&&currentWx008Data.getId()!=null){
                                 if("0".equals(isLocalSettingValue)){
                                     Wx008Data wx008Data = new Wx008Data();
                                     wx008Data.setId(currentWx008Data.getId());
@@ -178,29 +260,21 @@ public class UiAutoReciver extends BroadcastReceiver {
                                     json = null;
                                 }
                                 updateWxid(currentWx008Data,device);//更新wxid
-                            }
-                            if("1".equals(device.getLastIpAddress())){
+                            }*/
+                            /*if("1".equals(device.getLastIpAddress())){
                                 String ip = getIp();
                                 device.setLastIpAddress(ip);
                                 saveDeviceConfig(device);
-                            }
-                            /*if(!TextUtils.isEmpty(device.getCallNumber())){
-                                String res = httpRequestService.sendSms(device.getCallNumber(),device.getCalledNumber(),device.getContent());
-                                System.out.println("main-->doAction--->发送短信返回res:"+res);
-                                if(res.contains("提交成功")){
-                                    saveRegData2Server();
-                                }
-                                device.setCallNumber("");
-                                saveDeviceConfig(device);
                             }*/
-                            if(device.getChangeIp()==2){
+
+                            /*if(device.getChangeIp()==2){
                                 device.setChangeIp(1);
                                 saveDeviceConfig(device);
                                 startUiautoThread = null;
                                 startUiautoThread = new StartUiautoThread();
                                 startUiautoThread.start();
                                 //new StartUiautoThread().start();
-                            }
+                            }*/
                             return;
                         }
 
@@ -214,32 +288,49 @@ public class UiAutoReciver extends BroadcastReceiver {
 
     }
 
-    public void updateMaintainStatus(){
-        MaintainResultVO maintainResultVO = createMaintainResult(currentWx008Data,device);
+    //每30s刷新一次，记录活跃状态
+    public void refreshUiautoReveiverTime(){
+        long currentTime = System.currentTimeMillis();
+        if(GlobalValue.uiautoReveiverRefreshTime==null||currentTime-GlobalValue.uiautoReveiverRefreshTime>30000){
+            System.out.println("UiAutoReciver doAction--->30s刷新uiautoReveiverRefreshTime时间");
+            GlobalValue.uiautoReveiverRefreshTime = currentTime;
+        }
+    }
+
+    public void updateMaintain(MaintainResultVO maintainResultVO){
         String json = JSON.toJSONString(maintainResultVO);
-        System.out.println("main-->doAction-->修改维护状态req:"+json);
+        System.out.println("UiAutoReciver main-->doAction-->updateMaintain修改维护状态req:"+json);
         String res = httpRequestService.updateMaintainStatus(json);
-        System.out.println("main-->doAction--->修改维护状态res："+res);
+        System.out.println("UiAutoReciver main-->doAction--->updateMaintain修改维护状态res："+res);
+    }
+
+    /*public void updateMaintainStatus(){
+        MaintainResultVO maintainResultVO = createMaintainResult(device);
+        String json = JSON.toJSONString(maintainResultVO);
+        System.out.println("UiAutoReciver main-->doAction-->修改维护状态req:"+json);
+        String res = httpRequestService.updateMaintainStatus(json);
+        System.out.println("UiAutoReciver main-->doAction--->修改维护状态res："+res);
         maintainResultVO = null;
         json = null;
     }
-
-    public void saveRegData2Server(){
+*/
+    public void saveRegData2Server(Wx008Data currentWx008Data){
         //String phoneStrs = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
-        currentWx008Data.setRegIp(device.getIpAddress());
+        currentWx008Data.setRegIp(GlobalValue.ip);
         currentWx008Data.setId(null);
         //currentWx008Data.setPhoneStrs(phoneStrs);
         String json = JSON.toJSONString(currentWx008Data);
-        System.out.println("main-->doAction--->发送短信成功上传数据currentWx008Data："+json);
+        System.out.println("UiAutoReciver main-->doAction--->发送短信成功上传数据currentWx008Data："+json);
         if(!TextUtils.isEmpty(currentWx008Data.getPhone())){
             String res = httpRequestService.uploadPhoneData(json);
             if(!"".equals(res)&&AutoUtil.isValidLong(res)){//返回更新成功id，update wxid用到
+                GlobalValue.data008Id = Long.parseLong(res);
                 currentWx008Data.setId(Long.parseLong(res));
                 String currentWx008DataStr = JSON.toJSONString(currentWx008Data);
                 FileUtil.writeContent2FileForceUtf8(FilePathCommon.wx008DataFilePath,currentWx008DataStr);//写入008j数据，供对方用
                 currentWx008DataStr = null;
             }
-            System.out.println("main-->doAction--->发送短信成功上传数据res："+res);
+            System.out.println("UiAutoReciver main-->doAction--->发送短信成功上传数据res："+res);
             //int cn = currentWx008Data.updateAll("phone=?",currentWx008Data.getPhone());
             //System.out.println("main-->doAction--->更新phoneStrs到数据库："+cn);
         }
@@ -254,7 +345,7 @@ public class UiAutoReciver extends BroadcastReceiver {
             AutoUtil.startAppByPackName("hyj.xw","hyj.xw.MainActivity");
             e.printStackTrace();
         }
-        System.out.println("main-->doActioni--->res ipStr:"+ipStr);
+        System.out.println("UiAutoReciver main-->doActioni--->res ipStr:"+ipStr);
         String ip = "失败";
         if(ipStr.contains("广东")){
             ip = "广东";
@@ -262,6 +353,7 @@ public class UiAutoReciver extends BroadcastReceiver {
             JSONObject jsonObject = JSONObject.parseObject(ipStr.substring(ipStr.indexOf("{"),ipStr.indexOf("}")+1));
             ip = jsonObject.getString("cname")+jsonObject.getString("cip");
         }
+        GlobalValue.ip = ip;
         //updateDeviceConfigIp(ip);
         return ip;
     }
@@ -269,40 +361,18 @@ public class UiAutoReciver extends BroadcastReceiver {
     public void updateWxid(Wx008Data currentWx008Data,Device device){
         ///currentWx008Data.setWxid19(device.getWxid());
         //int cn = currentWx008Data.updateAll("phone=?",currentWx008Data.getPhone());
-        System.out.println("main-->doAction---> wxid:"+device.getWxid());
+        System.out.println("UiAutoReciver main-->doAction---> wxid:"+device.getWxid());
         device.setWxid("");
         saveDeviceConfig(device);
     }
 
-    public MaintainResultVO createMaintainResult(Wx008Data currentWx008Data,Device device){
+    /*public MaintainResultVO createMaintainResult(Device device){
         String expMsg = device.getLoginResult();
-        int dieFlag = 0;
-        if(expMsg.contains("密码错误")){
-            dieFlag = 1;
-        }else if(expMsg.contains("帐号的使用存在异常")||expMsg.contains("系统检测到你的帐号有异常")){
-            dieFlag = 2;
-        }else if(expMsg.contains("操作频率过快")){
-            dieFlag = 3;
-        }else if(expMsg.contains("登录环境异常")){
-            dieFlag = 4;
-        }else if(expMsg.contains("新设备")){
-            dieFlag = 5;
-        }else if(expMsg.contains("外挂")){
-            dieFlag = 6;
-        }else if(expMsg.contains("长期未登录")||expMsg.contains("长期没有使用")){
-            dieFlag = 7;
-        }else if(expMsg.contains("该微信帐号因批量")){
-            dieFlag = 8;
-        }else if(expMsg.contains("本次登录已失效")){
-            dieFlag = 9;
-        }else if(expMsg.contains("已售")){
-            dieFlag = 98;
-        }else if(expMsg.contains("作废")){
-            dieFlag = 99;
-        }
-        MaintainResultVO maintainResultVO = new MaintainResultVO(currentWx008Data.getId(),dieFlag,expMsg,device.getIpAddress());
+        System.out.println("UiAutoReciver doAction--->gloabal ip:"+GlobalValue.ip+" gloabal data008Id:"+GlobalValue.data008Id);
+        //MaintainResultVO maintainResultVO = new MaintainResultVO(currentWx008Data.getId(),device.getDieFlag(),expMsg,device.getIpAddress());
+        MaintainResultVO maintainResultVO = new MaintainResultVO(GlobalValue.data008Id,device.getDieFlag(),expMsg,GlobalValue.ip);
         return maintainResultVO;
-    }
+    }*/
 
     public void installUiauto(){
         System.out.println("doAction--->即将开始安装auto-------------------------");
@@ -311,34 +381,35 @@ public class UiAutoReciver extends BroadcastReceiver {
         AutoUtil.execShell("pm install -r \"/data/local/tmp/hyj.autooperation.test\"");
         File file = new File(FilePathCommon.downAPk2Path);
         if(file.exists()) {
+            GlobalValue.isHaveNewAttach = false;
             boolean flag = file.delete();
-            System.out.println("doAction--->删除auto："+flag);
+            System.out.println("UiAutoReciver doAction--->删除auto："+flag);
         }
     }
 
     public String setWx008Data(String tag){
         String result = "";
         try {
-            if(1==device.getRunType()){//注册
+            if(1==GlobalValue.deviceRunType){//注册
                 if(tag.equals("next")||currentWx008Data==null){
                     String phone = httpRequestService.getPhone("");
                     if(TextUtils.isEmpty(phone)){
                         currentWx008Data =  null;
-                        AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"获取手机号失败");
                         return "获取手机号失败";
                     }
-                    if(device.getHookType()==2){//008改机方式
+                    GlobalValue.data008Phone = phone;
+                    if(GlobalValue.deviceHookType==2){//008改机方式
                         currentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(phone); //008机型数据在发送短信成功后获取
                     }else {
-                        System.out.println("main-->doAction--->生成内部改机数据");
+                        System.out.println("UiAutoReciver main-->doAction--->生成内部改机数据");
                         currentWx008Data = PhoneConf.createRegDataByPhone(phone);
                     }
-                    currentWx008Data.setRegDevice(device.getNum());
-                    currentWx008Data.setRegHookType(device.getHookType());
+                    currentWx008Data.setRegDevice(GlobalValue.deviceNum);
+                    currentWx008Data.setRegHookType(GlobalValue.deviceHookType);
                     //currentWx008Data.save();
-                    System.out.println("main-->doAction--->获取一份新改机wxData并保存");
+                    System.out.println("UiAutoReciver main-->doAction--->获取一份新改机wxData并保存");
                 }
-            }else if(2==device.getRunType()) {//养号
+            }else if(2==GlobalValue.deviceRunType) {//养号
                 if("1".equals(isLocalSettingValue)){
                     if(currentWx008Data==null){
                         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
@@ -349,23 +420,25 @@ public class UiAutoReciver extends BroadcastReceiver {
                         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_START_LOGIN_INDEX,loginIndex+"");
                         currentWx008Data = wx008Datas.get(loginIndex);
                     }
-                    System.out.println("doAction--->获取本地维护数据:"+JSON.toJSONString(currentWx008Data));
+                    System.out.println("UiAutoReciver doAction--->获取本地维护数据:"+JSON.toJSONString(currentWx008Data));
                 }else {
                     currentWx008Data = httpRequestService.getMaintainData();
                     if(currentWx008Data==null){
                         result = "获取维护数据失败 或 数据没有置入维护界面";
-                        AutoUtil.showToastByRunnable(GlobalApplication.getContext(),result);
-                        System.out.println("doAction--->"+result);
+                        //AutoUtil.showToastByRunnable(GlobalApplication.getContext(),result);
+                        System.out.println("UiAutoReciver doAction--->"+result);
                     }else {
+                        GlobalValue.data008Id = currentWx008Data.getId();
+                        GlobalValue.data008Friends = currentWx008Data.getFriends();
                         //System.out.println("doAction--->获取远程维护数据:"+JSON.toJSONString(currentWx008Data));
-                        System.out.println("doAction--->获取远程维护数据成功");
+                        System.out.println("UiAutoReciver doAction--->获取远程维护数据成功");
                     }
                 }
 
             }
         }catch (Exception e){
             e.printStackTrace();
-            System.out.println("doAction---Exception setWx008Data");
+            System.out.println("UiAutoReciver doAction---Exception setWx008Data");
         }
         return result;
     }
@@ -389,7 +462,7 @@ public class UiAutoReciver extends BroadcastReceiver {
         try {
             String data008Str = currentWx008Data.getPhoneStrs();//008原始数据
             if(!TextUtils.isEmpty(currentWx008Data.getPhoneStrsAw())&&currentWx008Data.getPhoneStrsAw().contains("androidId")){
-                System.out.println("main-->doAction--->npi数据");
+                System.out.println("UiAutoReciver main-->doAction--->npi数据");
                 data008Str = PhoneConf.phoneStr2008Str(currentWx008Data.getPhoneStrsAw());//内部改机数据转008原始数据
                 //System.out.println("main-->doAction--->npi数据phoneStr2008Str："+data008Str);
             }
@@ -401,7 +474,7 @@ public class UiAutoReciver extends BroadcastReceiver {
             //System.out.println("main-->doAction-->008 str strs:"+strs);
         }catch (Exception e){
             e.printStackTrace();
-            System.out.println("main-->doAction---Exception set008Environment");
+            System.out.println("UiAutoReciver main-->doAction---Exception set008Environment");
         }
     }
     public  Device getDeviceConfig(){
@@ -421,7 +494,7 @@ public class UiAutoReciver extends BroadcastReceiver {
     class StartChangeIpThread extends Thread{
         @Override
         public void run() {
-            System.out.println("main--doAction-->StartChangeIpThread");
+            System.out.println("UiAutoReciver main--doAction-->StartChangeIpThread");
             AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.autooperation.ExampleInstrumentedTest#changeIp hyj.autooperation.test/android.support.test.runner.AndroidJUnitRunner");
         }
     }
@@ -430,7 +503,7 @@ public class UiAutoReciver extends BroadcastReceiver {
     class StartUiautoThread extends Thread{
         @Override
         public void run() {
-            System.out.println("main--doAction-->开启StartUiautoThread");
+            System.out.println("UiAutoReciver StartUiautoThread--doAction-->开启StartUiautoThread");
             AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.autooperation.ExampleInstrumentedTest#useAppContext hyj.autooperation.test/android.support.test.runner.AndroidJUnitRunner");
         }
     }

@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 
 import hyj.xw.activity.ApiSettingActivity;
 import hyj.xw.activity.AppSettingActivity;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     CheckBox gj008CheckBox;
 
     private String[] phoneStrs;
+    private String[] serverConfigArr = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FileUtil.createFilePath(FilePathCommon.importDataAPath);
         FileUtil.createFilePath(FilePathCommon.dataBakPath);
         FileUtil.createFilePath(FilePathCommon.importData008Path);
+        createServerConfig();
+
         if (Build.VERSION.SDK_INT < 23) {
             MyWindowManager.createSmallWindow(getApplicationContext());
             MyWindowManager.createSmallWindow2(getApplicationContext());
@@ -116,19 +120,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //服务器地址
         hostEditText = (EditText) findViewById(R.id.host);
         String hostValue = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_HOST);
-        hostEditText.setText(TextUtils.isEmpty(hostValue) ? "120.78.134.230:8080" : hostValue);
+        hostEditText.setText(TextUtils.isEmpty(hostValue) ? serverConfigArr==null?"":serverConfigArr[0] : hostValue);
         //设备编号
         deviceEditText = (EditText) findViewById(R.id.deviceNum);
         String deviceNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_DEVICE);
-        deviceEditText.setText(TextUtils.isEmpty(deviceNum) ? "" : deviceNum);
+        deviceEditText.setText(TextUtils.isEmpty(deviceNum) ? serverConfigArr==null||serverConfigArr[3].equals("deviceNO")?"":serverConfigArr[3] : deviceNum);
         //帐号
         usernameEditText = (EditText) findViewById(R.id.username);
         String username = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_USERNAME);
-        usernameEditText.setText(TextUtils.isEmpty(username) ? "" : username);
+        usernameEditText.setText(TextUtils.isEmpty(username) ? serverConfigArr==null?"":serverConfigArr[1] : username);
         //密码
         passwordEditText = (EditText) findViewById(R.id.password);
         String password = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_PWD);
-        passwordEditText.setText(TextUtils.isEmpty(password) ? "" : password);
+        passwordEditText.setText(TextUtils.isEmpty(password) ? serverConfigArr==null?"":serverConfigArr[2] : password);
         //国别
         cnNumEditText = (EditText) findViewById(R.id.cnNum);
         String cnNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_CN_NUM);
@@ -194,6 +198,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public void createServerConfig(){
+        File file = new File(FilePathCommon.serverConfigTxtPath);
+        if(!file.exists()){
+            try {
+                boolean flag = file.createNewFile();
+                System.out.println("doAction--->创建服务器配置文件 "+flag);
+                if(flag){
+                    String configStr = "192.168.1.1----username----password----deviceNO";
+                    FileUtil.writeContent2FileForceUtf8(FilePathCommon.serverConfigTxtPath,configStr);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            System.out.println("doAction--->服务器配置文件已存在");
+            String configStr = FileUtil.readAllUtf8(FilePathCommon.serverConfigTxtPath);
+            if(!configStr.contains("192.168.1.1")){
+                serverConfigArr = configStr.split("----");
+            }
+        }
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String spinnerValue = phoneStrs[i];
@@ -256,7 +282,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_CN_NUM, cnNumEditText.getText().toString());
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_AIR_CHANGE_IP, isAirChangeIpCheckBox.isChecked() ? "1" : "0");
         //主机地址
-        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_HOST, hostEditText.getText().toString());
+        String host = hostEditText.getText().toString();
+        if(!host.contains(":")){
+            host = host+":8080";
+        }
+        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_HOST, host);
         //本地配置
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_IS_LOCAL_SETTING, isLocalSettingCheckBox.isChecked() ? "1" : "0");
         //008改机
@@ -523,6 +553,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             device.setChangeIp(1);//重置状态 状态为2是修改ip
         }
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,device.getRunState()+"");//暂停标志 1、正常；2、暂停
+        GlobalValue.deviceRunType = device.getRunType();
+        GlobalValue.deviceHookType = device.getHookType();
+        GlobalValue.deviceNum = device.getNum();
         saveDeviceConfig(device);
         return result;
     }
@@ -550,6 +583,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void run() {
 
+            GlobalValue.uiautoReveiverRefreshTime = System.currentTimeMillis();
             String result = initDeviceConfig2Txt();
             if(!"".equals(result)) return;
             FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
@@ -575,12 +609,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Device device = getDeviceConfig();
                         if(device.getRefreshTime()!=null){
                             activeTimeLength = currentTime - device.getRefreshTime();
-                            if(activeTimeLength>2*60000){//超过5分钟，重试
+                            if(activeTimeLength>2*60000&&currentTime - GlobalValue.uiautoReveiverRefreshTime>2*60000){//超过2分钟，重试
                                 String msg = "doAction--->超时，超过2*60000，发送广播tag：retry";
                                 System.out.println(msg);
                                 String tag = "retry";
                                 AutoUtil.execShell("am broadcast -a hyj.auto.test --es tag \""+tag+"\"");
+                            }if(currentTime - GlobalValue.uiautoReveiverRefreshTime>5*60000){//超过5分钟，重试
+                                String msg = "doAction--->超时，超过5*60000，发送广播tag：retry";
+                                System.out.println(msg);
+                                String tag = "retry";
+                                AutoUtil.execShell("am broadcast -a hyj.auto.test --es tag \""+tag+"\"");
                             }
+
                         }
                         downloadAttach(false);
                     }

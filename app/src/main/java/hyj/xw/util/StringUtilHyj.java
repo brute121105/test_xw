@@ -1,5 +1,7 @@
 package hyj.xw.util;
 
+import android.text.TextUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,4 +51,16 @@ public class StringUtilHyj {
             return str;
         }
     }
+
+    public static boolean isNumeric(String str){
+            if(TextUtils.isEmpty(str)) return false;
+            str = str.trim();
+            for (int i = str.length();--i>=0;){
+                   if (!Character.isDigit(str.charAt(i))){
+                           return false;
+                        }
+                }
+            return true;
+         }
+
 }

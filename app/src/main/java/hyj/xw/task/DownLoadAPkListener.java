@@ -16,6 +16,8 @@ import hyj.xw.dao.AppConfigDao;
 import hyj.xw.modelHttp.Apk;
 import hyj.xw.service.HttpRequestService;
 import hyj.xw.util.AutoUtil;
+import hyj.xw.util.StringUtilHyj;
+import hyj.xw.util.TimeUtil;
 import hyj.xw.view.CommonProgressDialog;
 
 
@@ -65,7 +67,7 @@ public class DownLoadAPkListener implements DialogInterface.OnClickListener {
         //System.out.println("doAction--->currentVersion:"+currentVersion);
         apkDownloadUrl = apkDownloadUrl+apk.getId();
         //System.out.println("doAction--->apkDownloadUrl:"+apkDownloadUrl);
-        String content = "版本"+apk.getVersionCode()+"\n发布时间"+apk.getCreateTime();
+        String content = "版本"+apk.getVersionName()+"\n发布时间"+TimeUtil.toString(apk.getCreateTime());
         showDwnloadApkDialog(content);
     }
 

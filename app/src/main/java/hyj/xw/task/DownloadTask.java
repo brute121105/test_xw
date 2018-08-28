@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import hyj.xw.GlobalValue;
 import hyj.xw.common.CommonConstant;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.dao.AppConfigDao;
@@ -146,7 +147,8 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
                 AutoUtil.execShell("chmod 777 /data/local/tmp/hyj.autooperation.test");
                 AutoUtil.execShell("pm install -r \"/data/local/tmp/hyj.autooperation.test\"");*/
 
-                System.out.println("doAction-->附件下载完成并生产文件");
+                System.out.println("doAction-->附件下载完成并生产文件 versionCode"+apk.getVersionCode());
+                GlobalValue.isHaveNewAttach = true;
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_UIAUTO_VERSION,apk.getVersionCode()+"");
                 //apk.setEndInstallApk(true);
 

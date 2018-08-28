@@ -397,12 +397,12 @@ public class PhoneConf {
         npi.setSubscriberId(pi.getSubscriberId());
         //npi.setMacAddress(pi.getBlueAddress());//--
         npi.setMacAddress(pi.getMacAddress());
-          if(pi.getBlueAddress().indexOf(":")==-1){
+          if(pi.getBlueAddress()!=null&&pi.getBlueAddress().indexOf(":")==-1){
               npi.setP2p0Mac(pi.getMacAddress());
           }else {
               npi.setP2p0Mac(pi.getBlueAddress());//--
           }
-          if(TextUtils.isEmpty(npi.getMacAddress())&&pi.getBlueAddress().indexOf(":")>-1){
+          if(pi.getBlueAddress()!=null&&TextUtils.isEmpty(npi.getMacAddress())&&pi.getBlueAddress().indexOf(":")>-1){
               npi.setMacAddress(pi.getBlueAddress());
           }
         npi.setCpuName("");

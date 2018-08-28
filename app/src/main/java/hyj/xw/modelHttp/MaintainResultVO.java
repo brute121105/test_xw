@@ -21,6 +21,10 @@ public class MaintainResultVO {
      */
     private String ip;
 
+    public MaintainResultVO(){
+
+    }
+
     public MaintainResultVO(Long id,Integer dieFlag,String expMsg, String ip){
         this.id = id;
         this.dieFlag = dieFlag;

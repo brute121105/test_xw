@@ -304,6 +304,19 @@ public class HttpRequestService {
         return res;
     }
 
+    public String setFriendsNull(long id,String friends){
+        String res = "";
+        String url =host+"/wxdata/setfriends/"+id+"?friends="+friends;
+        try {
+            System.out.println("TestHttpRequestService setFriendsNull url--->"+url);
+            res = OkHttpUtil.okHttpPostBodyByToken(url,getTestJSON(),token);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("TestHttpRequestService setFriendsNull res--->"+res);
+        return res;
+    }
+
     public JSONObject getJSONObjectData(String json){
         ResponseData responseData = JSONObject.parseObject(json,ResponseData.class);
         JSONObject jsonObject = JSONObject.parseObject(responseData.getData());

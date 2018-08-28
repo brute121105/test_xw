@@ -39,7 +39,7 @@ public class GetFutureResultUtil {
         }
         if(null==res){
             if("1".equals(apkType)){
-                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"当前是最新版本");
+                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"当前是最新版本 "+getVersionName());
             }
             System.out.println("main--->downloadAttach:当前是最新版本");
             return null;
@@ -76,6 +76,18 @@ public class GetFutureResultUtil {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public static String getVersionName() {
+        try {
+            PackageManager manager = GlobalApplication.getContext().getPackageManager();
+            PackageInfo info = manager.getPackageInfo(GlobalApplication.getContext().getPackageName(),0);
+            String version = info.versionName;
+            return version;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "获取版本失败";
     }
 
 

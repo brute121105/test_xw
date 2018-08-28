@@ -143,6 +143,16 @@ public class Device {
 
     private Long refreshTime;//刷新时间，uiauto脚本没30S分钟刷新一次
 
+    private int dieFlag;
+
+    public int getDieFlag() {
+        return dieFlag;
+    }
+
+    public void setDieFlag(int dieFlag) {
+        this.dieFlag = dieFlag;
+    }
+
 
     public Long getRefreshTime() {
         return refreshTime;
