@@ -41,6 +41,7 @@ import hyj.xw.service.SmsReciver;
 import hyj.xw.task.DownLoadAPkListener;
 import hyj.xw.task.StartAutoTask;
 import hyj.xw.util.AutoUtil;
+import hyj.xw.util.ContactUtil;
 import hyj.xw.util.DeviceParamUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetFutureResultUtil;
@@ -500,8 +501,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"");
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath,"");
-        File file = new File(FilePathCommon.downAPk2Path);
-        if(file.exists()) file.delete();
+        /*File file = new File(FilePathCommon.downAPk2Path);
+        if(file.exists()) file.delete();*/
         String result = "";
         Device device = null;
         if("1".equals(isLocalSettingValue)){
@@ -655,6 +656,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         System.out.println("doAction--StopThread--->获取到状态4，重启手机");
                         AutoUtil.execShell("reboot");
                     }if(5==device.getRunState()){//启动脚本
+
+                        System.out.println("UiAutoReciver doAction--->删除联系人");
+                        AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"删除联系人");
+                        ContactUtil.deleteAll();//删除联系人
+
                         System.out.println("doAction--StopThread--->获取到状态5，启动脚本");
                         String tag = "retry";
                         AutoUtil.execShell("am broadcast -a hyj.auto.test --es tag \""+tag+"\"");

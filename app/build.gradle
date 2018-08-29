@@ -7,8 +7,8 @@ android {
         applicationId "hyj.xw"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 2256
-        versionName "2.2.56"
+        versionCode 2262
+        versionName "2.2.62"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

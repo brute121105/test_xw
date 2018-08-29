@@ -141,19 +141,13 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
             update();
         }else {
             if(pBar!=null) pBar.cancel();
-            File file = new File(FilePathCommon.downAPk1Path);
+            File file = new File(FilePathCommon.downAPk2Path);
             if(file!=null&&file.length()>0){
-                /*AutoUtil.execShell("cp /sdcard/hyj.autooperation.test /data/local/tmp/");
-                AutoUtil.execShell("chmod 777 /data/local/tmp/hyj.autooperation.test");
-                AutoUtil.execShell("pm install -r \"/data/local/tmp/hyj.autooperation.test\"");*/
-
-                System.out.println("doAction-->附件下载完成并生产文件 versionCode"+apk.getVersionCode());
+                System.out.println("main--doAction-->附件下载成功 versionCode"+apk.getVersionCode());
                 GlobalValue.isHaveNewAttach = true;
                 AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_UIAUTO_VERSION,apk.getVersionCode()+"");
-                //apk.setEndInstallApk(true);
-
-                //AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.autooperation.ExampleInstrumentedTest#installTest hyj.autooperation.test/android.support.test.runner.AndroidJUnitRunner");
-
+            }else {
+                System.out.println("main--doAction-->附件下载失败 versionCode"+apk.getVersionCode());
             }
 
         }

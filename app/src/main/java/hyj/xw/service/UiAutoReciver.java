@@ -167,10 +167,17 @@ public class UiAutoReciver extends BroadcastReceiver {
                             String res = httpRequestService.uploadPhoneData(json);
                             System.out.println("UiAutoReciver main-->doAction--->上传wxid res："+res);
                             return;
-                        }
-
-                        if("next".equals(tag)||"retry".equals(tag)){
+                        }else if("next".equals(tag)||"retry".equals(tag)){
                             refreshUiautoReveiverTime();
+
+                            File file = new File(FilePathCommon.downAPk2Path);//监测新版本更新
+                            if(file.exists()){
+                                System.out.println("UiAutoReciver main-->doAction--->存在新版本文件");
+                                installUiauto();
+                            }else {
+                                System.out.println("UiAutoReciver main-->doAction--->不存在新版本文件");
+                            }
+
                             currentWx008Data = null;
                             String setWxDataResult = setWx008Data(tag);//获取008数据
                             if(!"".equals(setWxDataResult)||currentWx008Data==null){
@@ -208,9 +215,9 @@ public class UiAutoReciver extends BroadcastReceiver {
                             System.out.println("UiAutoReciver main-->doAction--->mainActivity环境和currentData已准备，写入done标志完成");
                             //device.setRefreshTime(System.currentTimeMillis());
                             //saveDeviceConfig(device);
-                            if(GlobalValue.isHaveNewAttach){
-                                installUiauto();
-                            }
+
+
+
                             startChangeIpThread = null;
                             startChangeIpThread = new StartChangeIpThread();
                             startChangeIpThread.start();
