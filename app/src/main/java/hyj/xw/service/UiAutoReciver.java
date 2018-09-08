@@ -144,9 +144,9 @@ public class UiAutoReciver extends BroadcastReceiver {
                             if(maintainResultVO!=null){
                                 maintainResultVO.setIp(GlobalValue.ip);
                                 maintainResultVO.setId(GlobalValue.data008Id);
-                                if(GlobalValue.deviceRunType==2){
+                                if(GlobalValue.device.getRunType()==2){
                                     updateMaintain(maintainResultVO);
-                                }else if(GlobalValue.deviceRunType==1){
+                                }else if(GlobalValue.device.getRunType()==1){
                                     if(maintainResultVO.getExpMsg()!=null&&maintainResultVO.getExpMsg().contains("本次登录已失效")){
                                         updateMaintain(maintainResultVO);
                                     }
@@ -169,7 +169,6 @@ public class UiAutoReciver extends BroadcastReceiver {
                             return;
                         }else if("next".equals(tag)||"retry".equals(tag)){
                             refreshUiautoReveiverTime();
-
                             File file = new File(FilePathCommon.downAPk2Path);//监测新版本更新
                             if(file.exists()){
                                 System.out.println("UiAutoReciver main-->doAction--->存在新版本文件");
@@ -191,7 +190,7 @@ public class UiAutoReciver extends BroadcastReceiver {
                             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"关闭、清除数据");
                             AutoUtil.killAndClearWxData();
 
-                            if(GlobalValue.deviceRunType==1){
+                            if(GlobalValue.device.getRunType()==1){
                                 System.out.println("UiAutoReciver doAction--->删除联系人");
                                 AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"删除联系人");
                                 ContactUtil.deleteAll();//删除联系人
@@ -203,25 +202,19 @@ public class UiAutoReciver extends BroadcastReceiver {
 
                             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"设置手机环境setEnviroment");
                             System.out.println("UiAutoReciver doAction--->设置手机环境setEnviroment");
-                            if(GlobalValue.deviceHookType==2){
+                            if(GlobalValue.device.getHookType()==2){
                                 set008Environment(currentWx008Data);
                             }else {
                                 setEnviroment(currentWx008Data);//修改hook文件
                             }
                             String currentWx008DataStr = JSON.toJSONString(currentWx008Data);
                             FileUtil.writeContent2FileForceUtf8(FilePathCommon.wx008DataFilePath,currentWx008DataStr);//写入008j数据，供对方用
-                            currentWx008DataStr = null;
                             FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"done");
-                            System.out.println("UiAutoReciver main-->doAction--->mainActivity环境和currentData已准备，写入done标志完成");
-                            //device.setRefreshTime(System.currentTimeMillis());
-                            //saveDeviceConfig(device);
-
-
-
+                            saveDeviceConfig(GlobalValue.getDeviceAndSomeParams());
+                            System.out.println("UiAutoReciver main-->doAction--->currentWx008Data对象、device对象、环境done标志写入文件");
                             startChangeIpThread = null;
                             startChangeIpThread = new StartChangeIpThread();
                             startChangeIpThread.start();
-                            //new StartChangeIpThread().start();
                             return;
                         }
 
@@ -397,7 +390,7 @@ public class UiAutoReciver extends BroadcastReceiver {
     public String setWx008Data(String tag){
         String result = "";
         try {
-            if(1==GlobalValue.deviceRunType){//注册
+            if(1==GlobalValue.device.getRunType()){//注册
                 if(tag.equals("next")||currentWx008Data==null){
                     String phone = httpRequestService.getPhone("");
                     if(TextUtils.isEmpty(phone)){
@@ -405,18 +398,18 @@ public class UiAutoReciver extends BroadcastReceiver {
                         return "获取手机号失败";
                     }
                     GlobalValue.data008Phone = phone;
-                    if(GlobalValue.deviceHookType==2){//008改机方式
+                    if(GlobalValue.device.getHookType()==2){//008改机方式
                         currentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(phone); //008机型数据在发送短信成功后获取
                     }else {
                         System.out.println("UiAutoReciver main-->doAction--->生成内部改机数据");
                         currentWx008Data = PhoneConf.createRegDataByPhone(phone);
                     }
-                    currentWx008Data.setRegDevice(GlobalValue.deviceNum);
-                    currentWx008Data.setRegHookType(GlobalValue.deviceHookType);
+                    currentWx008Data.setRegDevice(GlobalValue.device.getNum());
+                    currentWx008Data.setRegHookType(GlobalValue.device.getHookType());
                     //currentWx008Data.save();
                     System.out.println("UiAutoReciver main-->doAction--->获取一份新改机wxData并保存");
                 }
-            }else if(2==GlobalValue.deviceRunType) {//养号
+            }else if(2==GlobalValue.device.getRunType()) {//养号
                 if("1".equals(isLocalSettingValue)){
                     if(currentWx008Data==null){
                         loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
@@ -485,10 +478,16 @@ public class UiAutoReciver extends BroadcastReceiver {
         }
     }
     public  Device getDeviceConfig(){
-        String srConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
-        if(TextUtils.isEmpty(srConfigStr)) return null;
-        Device srConfig = JSONObject.parseObject(srConfigStr,Device.class);
-        return srConfig;
+        try {
+            String srConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
+            if(TextUtils.isEmpty(srConfigStr)) return null;
+            Device srConfig = JSONObject.parseObject(srConfigStr,Device.class);
+            return srConfig;
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("UiAutoReciver main-->doAction---getDeviceConfig exception");
+        }
+        return null;
     }
     public  void saveDeviceConfig(Device device){
         if(device!=null){
