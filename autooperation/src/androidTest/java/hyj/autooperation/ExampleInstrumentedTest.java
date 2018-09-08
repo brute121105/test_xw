@@ -65,7 +65,6 @@ import hyj.autooperation.httpModel.MaintainResultVO;
 import hyj.autooperation.model.NodeInfo;
 import hyj.autooperation.model.WindowNodeInfo;
 import hyj.autooperation.model.Wx008Data;
-import hyj.autooperation.service.HttpRequestService;
 import hyj.autooperation.util.AutoUtil;
 import hyj.autooperation.util.DragImageUtil2;
 import hyj.autooperation.util.FileUtil;
@@ -113,16 +112,8 @@ public class ExampleInstrumentedTest {
 
     @Test
     public void installTest(){
-        UiObject uiObject2 = new UiObject(new UiSelector().className(EditText.class));
-        if(uiObject2!=null){
-            try {
-                uiObject2.click();
-                AutoUtil.sleep(500);
-                uiObject2.setText("123");
-            } catch (UiObjectNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
+        System.out.println("doAction--->installTest");
+        AutoUtil.clickXY(0,0);
     }
 
     @Test
