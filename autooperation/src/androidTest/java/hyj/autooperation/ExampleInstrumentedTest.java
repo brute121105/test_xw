@@ -1394,18 +1394,8 @@ public class ExampleInstrumentedTest {
         appContext.startActivity(intent);*/
     }
     public Wx008Data tellSetEnvirlmentAndGet008Data(String tag){
-        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,tag);//next登录下一个，retry新登录,首次开启也是retry
-       /* AutoUtil.sleep(800);//等待对方处理写入文件
-        String str = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
-        System.out.println("doAction-->监听当前标志："+str);
-        while (str.equals("next")||str.equals("retry")){//等待对方写入hook和008data，对方修改状态，循环不执行
-            str = FileUtil.readAllUtf8(FilePathCommon.setEnviromentFilePath);
-            System.out.println("doAction-->等待对方完成done，当前标志："+str);
-            AutoUtil.sleep(500);
-        }*/
         if(deviceConfig.getHookType()==2){//如果008改机
-            //if(deviceConfig.getRunType()==1)
-                do008();//生成随机数据，zc才需要
+            do008();//生成随机数据，zc才需要
         }
         String wx008DataSstr = FileUtil.readAllUtf8(FilePathCommon.wx008DataFilePath);
         Wx008Data currentWx008Data = JSON.parseObject(wx008DataSstr,Wx008Data.class);
