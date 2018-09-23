@@ -15,6 +15,7 @@ import hyj.xw.thread.Fetch008DataHistoryThread;
 import hyj.xw.thread.Fetch008DataThread;
 import hyj.xw.thread.MonitorMessageThread;
 import hyj.xw.thread.Recover008DataThread;
+import hyj.xw.thread.SendAccessMsgThread;
 import hyj.xw.thread.TestThread;
 
 /**
@@ -45,6 +46,8 @@ public class ThreadFactory {
                 return new Recover008DataThread(context,record,parameters);
             case "monitorMessageThread":
                 return new MonitorMessageThread(context,record,parameters);
+            case "sendAccessMsgThread":
+                return new SendAccessMsgThread(context,record,parameters);
         }
         throw new RuntimeException("【"+name+"】没有相关服务！");
 

@@ -195,6 +195,7 @@ public class HttpRequestService {
         try {
             String url =host+"/device/connect";
             System.out.println("HttpRequestService deviceConnectServer url--->"+url);
+            System.out.println("HttpRequestService deviceConnectServer token--->"+token);
             Device device = new Device();
             device.setNum(deviceNum);
             res = OkHttpUtil.okHttpPostBodyByToken(url,JSON.toJSONString(device),token);
@@ -316,6 +317,21 @@ public class HttpRequestService {
         System.out.println("TestHttpRequestService setFriendsNull res--->"+res);
         return res;
     }
+
+    public String helpLogin(String json){
+        String res = "";
+        String url =host+"/help-login/login";
+        try {
+            System.out.println("TestHttpRequestService helpLogin url--->"+url);
+            res = OkHttpUtil.okHttpPostBodyByToken(url,json,token);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("TestHttpRequestService helpLogin res--->"+res);
+        return res;
+    }
+
+
 
     public JSONObject getJSONObjectData(String json){
         ResponseData responseData = JSONObject.parseObject(json,ResponseData.class);

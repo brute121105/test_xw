@@ -145,6 +145,16 @@ public class Device {
 
     private int dieFlag;
 
+    private Integer assistant;
+
+    public Integer getAssistant() {
+        return assistant;
+    }
+
+    public void setAssistant(Integer assistant) {
+        this.assistant = assistant;
+    }
+
     public int getDieFlag() {
         return dieFlag;
     }

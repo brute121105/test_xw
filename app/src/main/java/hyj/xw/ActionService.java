@@ -37,7 +37,12 @@ public class ActionService  extends AccessibilityService {
         AutoUtil.execShell("input keyevent 3");
         parameters.setIsStop(0);
 
-        executorService.submit(ThreadFactory.getThread("monitorMessageThread",this,record,parameters));
+        //executorService.submit(ThreadFactory.getThread("monitorMessageThread",this,record,parameters));
+        //executorService.submit(ThreadFactory.getThread("autoOperation",this,record,parameters));
+        //executorService.submit(ThreadFactory.getThread("recover008Data",this,record,parameters));
+        executorService.submit(ThreadFactory.getThread("sendAccessMsgThread",this,record,parameters));
+
+
 
         //2018年8月3日15:58:16 住宿
         /*parameters.setStartLoginIndex(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));

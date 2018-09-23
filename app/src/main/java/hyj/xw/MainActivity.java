@@ -45,6 +45,7 @@ import hyj.xw.util.DeviceParamUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.GetFutureResultUtil;
 import hyj.xw.util.GetPermissionUtil;
+import hyj.xw.util.OkHttpUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -325,6 +326,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void testMethod() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //String url = "http://localhost:1888/cmd?fun=userdelcur";
+                //String url = "http://localhost:1888/cmd?fun=usercreate";
+                String url = "http://localhost:1888/cmd?fun=sendtoast&text=sdfs";
+
+                try {
+                    String res = OkHttpUtil.okHttpGet(url);
+                    System.out.println("doAction--res:"+res);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         /*List<String> phones = FileUtil.read008Data("/sdcard/brute9.txt");
         for (String phone : phones) {
             phone = phone.substring(phone.indexOf("--") + 2);
@@ -389,7 +405,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(MainActivity.this, AppSettingActivity.class));
                 break;
             case R.id.btn_yh_setting:
-                testMethod();
                 //startActivity(new Intent(MainActivity.this, YhSettingActivity.class));
                 break;
             case R.id.btn_data_impExp:
@@ -401,6 +416,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 AutoUtil.killApp();
                 break;
             case R.id.test_conn:
+                //testMethod();
                 testConn();
                 //new StopThread().start();
                 break;
@@ -554,11 +570,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             device.setChangeIp(1);//重置状态 状态为2是修改ip
         }
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,device.getRunState()+"");//暂停标志 1、正常；2、暂停
-        //GlobalValue.deviceRunType = device.getRunType();
-        //GlobalValue.deviceHookType = device.getHookType();
-        //GlobalValue.deviceNum = device.getNum();
         GlobalValue.device  = device;
-        //saveDeviceConfig(device);
         return result;
     }
 
@@ -627,50 +639,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         downloadAttach(false);
                     }
 
-                    String res = httpRequestService.getStartConifgFromServer(deviceNum);
-                    if("".equals(res)){
-                        coutDisNet = coutDisNet+1;
-                        if(coutDisNet>12){
-                            coutDisNet = 0;
-                            System.out.println("StopThread--HttpRequestService getPhone--doAction-->连接异常飞行");
-                            AutoUtil.execShell("svc wifi disable");
-                            AutoUtil.sleep(5000);
-                            AutoUtil.execShell("svc wifi enable");
-                            AutoUtil.startAppByPackName("hyj.xw","hyj.xw.MainActivity");
-                            AutoUtil.sleep(3000);
-                            new StartChangeIpThread().start();
-                        }
-                        continue;
-                    }
-                    coutDisNet = 0;
-                    ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
-                    Device device = JSONObject.parseObject(responseData.getData(),Device.class);
-                    if(device!=null){
-                        GlobalValue.device = device;
-                        System.out.println("StopThread-->获取到服务器状态 runState:"+device.getRunState());
-                        if(6==device.getRunState()){//杀死脚本
-                            System.out.println("doAction--StopThread--->获取到状态6，杀死脚本");
-                            System.out.println("doAction--->停止am force-stop hyj.autooperation");
-                            AutoUtil.execShell("am force-stop hyj.autooperation");
-                            AutoUtil.execShell("am force-stop hyj.xw");
-                            AutoUtil.sleep(2000);
+                    if(AutoUtil.isNetworkConnected()){
+                        String res = httpRequestService.getStartConifgFromServer(deviceNum);
+                        System.out.println("StopThread-->获取到服务器状态 getStartConifgFromServer res:"+res);
+                        if("".equals(res)){
+                            coutDisNet = coutDisNet+1;
+                            if(coutDisNet>12){
+                                coutDisNet = 0;
+                                System.out.println("StopThread--HttpRequestService getPhone--doAction-->连接异常飞行");
+                                AutoUtil.execShell("svc wifi disable");
+                                AutoUtil.sleep(5000);
+                                AutoUtil.execShell("svc wifi enable");
+                                AutoUtil.startAppByPackName("hyj.xw","hyj.xw.MainActivity");
+                                AutoUtil.sleep(3000);
+                                new StartChangeIpThread().start();
+                            }
                             continue;
-                        }if(4==device.getRunState()){//重启手机
-                            System.out.println("doAction--StopThread--->获取到状态4，重启手机");
-                            AutoUtil.execShell("reboot");
-                        }if(5==device.getRunState()){//启动脚本
-
-                            System.out.println("StopThread--UiAutoReciver doAction--->删除联系人");
-                            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"删除联系人");
-                            ContactUtil.deleteAll();//删除联系人
-
-                            System.out.println("doAction--StopThread--->获取到状态5，启动脚本");
-                            String tag = "retry";
-                            AutoUtil.execShell("am broadcast -a hyj.auto.test --es tag \""+tag+"\"");
                         }
-                        //标志停止状态，告知对方
-                        FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,device.getRunState()+"");//暂停标志 1、正常；2、暂停
+                        coutDisNet = 0;
+                        ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+                        Device device = JSONObject.parseObject(responseData.getData(),Device.class);
+                        if(device!=null){
+                            GlobalValue.device = device;
+                            System.out.println("StopThread-->获取到服务器状态 runState:"+device.getRunState());
+                            if(6==device.getRunState()){//杀死脚本
+                                System.out.println("doAction--StopThread--->获取到状态6，杀死脚本");
+                                System.out.println("doAction--->停止am force-stop hyj.autooperation");
+                                AutoUtil.execShell("am force-stop hyj.autooperation");
+                                AutoUtil.execShell("am force-stop hyj.xw");
+                                AutoUtil.sleep(2000);
+                                continue;
+                            }if(4==device.getRunState()){//重启手机
+                                System.out.println("doAction--StopThread--->获取到状态4，重启手机");
+                                AutoUtil.execShell("reboot");
+                            }if(5==device.getRunState()){//启动脚本
+
+                                System.out.println("StopThread--UiAutoReciver doAction--->删除联系人");
+                                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"删除联系人");
+                                ContactUtil.deleteAll();//删除联系人
+
+                                System.out.println("doAction--StopThread--->获取到状态5，启动脚本");
+                                String tag = "retry";
+                                AutoUtil.execShell("am broadcast -a hyj.auto.test --es tag \""+tag+"\"");
+                            }
+                            //标志停止状态，告知对方
+                            FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,device.getRunState()+"");//暂停标志 1、正常；2、暂停
+                        }
                     }
+
                 }catch (Exception e){
                     e.printStackTrace();
                 }

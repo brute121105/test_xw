@@ -4,17 +4,20 @@ import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.List;
 import java.util.Map;
 
 import hyj.xw.BaseThread;
 import hyj.xw.common.CommonConstant;
+import hyj.xw.common.FilePathCommon;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.AccessibilityParameters;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.DaoUtil;
+import hyj.xw.util.FileUtil;
 import hyj.xw.util.LogUtil;
 import hyj.xw.util.NodeActionUtil;
 import hyj.xw.util.ParseRootUtil;
@@ -34,7 +37,7 @@ public class Recover008DataThread extends BaseThread {
     }
 
     List<Wx008Data> wx008Datas;
-    private int loginIndex;
+    private int loginIndex=0;
     Wx008Data currentWx008Data;
     private void init(){
         wx008Datas = DaoUtil.getWx008Datas();
@@ -54,7 +57,7 @@ public class Recover008DataThread extends BaseThread {
                     AutoUtil.sleep(500);
                     continue;
                 }
-                if(!AutoUtil.actionContains(record,"008")) continue;
+                //if(!AutoUtil.actionContains(record,"008")) continue;
                 System.out.println("deb==================================");
                 ParseRootUtil.debugRoot(root);
                 ParseRootUtil.getCurrentViewAllNode(root);
@@ -71,7 +74,7 @@ public class Recover008DataThread extends BaseThread {
                 AccessibilityNodeInfo cnNode1 = ParseRootUtil.getNodePath(root,"091");
                 if(cnNode1!=null&&"序列号".equals(cnNode1.getText().toString())){
                     //填充数据
-                    set008Data(root);
+                    boolean flag = set008Data(root);
                 }
 
 
@@ -82,14 +85,14 @@ public class Recover008DataThread extends BaseThread {
         }
     }
 
-    private void set008Data(AccessibilityNodeInfo root){
+    private boolean set008Data(AccessibilityNodeInfo root){
         AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
         System.out.println("list-->"+list);
         if(list!=null){
             System.out.println("--list-getChildCount->"+list.getChildCount());
         }
         if(list!=null&&list.getChildCount()>90){
-            loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
+            //loginIndex = Integer.parseInt(AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_START_LOGIN_INDEX));
             currentWx008Data = wx008Datas.get(loginIndex);
             System.out.println("currentWx008Data---->"+JSON.toJSONString(currentWx008Data));
             List<String> dataStrs =  JSON.parseArray(currentWx008Data.getDatas(),String.class);
@@ -108,10 +111,28 @@ public class Recover008DataThread extends BaseThread {
             AutoUtil.recordAndLog(record,"008写入数据完成");
             if(AutoUtil.checkAction(record,"008写入数据完成")){
                 AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
-                AutoUtil.performClick(save,record,"008保存数据",1000);
+                boolean flag = AutoUtil.performClick(save,record,"008保存数据",1000);
                 AutoUtil.recordAndLog(record,"wx设置数据完成");
+                if(flag){
+                    System.out.println("doActin-->loinIndex:"+loginIndex);
+                    String str = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
+                    System.out.println("doAction-->currentWx008Data:"+ JSONObject.toJSONString(currentWx008Data.getDatas()));
+                    System.out.println("doAction-->getDeviceId:"+JSONObject.parseObject(str).get("getDeviceId"));
+                    System.out.println("doAction-->device008Txt:"+str);
+                    loginIndex = loginIndex+1;
+                    currentWx008Data.setPhoneStrs008Json(str);
+                    int cn = currentWx008Data.updateAll("phone=?",currentWx008Data.getPhone());
+                    if(cn==0){
+                        cn = currentWx008Data.updateAll("wxId=?",currentWx008Data.getWxId());
+                    }else if(cn==0){
+                        cn = currentWx008Data.updateAll("guid=?",currentWx008Data.getGuid());
+                    }
+                    System.out.println("doAction--->cn:"+cn+" ==================================================phone:"+currentWx008Data.getPhone());
+                    return true;
+                }
             }
         }
+        return false;
     }
 
 }

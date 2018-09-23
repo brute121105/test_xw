@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.wx.wyyk.netty.client.NettyClient;
 
 import java.io.File;
 import java.util.List;
@@ -64,6 +65,9 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
         //开启辅助
         Button openAssist2Btn = (Button)this.findViewById(R.id.open_assist2);
         openAssist2Btn.setOnClickListener(this);
+        //启动长连接
+        Button openLongConn = (Button)this.findViewById(R.id.open_long_conn);
+        openLongConn.setOnClickListener(this);
     }
 
     @Override
@@ -93,7 +97,29 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
             case R.id.open_assist2:
                 startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                 break;
+            case R.id.open_long_conn:
+                openLongConn();
+                break;
         }
+    }
+    private void openLongConn(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String deviceNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_DEVICE);
+                String host = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_HOST);
+                if(host.contains(":")){
+                    host = host.substring(0,host.indexOf(":"));
+                }
+                System.out.println("doAction--->deviceNum:"+deviceNum+" host:"+host);
+                NettyClient client = new NettyClient(host, 8000, deviceNum);
+                try {
+                    client.connect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
     private void uploadData(){
         final String indexStr = delteIndexEdt.getText().toString();
@@ -120,8 +146,11 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
                     if(i>=startIndex&&i<=endIndex){
                         Wx008Data wx008Data = wx008Datas.get(i);
                         wx008Data.setId(null);
+                        //createUploadWxdata1(wx008Data,i);//上次旧008数据
+                        createUploadWxdata2(wx008Data,i);
+                        System.out.println(i+" upload req wx008Data --->"+JSON.toJSONString(wx008Data));
                         String str = service.uploadPhoneDataReturnAll(JSON.toJSONString(wx008Data));
-                        System.out.println("upload res--->"+str);
+                        System.out.println(i+" upload res--->"+str);
                         if(str.contains("成功")){
                             uploadCn = uploadCn+1;
                         }else {
@@ -132,6 +161,38 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
                 AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"上传序号"+indexStr+"之间：成功"+uploadCn+" 条，失败："+failCn+"条");
             }
         }).start();
+    }
+
+    //上次旧008数据
+    public void createUploadWxdata1(Wx008Data wx008Data,int i){
+        if(!TextUtils.isEmpty(wx008Data.getPhoneStrs008Json())){//上传旧数据
+            if(TextUtils.isEmpty(wx008Data.getPhone())){
+                wx008Data.setPhone(wx008Data.getWxId());
+            }
+                            /*if(!TextUtils.isEmpty(wx008Data.getWxId())){
+                                wx008Data.setPhone(wx008Data.getWxId());//避免
+                            }*/
+            wx008Data.setDatas("");
+            wx008Data.setDieFlag(0);
+            wx008Data.setRegDevice("note2三 "+i);
+            wx008Data.setRegHookType(2);
+            wx008Data.setPhoneStrs(wx008Data.getPhoneStrs008Json());
+            wx008Data.setPhoneStrsAw("");
+            wx008Data.setPhoneStrs008Json("");
+        }
+    }
+    //上次数据，重新创建一份008数据
+    public void createUploadWxdata2(Wx008Data wx008Data,int i){
+        if(TextUtils.isEmpty(wx008Data.getWxId())&&!TextUtils.isEmpty(wx008Data.getWxid19())){
+            wx008Data.setWxId(wx008Data.getWxid19());
+        }
+        wx008Data.setDatas("");
+        wx008Data.setDieFlag(0);
+        wx008Data.setRegDevice("note2四美国号 "+i);
+        wx008Data.setRegHookType(2);
+        wx008Data.setPhoneStrs(PhoneConf.create008DataStr(wx008Data.getPhone()));
+        wx008Data.setPhoneStrsAw("");
+        wx008Data.setPhoneStrs008Json("");
     }
 
     private void importAppConfig(){

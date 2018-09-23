@@ -74,8 +74,8 @@ public class WindowNodeInfoConf {
 
 
        infos.add(new WindowNodeInfo("养号","a",CommonConstant.APPCONFIG_CEVN));//清除并准备改机环境
-       //infos.add(new WindowNodeInfo("养号","b",CommonConstant.APPCONFIG_APM));//飞行模式
-       infos.add(new WindowNodeInfo("养号","b",CommonConstant.APPCONFIG_VPN));//打开VPN界面
+       infos.add(new WindowNodeInfo("养号","b",CommonConstant.APPCONFIG_APM));//飞行模式
+       //infos.add(new WindowNodeInfo("养号","b",CommonConstant.APPCONFIG_VPN));//打开VPN界面
        //infos.add(new WindowNodeInfo("养号","c",CommonConstant.APPCONFIG_008));//设置008
        infos.add(new WindowNodeInfo("养号","d", CommonConstant.APPCONFIG_SWX));//启动微信
        infos.add(new WindowNodeInfo("养号","注册|登录",1,"e","点击登录1","登录",""));
@@ -92,6 +92,7 @@ public class WindowNodeInfoConf {
        infos.add(new WindowNodeInfo("养号","窗口文本",3,"g","登录异常","刷公众号",""));
        infos.add(new WindowNodeInfo("养号","窗口文本",3,"g","登录异常","打招呼存在异常",""));
        infos.add(new WindowNodeInfo("养号","窗口文本",3,"g","登录异常","长期未登录",""));
+       infos.add(new WindowNodeInfo("养号","窗口文本",3,"g","登录异常","该微信帐号因使用了微信外挂",""));
        infos.add(new WindowNodeInfo("养号","看看手机通讯录",1,"g","随机界面点击-否","否",""));
        infos.add(new WindowNodeInfo("养号","窗口文本",1,"g","随机界面点击-完成应急联系人","完成",""));
        infos.add(new WindowNodeInfo("关手机号搜索","窗口文本",1,"a","点击我","我",""));
@@ -120,6 +121,8 @@ public class WindowNodeInfoConf {
 
        infos.add(new WindowNodeInfo("提取wxid","窗口文本",1,"a","点击我","我",""));
        infos.add(new WindowNodeInfo("提取wxid","微信号：wxid",7,"b","获取nodeText","","00610"));
+
+       infos.add(new WindowNodeInfo("加好友","a","开始加好友"));//清除并准备改机环境
 
        return infos;
    }

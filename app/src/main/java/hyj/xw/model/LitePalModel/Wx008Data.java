@@ -22,6 +22,7 @@ public class Wx008Data  extends DataSupport{
     private Long id;
     private String phoneStrs;
     private String phoneStrsAw;//aw数据
+    private String phoneStrs008Json;//008json数据
     private String rgWxStatus;//aw状态
     private String guid;
     private String datas;
@@ -45,6 +46,14 @@ public class Wx008Data  extends DataSupport{
     private String regIp;//注册ip
     private Integer regHookType;//注册改机类型
 
+
+    public String getPhoneStrs008Json() {
+        return phoneStrs008Json;
+    }
+
+    public void setPhoneStrs008Json(String phoneStrs008Json) {
+        this.phoneStrs008Json = phoneStrs008Json;
+    }
 
     public String getRegDevice() {
         return regDevice;

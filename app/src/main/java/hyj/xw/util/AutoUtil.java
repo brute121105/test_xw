@@ -352,6 +352,10 @@ public class AutoUtil {
         startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
     }
 
+    public static void startAppByShell(String activity){
+        execShell("am start "+activity);
+    }
+
     public  static void  wakeAndUnlock()
     {
         KeyguardManager km;
@@ -653,4 +657,5 @@ public class AutoUtil {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         GlobalApplication.getContext().startActivity(intent);
     }
+
 }

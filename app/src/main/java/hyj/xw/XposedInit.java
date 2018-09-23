@@ -4,7 +4,11 @@ import android.content.Context;
 
 import com.alibaba.fastjson.JSON;
 
+import java.lang.reflect.Method;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.hook.Phone;
@@ -24,8 +28,42 @@ public class XposedInit implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) {
-        String packageName = lpparam.packageName;
+        final String packageName = lpparam.packageName;
         System.out.println("hyj xw hyj-->"+packageName);
+
+       /* if("app.aptx.chamelemon".equals(packageName)){
+            System.out.println("doAction method:"+packageName);
+            *//*Class class1  = XposedHelpers.findClass("com.a.a.a.a.b",lpparam.classLoader);
+            if(class1!=null){
+                String arg = "GwYMQRYEGQILCQxHDAI=";
+                String  str = (String) XposedHelpers.callStaticMethod(class1,"香港",arg);
+                System.out.println("doAction arg:"+arg+" str:"+str);
+                *//**//*XposedHelpers.findAndHookMethod(class1, "香港", String.class, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        super.afterHookedMethod(param);
+                        System.out.println("doAction args:"+param.args[0]+"--result:"+param.getResult());
+                    }
+                });*//**//*
+            }*//*
+
+            //hook新机 getDeviceJsonObj
+            Class class1  = XposedHelpers.findClass("app.aptx.chamelemon.a",lpparam.classLoader);
+            if(class1!=null){
+                XposedHelpers.findAndHookMethod(class1, "记者", String.class,String.class,new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        super.afterHookedMethod(param);
+                        String bslStr = param.getResult().toString();
+                        if(bslStr.contains("android_id")){
+                            System.out.println("doAction--->hook 变色龙改机数据bls str:"+bslStr);
+                            FileUtil.writeContent2FileForceUtf8(FilePathCommon.bslStrTxt,bslStr);
+                        }
+                    }
+                });
+            }
+        }*/
+
 
         if("hyj.xw".equals(packageName)){
           /*  new Phone(lpparam);

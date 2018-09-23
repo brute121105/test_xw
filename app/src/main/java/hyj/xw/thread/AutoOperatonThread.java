@@ -3,6 +3,7 @@ package hyj.xw.thread;
 import android.accessibilityservice.AccessibilityService;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -71,6 +72,7 @@ public class AutoOperatonThread extends BaseThread {
         AutoUtil.recordAndLog(record,"init");
         //loginSussDos.add("注册");
         loginSussDos.add("养号");
+        loginSussDos.add("加好友");
         //loginSussDos.add("提取wxid");
         //loginSussDos.add("发圈");
         //loginSussDos.add("关手机号搜索");
@@ -127,6 +129,10 @@ public class AutoOperatonThread extends BaseThread {
                     continue;
                 }
                 System.out.println("getPackageName--->"+root.getPackageName());
+
+                /*boolean flag = doAddFriend();
+                System.out.println("doAction-->发送结果："+flag);
+                if(true) continue;*/
 
                 List<WindowNodeInfo> wInfos = wInfoMap.get(actionNo);//获取当前执行动作
                 System.out.println("wInfos--->"+JSON.toJSONString(wInfos));
@@ -320,9 +326,78 @@ public class AutoOperatonThread extends BaseThread {
                     }
                 }
             }
+        }else if("开始加好友".equals(info.getActionDesc())){
+            doAddFriend();
         }
         info.setActionResultFlag(flag);//修改执行结果标识
         return flag;
+    }
+
+    String doAddFriendAction = "";
+    private boolean doAddFriend(){
+        doAddFriendAction = "init";
+        AutoUtil.execShell("am start -n com.tencent.mm/.plugin.subapp.ui.pluginapp.AddMoreFriendsUI");
+        while (true){
+            AutoUtil.sleep(1000);
+            AccessibilityNodeInfo root = context.getRootInActiveWindow();
+            if(root==null){
+                AutoUtil.sleep(1000);
+                continue;
+            }
+            ParseRootUtil.debugRoot(root);
+            AccessibilityNodeInfo nodeInfo1 = AutoUtil.findNodeInfosByText(root,"微信号/QQ号/手机号");
+            if(nodeInfo1!=null){
+                Rect rect = new Rect();
+                nodeInfo1.getBoundsInScreen(rect);
+                AutoUtil.clickXY(rect.centerX(),rect.centerY());
+            }
+            WindowOperationUtil.performClickTest(nodeInfo1);
+            AccessibilityNodeInfo nodeInfo2 = ParseRootUtil.getNodePath(root,"002");
+            WindowOperationUtil.performSetTextTest(nodeInfo2,"fz2018802");
+            AccessibilityNodeInfo nodeInfo3 = ParseRootUtil.getNodePath(root,"004000");
+            if(nodeInfo3!=null&&nodeInfo3.getText().toString().contains("搜索")){
+               WindowOperationUtil.performClickTest(nodeInfo3);
+            }
+            AccessibilityNodeInfo nodeInfo4 = AutoUtil.findNodeInfosByText(root,"添加到通讯录");
+            WindowOperationUtil.performClickTest(nodeInfo4);
+
+            AccessibilityNodeInfo nodeInfo5 = AutoUtil.findNodeInfosByText(root,"发消息");
+            WindowOperationUtil.performClickTest(nodeInfo5);
+
+            AccessibilityNodeInfo nodeInfo6 = ParseRootUtil.getNodePath(root,"0001010");//消息发送输入框
+            WindowOperationUtil.performSetTextTest(nodeInfo6,"12345678");
+
+            AccessibilityNodeInfo nodeInfo7 = AutoUtil.findNodeInfosByText(root,"发送");
+            boolean flag = WindowOperationUtil.performClickTest(nodeInfo7);
+            if(flag){
+                AccessibilityNodeInfo nodeInfo8 = ParseRootUtil.getNodePath(root,"0010");//左上角返回
+                Rect rect = new Rect();
+                nodeInfo8.getBoundsInScreen(rect);
+                AutoUtil.clickXY(rect.centerX(),rect.centerY());
+                doAddFriendAction = "点击返回主界面";
+                AutoUtil.sleep(5000);
+                continue;
+            }
+
+            if("点击返回主界面".equals(doAddFriendAction)){//判断是否发送成功
+                List<AccessibilityNodeInfo> nodes1 = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/apx");
+                List<AccessibilityNodeInfo> nodes2 = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/apw");
+                if(nodes1.size()>0&&nodes2.size()>0){
+                    String text1 = nodes1.get(0).getText()+"";
+                    String text2 = nodes2.get(0).getText()+"";
+                    System.out.println("doAction-->text:"+text1+" text2:"+text2);
+                    if("12345678".equals(text1)&&!text2.contains("发送中")){
+                        System.out.println("doAction--->添加成功");
+                        return true;
+                    }else {
+                        return false;
+                    }
+                }else {
+                    return false;
+                }
+            }
+
+        }
     }
 
     /**
@@ -342,9 +417,10 @@ public class AutoOperatonThread extends BaseThread {
     //等待飞行模式开启成功
     private boolean waitAriplaneModeSuc(AccessibilityNodeInfo root){
         boolean flag = false;
-        if(WindowOperationUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
+       /* if(WindowOperationUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
              flag = WindowOperationUtil.performClickTest(WindowOperationUtil.findNodeInfosByText(root,"确定"));
-        }
+        }*/
+        flag = AutoUtil.isNetworkConnected();
         return flag;
     }
 
@@ -398,11 +474,11 @@ public class AutoOperatonThread extends BaseThread {
             if(info.getNodeType()==2){
                 if("输入账号".equals(info.getActionDesc())){
                     String account = "";
-                    if(!TextUtils.isEmpty(currentWx008Data.getWxId())){
-                        account = currentWx008Data.getWxId();
-                    }else if(!TextUtils.isEmpty(currentWx008Data.getWxid19())){
+                    if(!TextUtils.isEmpty(currentWx008Data.getWxid19())){
                         account = currentWx008Data.getWxid19();
-                    }else if(!TextUtils.isEmpty(currentWx008Data.getPhone())){
+                    }else if(!TextUtils.isEmpty(currentWx008Data.getWxId())){
+                        account = currentWx008Data.getWxId();
+                    } else if(!TextUtils.isEmpty(currentWx008Data.getPhone())){
                         account = currentWx008Data.getPhone();
                     }
                     info.setInputText(account);
@@ -516,6 +592,12 @@ public class AutoOperatonThread extends BaseThread {
                             System.out.println("wxid inputText--->"+wxid);
                         }
                         System.out.println("inputText--->"+text);
+                    }else if("添加好友完成".equals(wInfo.getActionDesc())){
+                        currentWx008Data.setFriends(currentWx008Data.getFriends()+"bbb");
+                        int cn = currentWx008Data.updateAll("phone=?","");
+                        //System.out.println("doAction--->添加好友完成 cn:"+cn);
+                        System.out.println("doAction--->添加好友完成");
+
                     }
                 }
             }

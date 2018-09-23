@@ -7,8 +7,8 @@ android {
         applicationId "hyj.xw"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 2264
-        versionName "2.2.64"
+        versionCode 2266
+        versionName "2.2.66"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -33,6 +33,7 @@ dependencies {
     androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
     compile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
     compile 'com.android.support.test:runner:0.5'
+    compile 'io.netty:netty-all:4.1.28.Final'
     testCompile 'junit:junit:4.12'
     provided 'de.robv.android.xposed:api:82'
 }

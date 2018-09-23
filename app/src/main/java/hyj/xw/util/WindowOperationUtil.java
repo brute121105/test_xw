@@ -79,6 +79,16 @@ public class WindowOperationUtil {
         }
         return flag;
     }
+    public static boolean performSetTextTest(AccessibilityNodeInfo nodeInfo,String inputText){
+        boolean flag = false;
+        if(nodeInfo == null) return flag;
+        if(nodeInfo.isEditable()){
+            flag = nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,createBuddleText(inputText));
+        }else{
+            flag = performSetTextTest(nodeInfo.getParent(),inputText);
+        }
+        return flag;
+    }
     //创建buggle文本
     public static Bundle createBuddleText(String inputText){
         Bundle inputContent = new Bundle();

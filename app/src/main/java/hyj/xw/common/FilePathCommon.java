@@ -30,6 +30,7 @@ public class FilePathCommon {
     public static final String serverConfigTxtPath;
     public static final String loginMaintainResultTxt;
     public static final String refreshTimeTxt;
+    public static final String bslStrTxt;
     static {
         baseAppPath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/azy";
         baseAppPathAW= Environment.getExternalStorageDirectory().getAbsolutePath()+"/.money/";
@@ -53,5 +54,6 @@ public class FilePathCommon {
         downAPk1Path = "/sdcard/azyfile";
         downAPk2Path = "/sdcard/hyj.autooperation.test";
         serverConfigTxtPath = "/sdcard/serverConfig.txt";
+        bslStrTxt = baseAppPath+"/bslStrTxt.txt";
     }
 }

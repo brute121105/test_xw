@@ -1,5 +1,7 @@
 package hyj.xw;
 
+import com.wx.wyyk.netty.client.NettyClient;
+
 import org.junit.Test;
 
 import hyj.xw.util.ContactUtil;
@@ -16,8 +18,8 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        String p = ContactUtil.createPersonName();
-        int tel = ContactUtil.getRandomByQj(15,30);
-        System.out.println("p-->"+p+" tel:"+tel);
+        System.out.println("doAction---conn");
+        NettyClient client = new NettyClient("192.168.31.73", 8000, "A999");
+        client.connect();
     }
 }
