@@ -167,6 +167,16 @@ public class Device {
     private String calledNumber;
     private String content;
 
+    private Integer assistant;
+
+    public Integer getAssistant() {
+        return assistant;
+    }
+
+    public void setAssistant(Integer assistant) {
+        this.assistant = assistant;
+    }
+
 
     private Integer changeIp;//1 不改变ip，2 执行改变ip
 

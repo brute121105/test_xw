@@ -86,6 +86,10 @@ public class WindowOperationConf {
         NodeInfo nodeInfo11 = new NodeInfo(1,"登录","","点击登录1");
         setOps(ops,windowNodeInfo1,nodeInfo11);
 
+        WindowNodeInfo windowNodeInfo01 = new WindowNodeInfo("6.6.7","养号","邀请好友辅助验证","点击邀请好友辅助验证");
+        NodeInfo nodeInfo21 = new NodeInfo(1,"","邀请好友辅助验证%","点击邀请好友辅助验证");
+        setOps(ops,windowNodeInfo01,nodeInfo21);
+
         WindowNodeInfo windowNodeInfo2 = new WindowNodeInfo("6.6.7","养号","请填写手机号|下一步","自定义-登录下一步");
         setOps(ops,windowNodeInfo2,null);
 
@@ -119,6 +123,12 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo48 = new WindowNodeInfo("6.6.7","养号","你的微信号由于长期没有使用","自定义-登录异常");
         setOps(ops,windowNodeInfo48,null);
 
+        WindowNodeInfo windowNodeInfo49 = new WindowNodeInfo("6.6.7","养号","该帐号长期未登录","自定义-登录异常");
+        setOps(ops,windowNodeInfo49,null);
+
+        WindowNodeInfo windowNodeInfo50 = new WindowNodeInfo("6.6.7","养号","刷公众号","自定义-登录异常");
+        setOps(ops,windowNodeInfo50,null);
+
         WindowNodeInfo windowNodeInfo5 = new WindowNodeInfo("6.6.7","养号","通讯录|发现","自定义-判断登录成功-结束");
         setOps(ops,windowNodeInfo5,null);
 
@@ -131,11 +141,17 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo62 = new WindowNodeInfo("6.6.7","养号","微信团队邀请你参与内部体验","自定义-随机界面");
         setOps(ops,windowNodeInfo62,null);
 
+        WindowNodeInfo windowNodeInfo71 = new WindowNodeInfo("6.6.7","养号","应急联系人","自定义-随机界面");
+        setOps(ops,windowNodeInfo71,null);
+
         WindowNodeInfo windowNodeInfo64 = new WindowNodeInfo("6.6.7","养号","无响应。要将其关闭吗","自定义-无响应等待");
         setOps(ops,windowNodeInfo64,null);
 
         WindowNodeInfo windowNodeInfo63 = new WindowNodeInfo("6.6.7","养号","当前所在页面,微信安全","自定义-过滑块");
         setOps(ops,windowNodeInfo63,null);
+
+        WindowNodeInfo windowNodeInfo65 = new WindowNodeInfo("6.6.7","养号","让好友发送","自定义-提取好友验证数字并发送广播");
+        setOps(ops,windowNodeInfo65,null);
 
 
         /*WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","点击发现");
