@@ -30,7 +30,7 @@ public class DaoUtil {
         return wx008Datas;
     }
     public static List<Wx008Data> findByDataBydataFlag(){
-         //List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and wxPwd is not null","007","008","009").order("createTime asc").find(Wx008Data.class);
+        //List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and wxPwd is not null","007","008","009").order("createTime asc").find(Wx008Data.class);
 
        // List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and dieFlag=? and (expMsg not like '%帐号%' or expMsg is null)  and wxPwd is not null","007","008","009","888").order("createTime asc").find(Wx008Data.class);
         //List<Wx008Data> wx008Datas = DataSupport.where("(dataFlag=? or dataFlag=? or dataFlag=?) and dieFlag!=? and (expMsg not like '%帐号%' or expMsg is null)  and wxPwd is not null","007","008","009","999").order("createTime asc").find(Wx008Data.class);

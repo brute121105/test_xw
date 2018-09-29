@@ -182,6 +182,7 @@ public class ParseRootUtil {
         return root;
     }
     public static void debugRoot(AccessibilityNodeInfo root){
+        System.out.println("doAction--->debugRoot已开启");
         List<List<NodeAttr>> treeNodes =  ParseRootUtil.createLevelNodes(root);
 
             for(List<NodeAttr> levelNodes :treeNodes){

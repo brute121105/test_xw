@@ -64,6 +64,9 @@ public class AutoOperatonThread extends BaseThread {
     private String operation;//操作,注册、养号...
     private String lastWindowText;//上次窗口文本
     private int countSameCurrentWindowCum=0;//记录一直处在当前界面的次数
+
+    private String fzWxid = "";
+
     public AutoOperatonThread(AccessibilityService context, Map<String, String> record, AccessibilityParameters parameters){
         super(context,record,parameters);
         intiParam();
@@ -93,6 +96,7 @@ public class AutoOperatonThread extends BaseThread {
         }else {
             currentWx008Data = wx008Datas.get(loginIndex);
         }
+        fzWxid = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_FZWXNUM);
     }
     @Override
     public Object call() {
@@ -267,7 +271,7 @@ public class AutoOperatonThread extends BaseThread {
                 flag = true;
             }
         }else if(CommonConstant.APPCONFIG_APM.equals(info.getActionDesc())){
-             if(!info.isActionResultFlag()){//开启飞行模式,只开启一次默认为开启成功
+             if(!info.isActionResultFlag()&&loginIndex%3==0){//开启飞行模式,只开启一次默认为开启成功
                  AutoUtil.setAriplaneMode(1000);
              }
             flag = true;
@@ -327,7 +331,9 @@ public class AutoOperatonThread extends BaseThread {
                 }
             }
         }else if("开始加好友".equals(info.getActionDesc())){
-            doAddFriend();
+            if(doAddFriend()){
+                flag = true;
+            }
         }
         info.setActionResultFlag(flag);//修改执行结果标识
         return flag;
@@ -339,47 +345,77 @@ public class AutoOperatonThread extends BaseThread {
         AutoUtil.execShell("am start -n com.tencent.mm/.plugin.subapp.ui.pluginapp.AddMoreFriendsUI");
         while (true){
             AutoUtil.sleep(1000);
+            System.out.println("doAction--->doAddFriendAction:"+doAddFriendAction);
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){
                 AutoUtil.sleep(1000);
                 continue;
             }
             ParseRootUtil.debugRoot(root);
+            String allText = ParseRootUtil.getCurrentViewAllTexts(root);
+            if(allText.contains("没有找到")){
+                AutoUtil.clickUpLeftXYBack();//点击左上角
+                continue;
+            }
             AccessibilityNodeInfo nodeInfo1 = AutoUtil.findNodeInfosByText(root,"微信号/QQ号/手机号");
             if(nodeInfo1!=null){
                 Rect rect = new Rect();
                 nodeInfo1.getBoundsInScreen(rect);
                 AutoUtil.clickXY(rect.centerX(),rect.centerY());
+                System.out.println("doAction---->点击 微信号/QQ号/手机号输入框1");
             }
-            WindowOperationUtil.performClickTest(nodeInfo1);
+            if(WindowOperationUtil.performClickTest(nodeInfo1)){
+                System.out.println("doAction---->点击 微信号/QQ号/手机号输入框2");
+            }
+
+
             AccessibilityNodeInfo nodeInfo2 = ParseRootUtil.getNodePath(root,"002");
-            WindowOperationUtil.performSetTextTest(nodeInfo2,"fz2018802");
+            if(WindowOperationUtil.performSetTextTest(nodeInfo2,fzWxid)){
+                System.out.println("doAction---->输入内容："+fzWxid);
+            }
             AccessibilityNodeInfo nodeInfo3 = ParseRootUtil.getNodePath(root,"004000");
             if(nodeInfo3!=null&&nodeInfo3.getText().toString().contains("搜索")){
                WindowOperationUtil.performClickTest(nodeInfo3);
+                System.out.println("doAction---->点击搜索结果");
             }
             AccessibilityNodeInfo nodeInfo4 = AutoUtil.findNodeInfosByText(root,"添加到通讯录");
-            WindowOperationUtil.performClickTest(nodeInfo4);
+            if(WindowOperationUtil.performClickTest(nodeInfo4)){
+                System.out.println("doAction---->点击添加到通讯录");
+            }
 
             AccessibilityNodeInfo nodeInfo5 = AutoUtil.findNodeInfosByText(root,"发消息");
-            WindowOperationUtil.performClickTest(nodeInfo5);
+            if(WindowOperationUtil.performClickTest(nodeInfo5)){
+                System.out.println("doAction---->点击发消息");
+            }
 
             AccessibilityNodeInfo nodeInfo6 = ParseRootUtil.getNodePath(root,"0001010");//消息发送输入框
-            WindowOperationUtil.performSetTextTest(nodeInfo6,"12345678");
+            if(nodeInfo6==null){
+                nodeInfo6 = ParseRootUtil.getNodePath(root,"000101");//消息发送输入框
+            }
+            if(WindowOperationUtil.performSetTextTest(nodeInfo6,currentWx008Data.getWxId())){
+                System.out.println("doAction---->输入发送内容："+currentWx008Data.getWxId());
+            }
 
             AccessibilityNodeInfo nodeInfo7 = AutoUtil.findNodeInfosByText(root,"发送");
             boolean flag = WindowOperationUtil.performClickTest(nodeInfo7);
             if(flag){
-                AccessibilityNodeInfo nodeInfo8 = ParseRootUtil.getNodePath(root,"0010");//左上角返回
+                System.out.println("doAction---->点击发送");
+                currentWx008Data.setFriends(fzWxid);
+                int cn = currentWx008Data.updateAll("phone=?",currentWx008Data.getPhone());
+                System.out.println("doAction--->添加成功修改friends：cn："+cn+" phone:"+currentWx008Data.getPhone());
+                AutoUtil.sleep(5000);
+                return true;
+                /*AccessibilityNodeInfo nodeInfo8 = ParseRootUtil.getNodePath(root,"0010");//左上角返回
                 Rect rect = new Rect();
                 nodeInfo8.getBoundsInScreen(rect);
                 AutoUtil.clickXY(rect.centerX(),rect.centerY());
                 doAddFriendAction = "点击返回主界面";
                 AutoUtil.sleep(5000);
-                continue;
+                continue;*/
             }
 
-            if("点击返回主界面".equals(doAddFriendAction)){//判断是否发送成功
+            /*if("点击返回主界面".equals(doAddFriendAction)){
+                //判断是否发送成功
                 List<AccessibilityNodeInfo> nodes1 = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/apx");
                 List<AccessibilityNodeInfo> nodes2 = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/apw");
                 if(nodes1.size()>0&&nodes2.size()>0){
@@ -395,7 +431,7 @@ public class AutoOperatonThread extends BaseThread {
                 }else {
                     return false;
                 }
-            }
+            }*/
 
         }
     }
@@ -440,7 +476,7 @@ public class AutoOperatonThread extends BaseThread {
     private boolean validEnviroment(){
         String phoneTag = FileUtil.readAllUtf8(FilePathCommon.phoneTagPath);
         String phoneTag008 = TextUtils.isEmpty(currentWx008Data.getPhone())?currentWx008Data.getWxId():currentWx008Data.getPhone();
-        System.out.println("phoneTag-->"+phoneTag+" phoneTag008:"+phoneTag008);
+        System.out.println("doAction--对比改机hookphoneTag-->"+phoneTag+" phoneTag008:"+phoneTag008);
         if(!phoneTag.equals(phoneTag008)){
             LogUtil.login(loginIndex+" exception change phone fail",currentWx008Data.getPhone()+" "+currentWx008Data.getWxId()+" "+currentWx008Data.getWxPwd()+" ip:"+record.remove("ipMsg"));
             return false;

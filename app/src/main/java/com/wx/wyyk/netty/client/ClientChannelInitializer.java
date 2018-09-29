@@ -10,9 +10,12 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 
 public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
-    private String device;
-    public ClientChannelInitializer(String device) {
+
+    private String device;// 设备编号
+    private String assistant;// 辅助号，空表示该设备不辅助
+    public ClientChannelInitializer(String device, String assistant) {
         this.device = device;
+        this.assistant = assistant;
     }
 
     @Override
@@ -22,7 +25,7 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
         p.addLast(new ObjectEncoder());
         p.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
         p.addLast(new ReadTimeoutHandler(100));
-        p.addLast(new ConnectReqHandler(device));
+        p.addLast(new ConnectReqHandler(device, assistant));
         p.addLast(new HeartBeatReqHandler(device));
         p.addLast(new HelpLoginMsgHandler());
     }

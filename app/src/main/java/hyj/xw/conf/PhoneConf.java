@@ -98,7 +98,7 @@ public class PhoneConf {
         for (int i = 0, l = wx008Datas.size(); i < l; i++) {
             Wx008Data wd = wx008Datas.get(i);
             System.out.println(i+" doAction--->Wx008Data 008json:"+wd.getPhoneStrs008Json());
-            if(i>-1){
+            if(i<300){
                 System.out.println(i+" wx008Datas-->"+JSON.toJSONString(wd));
                 //DaoUtil.updatePwdByPhone(wd.getPhone(),"www12345");
             }
@@ -137,7 +137,8 @@ public class PhoneConf {
             String showMsg = i + "-" + wxid + " " + time + " " + (cn == null ? "86" : cn);
             datas.add(showMsg);
 
-            System.out.println(showMsg+" --nickName:"+wd.getNickName()+" repPhone:"+wd.getReplacePhone()+" pwd:"+wd.getWxPwd()+" phone:"+wd.getPhone()+" wxid:"+wd.getWxid19()+" exp:"+wd.getExpMsg()+" pwd:"+wd.getWxPwd()+" friends:"+JSON.toJSONString(wd.getFriends()));
+            System.out.println(" exp:"+wd.getExpMsg()+"-"+wd.getWxId()+"----"+wd.getWxPwd()+"----"+wd.getWxid19());
+            //System.out.println(showMsg+" --nickName:"+wd.getNickName()+" repPhone:"+wd.getReplacePhone()+" pwd:"+wd.getWxPwd()+" phone:"+wd.getPhone()+" wxid:"+wd.getWxid19()+" exp:"+wd.getExpMsg()+" pwd:"+wd.getWxPwd()+" friends:"+JSON.toJSONString(wd.getFriends()));
             //AutoUtil.sleep(10);
             //删除测试
             //保护结束

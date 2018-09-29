@@ -13,6 +13,21 @@ import hyj.xw.common.FilePathCommon;
  */
 
 public class LogUtil {
+
+
+    /**
+     * 记录日志到sd卡,以小时为单位生成日志文件
+     * @param filePath 文件夹路径，后面跟反斜杠
+     * @param msg
+     */
+    public static void recordDoActionByHour(String filePath,String msg){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateTime = sdf.format(new Date());
+        String logMsg = dateTime+" doAction recordDoActionByHour---->"+msg;
+        System.out.println(logMsg);
+        FileUtil.writeContent2File(filePath,"log_"+dateTime.substring(0,13)+":00.txt",logMsg);
+    }
+
     //记录日志到sd卡
     public static void d(String tab,String msg){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

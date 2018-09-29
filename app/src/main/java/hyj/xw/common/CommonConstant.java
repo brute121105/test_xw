@@ -60,6 +60,8 @@ public class CommonConstant {
 
     public static String APPCONFIG_UIAUTO_VERSION= "uiautoVersonCode";
 
+    public static String APPCONFIG_FZWXNUM= "fzWxNum";
+
 
     public static int index=0;
 }

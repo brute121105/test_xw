@@ -159,6 +159,17 @@ public class UiAutoReciver extends BroadcastReceiver {
                             System.out.println("UiAutoReciver doAction--->发送辅助验证res:"+res);
                             return;
 
+                        }else if(param!=null&&param.contains("setNewPwdSucess")){
+                            String[] strArr = param.split("-");
+                            Wx008Data wx008Data = new Wx008Data();
+                            wx008Data.setId(GlobalValue.data008Id);
+                            wx008Data.setNewWxPwd(strArr[1]);
+                            String json = JSON.toJSONString(wx008Data);
+                            System.out.println("doAction--->req更新新密码："+json);
+                            String res = httpRequestService.uploadPhoneData(json);
+                            System.out.println("doAction--->res更新新密码："+res);
+                            return;
+
                         }
                         else if(!TextUtils.isEmpty(wxid)){
                             Wx008Data wx008Data = new Wx008Data();
@@ -390,8 +401,8 @@ public class UiAutoReciver extends BroadcastReceiver {
                         System.out.println("doAction--->获取远程维护数据:"+JSON.toJSONString(currentWx008Data));
                         System.out.println("UiAutoReciver doAction--->获取远程维护数据成功");
 
-                        //如果是辅助登录,生成一份新的改机数据，并修改远程
-                        if(GlobalValue.device.getAssistant()==2){
+                        //如果是辅助登录 && 没有生成新008数据,生成一份新的改机数据，并修改远程
+                        if(GlobalValue.device.getAssistant()==2&&currentWx008Data.getPhoneStrs()==null){
                             Wx008Data newCurrentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(currentWx008Data.getPhone());
                             newCurrentWx008Data.setId(currentWx008Data.getId());
                             newCurrentWx008Data.setPhone(currentWx008Data.getPhone());

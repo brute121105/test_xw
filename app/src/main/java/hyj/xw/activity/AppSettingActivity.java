@@ -33,6 +33,7 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
 
     EditText delteIndexEdt;
     EditText newPwdEdt;
+    EditText fzWxNumEdt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,10 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
         //开启辅助
         Button openAssist2Btn = (Button)this.findViewById(R.id.open_assist2);
         openAssist2Btn.setOnClickListener(this);
+        //辅助微信号
+        fzWxNumEdt = (EditText)this.findViewById(R.id.edt_fzWxNum);
+        String fzWxNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_FZWXNUM);
+        fzWxNumEdt.setText(TextUtils.isEmpty(fzWxNum)?"":fzWxNum);
         //启动长连接
         Button openLongConn = (Button)this.findViewById(R.id.open_long_conn);
         openLongConn.setOnClickListener(this);
@@ -103,7 +108,7 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
         }
     }
     private void openLongConn(){
-        new Thread(new Runnable() {
+       /* new Thread(new Runnable() {
             @Override
             public void run() {
                 String deviceNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_DEVICE);
@@ -112,14 +117,14 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
                     host = host.substring(0,host.indexOf(":"));
                 }
                 System.out.println("doAction--->deviceNum:"+deviceNum+" host:"+host);
-                NettyClient client = new NettyClient(host, 8000, deviceNum);
+                NettyClient client = new NettyClient(host, 8000, deviceNum,(byte)1);
                 try {
                     client.connect();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        }).start();*/
     }
     private void uploadData(){
         final String indexStr = delteIndexEdt.getText().toString();
@@ -280,6 +285,8 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
     private void save(){
         //删除数据索引
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_DELETE_DATA_INDEX,delteIndexEdt.getText().toString());
+        AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_FZWXNUM,fzWxNumEdt.getText().toString());
+
     }
     @Override
     protected void onStop() {

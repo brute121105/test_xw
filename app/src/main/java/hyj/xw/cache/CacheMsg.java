@@ -16,7 +16,9 @@ public class CacheMsg {
 
     public static HelpLoginMsg getHelpLoginMsg(){
         if(helpLoginMsgs.size()==0) return null;
+        System.out.println("doAction--->获取前长度helpLoginMsgs："+helpLoginMsgs.size());
         HelpLoginMsg helpLoginMsg = helpLoginMsgs.remove(helpLoginMsgs.size()-1);
+        System.out.println("doAction--->获取后长度helpLoginMsgs："+helpLoginMsgs.size());
         return helpLoginMsg;
 
     }

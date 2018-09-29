@@ -147,6 +147,26 @@ public class Device {
 
     private Integer assistant;
 
+    private Integer modifyPwd;
+
+    private Integer wxidLogin;
+
+    public Integer getModifyPwd() {
+        return modifyPwd;
+    }
+
+    public void setModifyPwd(Integer modifyPwd) {
+        this.modifyPwd = modifyPwd;
+    }
+
+    public Integer getWxidLogin() {
+        return wxidLogin;
+    }
+
+    public void setWxidLogin(Integer wxidLogin) {
+        this.wxidLogin = wxidLogin;
+    }
+
     public Integer getAssistant() {
         return assistant;
     }

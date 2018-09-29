@@ -658,4 +658,8 @@ public class AutoUtil {
         GlobalApplication.getContext().startActivity(intent);
     }
 
+    //点击微信左上角返回
+    public static void clickUpLeftXYBack(){
+        clickXY(67,133);
+    }
 }

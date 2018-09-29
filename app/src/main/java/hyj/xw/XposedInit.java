@@ -11,6 +11,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import hyj.xw.common.FilePathCommon;
+import hyj.xw.hook.HideApp;
 import hyj.xw.hook.Phone;
 import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.hook.newHook.nsEo5EnMUO99qwl4QERu;
@@ -86,9 +87,9 @@ public class XposedInit implements IXposedHookLoadPackage {
              //aw hook结束
 
              //-------my hook 开始
-            /* System.out.println("hyj context--->"+PACKAGE_NAME);
+            System.out.println("hyj context--->"+PACKAGE_NAME);
              new HideApp(lpparam);
-             new Phone(lpparam);*/
+             new Phone(lpparam);
             //--------my hook 结束
 
            //hook debug 开始
