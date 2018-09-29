@@ -173,16 +173,36 @@ public class Device {
         return assistant;
     }
 
-    public void setAssistant(Integer assistant) {
-        this.assistant = assistant;
-    }
-
-
     private Integer changeIp;//1 不改变ip，2 执行改变ip
 
     private Long refreshTime;//刷新时间，uiauto脚本没30S分钟刷新一次
 
+    private Integer modifyPwd;
+
+    private Integer wxidLogin;
+
     private int dieFlag;
+
+
+    public Integer getModifyPwd() {
+        return modifyPwd;
+    }
+
+    public void setModifyPwd(Integer modifyPwd) {
+        this.modifyPwd = modifyPwd;
+    }
+
+    public Integer getWxidLogin() {
+        return wxidLogin;
+    }
+
+    public void setWxidLogin(Integer wxidLogin) {
+        this.wxidLogin = wxidLogin;
+    }
+
+    public void setAssistant(Integer assistant) {
+        this.assistant = assistant;
+    }
 
     public int getDieFlag() {
         return dieFlag;

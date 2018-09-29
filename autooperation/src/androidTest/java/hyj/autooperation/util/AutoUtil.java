@@ -506,4 +506,20 @@ public class AutoUtil {
         cmds.add("rm -r -f /sdcard/tencent" );
         return cmds;
     }
+
+    public static void amStartWxActivity(String activiyName){
+        //execShell("am start -n com.tencent.mm/.plugin.sns.ui.SnsTimeLineUI");
+        execShell("am start -n com.tencent.mm/"+activiyName);
+    }
+
+    //手机号第 3 4 位 对应 zm数组下标的字母+ 手机号前 6位倒序
+    public  static String createPwdByPhone(String phone){
+        if(phone==null||phone.length()<7) return "null";
+        String[] zm = {"c","v","b","k","p","y","h","f","g","m"};
+        String pwd = zm[Integer.parseInt(phone.substring(2,3))]+zm[Integer.parseInt(phone.substring(3,4))];
+        for(int i=5;i>=0;i--){
+            pwd = pwd +phone.charAt(i);
+        }
+        return pwd;
+    }
 }

@@ -109,6 +109,7 @@ public class ExampleInstrumentedTest {
         if(device.getSendFriends()==2) autoTypes.add("发圈");
         if(device.getExtractWxId()==2) autoTypes.add("提取wxid");
         if(device.getAddFriend()==2) autoTypes.add("加好友");
+        if(device.getModifyPwd()==2) autoTypes.add("修改密码");
         return autoTypes;
     }
 
@@ -197,10 +198,10 @@ public class ExampleInstrumentedTest {
                 }
                 System.out.println("ops-->running-->getAllWindowText："+windowText);
                 System.out.println("ops-->ops:"+JSON.toJSONString(ops));
-                WindowNodeInfo wni1 = getWniByWindowText(ops,windowText);
-                if(wni==null||!wni.getMathWindowText().equals(wni1.getMathWindowText())){
+                WindowNodeInfo wni = getWniByWindowText(ops,windowText);
+                /*if(wni==null||!wni.getMathWindowText().equals(wni1.getMathWindowText())){
                     wni = wni1;
-                }
+                }*/
                 if(wni==null){
                     if(windowText.contains("progressBar")||windowText.contains("正在完成注册")||(windowText.contains("正在载入数据...")&&windowText.contains("%"))){
                         lastNotNullTime= System.currentTimeMillis();
@@ -219,9 +220,7 @@ public class ExampleInstrumentedTest {
                         System.out.println("doAction--->匹配null等待超过90秒，重试");
                         if(deviceConfig.getRunType()==1) updateDeviceConfig("regExp匹配null等待超过90秒1");
                         tellTag("retry");
-                        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
                         return;
-                        //initAuto("retry");
                     }
                     if(isMathOperation(currentWindowNodeInfo.getOperation())&&!windowText.contains("用短信验证码登录")&&!windowText.contains("正在登录..")&&!windowText.contains("正在载入数据..")){
                         System.out.println("doAction-->处理微信不在当前窗口");
@@ -233,8 +232,6 @@ public class ExampleInstrumentedTest {
                         System.out.println("doAction-->网络加载失败，重试");
                         if(deviceConfig.getRunType()==1) updateDeviceConfig("regExp找不到网页");
                         tellTag("retry");
-                        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
-                        //initAuto("retry");
                         return;
                     }
                     continue;
@@ -247,8 +244,6 @@ public class ExampleInstrumentedTest {
                         System.out.println("doAction--->静止等待超过90秒，重试");
                         if(deviceConfig.getRunType()==1) updateDeviceConfig("regExp匹配null等待超过90秒2");
                         tellTag("retry");
-                        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
-                        //initAuto("retry");
                         return;
                         //continue;
                     }
@@ -263,26 +258,18 @@ public class ExampleInstrumentedTest {
                 if("自定义-登录异常".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
                     updateDeviceConfig("fail"+windowText);
                     tellTag("next");
-                    //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
-                    //initAuto("next");
                     return;
                 }else if("自定义-注册异常二维码出现".equals(wni.getOperation())&&wni.isWindowOperatonSucc()){
                     updateDeviceConfig("regExp注册出现二维码");
                     tellTag("next");
-                    //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
-                    //initAuto("next");
                     return;
                 }else if("改机失败".equals(wni.getWindowOperationDesc())&&wni.isWindowOperatonSucc()){
                     if(deviceConfig.getRunType()==1)  updateDeviceConfig("regExp改机失败");
                     tellTag("retry");
-                    //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
-                    //initAuto("retry");
                     return;
                 }else if((wni.getWindowOperationDesc().contains("发送短信失败或超过最大尝试次数")||wni.getOperation().contains("尚未收到短信"))&&wni.isWindowOperatonSucc()){
                     updateDeviceConfig("regExp发送短信失败或超过最大尝试次数");
                     tellTag("next");
-                    //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
-                    //initAuto("next");
                     return;
                 }
                 else if(wni.getOperation().contains("-结束")&&wni.isWindowOperatonSucc()){
@@ -290,7 +277,8 @@ public class ExampleInstrumentedTest {
                         updateDeviceConfig("success");
                         System.out.println("doAction--->写入登录success标志");
                     }
-                    if(otherAutoTypes.size()==1){//等于1，登录成功没有其他动作
+                    if(otherAutoTypes.size()==1){
+                        //等于1，登录成功没有其他动作
                         int i = 0;
                         while (i<10){
                             AutoUtil.sleep(1000);
@@ -298,13 +286,11 @@ public class ExampleInstrumentedTest {
                             ++i;
                         }
                         tellTag("next");
-                        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
-                        //initAuto("next");//没有其他动作，下一个
                         return;
                     }else {
                         if(otherAutoTypes.indexOf(autoType)<otherAutoTypes.size()-1){
                             autoType = otherAutoTypes.get(otherAutoTypes.indexOf(autoType)+1);
-                            System.out.println("doAction--->autoType："+autoType);
+                            System.out.println("doAction--->autoType1："+autoType);
                             ops = WindowOperationConf.getOperatioByAutoType(autoType);
                             //返回主界面
                             while (mDevice.findObject(By.text("发现"))==null){
@@ -315,8 +301,6 @@ public class ExampleInstrumentedTest {
                                     UiObject2 uiObject2 = mDevice.findObject(By.text("用短信验证码登录"));
                                     if(uiObject2!=null){//处理登录被退出登录界面情况
                                         tellTag("retry");
-                                        //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"retry");//next登录下一个，retry新登录,首次开启也是retry
-                                        //initAuto("retry");
                                         return;
                                     }else {
                                         startWx();
@@ -325,9 +309,8 @@ public class ExampleInstrumentedTest {
                                 AutoUtil.sleep(1000);
                             }
                         }else {
+                            System.out.println("doAction--->autoType2："+autoType);
                             tellTag("next");
-                            //FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"next");//next登录下一个，retry新登录,首次开启也是retry
-                            //initAuto("next");//执行完所有动作，下一个
                             return;
                         }
                     }
@@ -563,19 +546,30 @@ public class ExampleInstrumentedTest {
                 List<UiObject2> uos = findNodesByClaZZ(EditText.class);
                 if(uos!=null&uos.size()==2){
                     System.out.println("runn size："+uos.size());
+                    System.out.println("doAction--->phone:"+currentWx008Data.getPhone()+" wxid:"+currentWx008Data.getWxId()+" wxid19:"+currentWx008Data.getWxid19());
                     String wxid = currentWx008Data.getPhone();
                     String pwd = currentWx008Data.getWxPwd();
-                    if(!TextUtils.isEmpty(currentWx008Data.getWxId())){
+                    if(currentWx008Data.getPhone()!=null&&!StringUtilHyj.isNumeric(currentWx008Data.getPhone())){
+                        //如果手机号不为数字，即设置的微信号
+                        wxid = currentWx008Data.getPhone();
+                    }else if(!TextUtils.isEmpty(currentWx008Data.getWxId())){
                         wxid = currentWx008Data.getWxId();
-                    }else if(!TextUtils.isEmpty(currentWx008Data.getWxid19())){
+                    }
+
+                    //wxid登录
+                    if(deviceConfig.getWxidLogin()==2){
                         wxid = currentWx008Data.getWxid19();
                     }
+                    String pwd1 = "";
                     if(!windowText.contains(wxid)){
                         uos.get(0).click();
                         AutoUtil.sleep(200);
-                        wxid = currentWx008Data.getWxid19();
+                        //wxid = currentWx008Data.getWxid19();
                         uos.get(0).setText(wxid);
-                        String pwd1 = TextUtils.isEmpty(pwd)?"nullnull":pwd;
+                        pwd1 = TextUtils.isEmpty(pwd)?"nullnull":pwd;
+                        if(!TextUtils.isEmpty(currentWx008Data.getNewWxPwd())){
+                            pwd1 = currentWx008Data.getNewWxPwd();
+                        }
                         try {
                             uos.get(1).setText(pwd1);
                         }catch (Exception e){
@@ -584,7 +578,7 @@ public class ExampleInstrumentedTest {
                         }
                     }
                     isOperationsSucc = clickUiObjectByText("登录");
-                    operationDesc = "输入账号["+wxid+"]密码["+pwd+"]点击登录"+isOperationsSucc;
+                    operationDesc = "输入账号["+wxid+"]密码["+pwd1+"]点击登录"+isOperationsSucc;
                     AutoUtil.sleep(5000);
                 }
             }else {
@@ -936,6 +930,99 @@ public class ExampleInstrumentedTest {
                     isOperationsSucc = true;
                 }
             }
+        }else if("自定义-已通过安全验证".equals(wni.getOperation())){
+            UiObject2 uiObject2 = mDevice.findObject(By.descStartsWith("完成"));
+            if(uiObject2!=null){
+                uiObject2.click();
+                isOperationsSucc = true;
+            }
+        }else if("自定义-忽略修改密码".equals(wni.getOperation())){
+            UiObject2 uiObject2 = mDevice.findObject(By.textContains("忽略"));
+            if(uiObject2!=null){
+                uiObject2.click();
+                isOperationsSucc = true;
+            }
+        }else if("自定义-点击扫二维码验证".equals(wni.getOperation())){
+            UiObject2 uiObject2 = mDevice.findObject(By.descContains("扫二维码验证"));
+            if(uiObject2!=null){
+                System.out.println("doAction--->进入点击扫二维码验证");
+                uiObject2.click();
+                AutoUtil.sleep(2000);
+                UiObject2 uiObject3 = null;
+                int cn  = 0;
+                //确保点击手机不在身边后到邀请微信好友界面
+                while (uiObject3==null&&cn<150){
+                    cn = cn+1;
+                    AutoUtil.clickXY(500,1406);//点击手机不在身边坐标
+                    AutoUtil.sleep(1000);
+                    System.out.println("doAction--->点击手机不在身边坐标500 1406 "+cn);
+                    uiObject3 = mDevice.findObject(By.descContains("邀请微信好友"));
+                }
+            }
+
+        }else if("自定义-点击账号与安全".equals(wni.getOperation())){
+            UiObject2 uiObject2 = mDevice.findObject(By.textContains("帐号与安全"));
+            if(uiObject2!=null){
+                System.out.println("doAction--->点击帐号与安全");
+                mDevice.click(uiObject2.getVisibleBounds().centerX(),uiObject2.getVisibleBounds().centerY());
+            }else {
+                System.out.println("doAction 点击帐号与安全 is null");
+            }
+        }else if("自定义-设置密码-结束".equals(wni.getOperation())){
+            String newPwd = AutoUtil.createPwdByPhone(currentWx008Data.getPhone());
+            currentWx008Data.setNewWxPwd(newPwd);
+            System.out.println("doAction--->请设置密码---newPwd:"+newPwd);
+
+            AutoUtil.clickXY(518,645);//点击原密码
+            AutoUtil.sleep(200);
+            AutoUtil.inputText(currentWx008Data.getWxPwd());
+            AutoUtil.sleep(200);
+            AutoUtil.clickXY(518,784);//点击原密码
+            AutoUtil.sleep(200);
+            AutoUtil.inputText(newPwd);
+            AutoUtil.sleep(200);
+            AutoUtil.clickXY(518,927);//点击原密码
+            AutoUtil.sleep(200);
+            AutoUtil.inputText(newPwd);
+            AutoUtil.sleep(200);
+            AutoUtil.clickXY(986,115);//点击左上角完成设置密码
+            AutoUtil.sleep(1000);
+
+            UiObject2 uiObject2 = null;
+            try {
+                uiObject2 = mDevice.findObject(By.textContains("微信密码设置成功"));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            int cn = 0;
+            while (true){
+                System.out.println("doAction--->等待微信密码设置成功 "+cn);
+                if(uiObject2!=null){
+                    sendBroadcastByShell("setNewPwdSucess-"+newPwd);
+                    System.out.println("doAction--->微信密码设置成功");
+                    isOperationsSucc = true;
+                    break;
+                }
+                if(cn>45){
+                    isOperationsSucc = true;
+                    System.out.println("doAction--->微信密码设置超时");
+                    break;
+                }
+                try {
+                    uiObject2 = mDevice.findObject(By.textContains("微信密码设置成功"));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                AutoUtil.sleep(1000);
+                cn = cn+1;
+            }
+        }else if("自定义-设置密码成功-结束".equals(wni.getOperation())){
+            sendBroadcastByShell("setNewPwdSucess-"+currentWx008Data.getNewWxPwd());
+            System.out.println("doAction--->微信密码设置成功2");
+            isOperationsSucc = true;
+        }else if("自定义-不允许更改密码-结束".equals(wni.getOperation())){
+            System.out.println("doAction--->不允许更改密码");
+            isOperationsSucc = true;
         }
         wni.setWindowOperationDesc(operationDesc);
         wni.setWindowOperatonSucc(isOperationsSucc);
@@ -2004,23 +2091,42 @@ public class ExampleInstrumentedTest {
         }
     }
     @Test
-    public void tesdot1(){
+    public void tesddebugot1(){
         getAllWindowText1();
-        UiObject2 uiObject2 = mDevice.findObject(By.descStartsWith("开始验证"));
-        if(uiObject2!=null){
-            uiObject2.click();
+
+        AutoUtil.clickXY(518,645);//点击原密码
+        AutoUtil.sleep(200);
+        AutoUtil.inputText("xbyr5221");
+        AutoUtil.sleep(200);
+        AutoUtil.clickXY(518,784);//点击原密码
+        AutoUtil.sleep(200);
+        AutoUtil.inputText("xbyr5221");
+        AutoUtil.sleep(200);
+        AutoUtil.clickXY(518,927);//点击原密码
+        AutoUtil.sleep(200);
+        AutoUtil.inputText("xbyr5221");
+        AutoUtil.sleep(200);
+        AutoUtil.clickXY(986,115);//点击左上角完成设置密码
+        AutoUtil.sleep(1000);
+
+        UiObject2 uiObject2 = mDevice.findObject(By.textContains("微信密码设置成功"));
+        int cn = 0;
+        while (true){
+            System.out.println("doAction--->等待微信密码设置成功 "+cn);
+            if(uiObject2!=null){
+                sendBroadcastByShell("setNewPwdSucess-"+currentWx008Data.getPhone());
+                System.out.println("doAction--->微信密码设置成功");
+                break;
+            }
+            if(cn>45){
+                System.out.println("doAction--->微信密码设置超时");
+            }
+            uiObject2 = mDevice.findObject(By.textContains("微信密码设置成功"));
+            AutoUtil.sleep(1000);
+            cn = cn+1;
         }
-        UiObject2 uiObject3 = mDevice.findObject(By.desc("邀请好友辅助验证"));
-        if(uiObject3!=null){
-            uiObject3.click();
-        }
-        UiObject2 uiObject21 = mDevice.findObject(By.descStartsWith("让好友发送"));
-        if(uiObject21!=null){
-            String text = uiObject21.getContentDescription();
-            System.out.println("doAction-->text:"+text);
-            String num = StringUtilHyj.getNumFromStr(text);
-            System.out.println("doAction-->num:"+num);
-        }
+
+
     }
 
 }

@@ -21,13 +21,26 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        int startX = 235;
+        /*int startX = 235;
         int endX = 830;
 
         List<Integer> xList = getAllInterVal(startX,endX,50,80,70,5,10);
         System.out.println(JSON.toJSONString(xList));
         Point[] points = getSwipePoints(startX,endX,50,80,70,5,10,1000,1050);
-        System.out.println(JSON.toJSONString(points));
+        System.out.println(JSON.toJSONString(points));*/
+        String pwd = createPwdByPhone("13625485654");
+        System.out.println("doAction--->"+pwd);
+
+    }
+
+    public  String createPwdByPhone(String phone){
+        if(phone==null||phone.length()<7) return "null";
+        String[] zm = {"c","v","b","k","p","y","h","f","g","m"};
+        String pwd = zm[Integer.parseInt(phone.substring(2,3))]+zm[Integer.parseInt(phone.substring(3,4))];
+        for(int i=5;i>=0;i--){
+            pwd = pwd +phone.charAt(i);
+        }
+        return pwd;
     }
 
     /**

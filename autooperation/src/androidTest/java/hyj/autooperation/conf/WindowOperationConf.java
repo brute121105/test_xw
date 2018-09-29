@@ -86,10 +86,6 @@ public class WindowOperationConf {
         NodeInfo nodeInfo11 = new NodeInfo(1,"登录","","点击登录1");
         setOps(ops,windowNodeInfo1,nodeInfo11);
 
-        WindowNodeInfo windowNodeInfo01 = new WindowNodeInfo("6.6.7","养号","邀请好友辅助验证","点击邀请好友辅助验证");
-        NodeInfo nodeInfo21 = new NodeInfo(1,"","邀请好友辅助验证%","点击邀请好友辅助验证");
-        setOps(ops,windowNodeInfo01,nodeInfo21);
-
         WindowNodeInfo windowNodeInfo2 = new WindowNodeInfo("6.6.7","养号","请填写手机号|下一步","自定义-登录下一步");
         setOps(ops,windowNodeInfo2,null);
 
@@ -150,8 +146,28 @@ public class WindowOperationConf {
         WindowNodeInfo windowNodeInfo63 = new WindowNodeInfo("6.6.7","养号","当前所在页面,微信安全","自定义-过滑块");
         setOps(ops,windowNodeInfo63,null);
 
+        //辅助登录--邀请好友辅助验证
+        /*WindowNodeInfo windowNodeInfo01 = new WindowNodeInfo("6.6.7","养号","邀请好友辅助验证","点击邀请好友辅助验证");
+        NodeInfo nodeInfo21 = new NodeInfo(1,"","邀请好友辅助验证%","点击邀请好友辅助验证");
+        setOps(ops,windowNodeInfo01,nodeInfo21);*/
+
+
+        /*WindowNodeInfo windowNodeInfo01 = new WindowNodeInfo("6.6.7","养号","邀请好友辅助验证","点击扫二维码验证");
+        NodeInfo nodeInfo21 = new NodeInfo(1,"","扫二维码验证%","点击扫二维码验证");
+        setOps(ops,windowNodeInfo01,nodeInfo21);*/
+
+        //辅助登录--扫二维码验证
+        WindowNodeInfo windowNodeInfo661 = new WindowNodeInfo("6.6.7","养号","邀请好友辅助验证","自定义-点击扫二维码验证");
+        setOps(ops,windowNodeInfo661,null);
+
         WindowNodeInfo windowNodeInfo65 = new WindowNodeInfo("6.6.7","养号","让好友发送","自定义-提取好友验证数字并发送广播");
         setOps(ops,windowNodeInfo65,null);
+
+        WindowNodeInfo windowNodeInfo66 = new WindowNodeInfo("6.6.7","养号","已通过安全验证","自定义-已通过安全验证");
+        setOps(ops,windowNodeInfo66,null);
+
+        WindowNodeInfo windowNodeInfo67 = new WindowNodeInfo("6.6.7","养号","有人正通过微信密码登录你的微信","自定义-忽略修改密码");
+        setOps(ops,windowNodeInfo67,null);
 
 
         /*WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","点击发现");
@@ -200,6 +216,36 @@ public class WindowOperationConf {
 
         WindowNodeInfo windowNodeInfo18 = new WindowNodeInfo("6.6.7","加好友","更多功能按钮，已折叠","自定义-输入发送内容-结束");
         setOps(ops,windowNodeInfo18,null);
+
+        WindowNodeInfo windowNodeInfoS1 = new WindowNodeInfo("6.6.7","修改密码","通讯录|发现","点击我");
+        NodeInfo nodeInfoS1 = new NodeInfo(1,"我","","点击我");
+        setOps(ops,windowNodeInfoS1,nodeInfoS1);
+
+        WindowNodeInfo windowNodeInfoS2 = new WindowNodeInfo("6.6.7","修改密码","设置|相册","点击设置");
+        NodeInfo nodeInfoS2 = new NodeInfo(1,"设置","","点击设置");
+        setOps(ops,windowNodeInfoS2,nodeInfoS2);
+
+        WindowNodeInfo windowNodeInfoS3 = new WindowNodeInfo("6.6.7","修改密码","勿扰模式","自定义-点击账号与安全");//对方没有免验证情况
+        setOps(ops,windowNodeInfoS3,null);
+
+        /*WindowNodeInfo windowNodeInfoS3 = new WindowNodeInfo("6.6.7","修改密码","账号与安全|勿扰模式","点击账号与安全");
+        NodeInfo nodeInfoS3 = new NodeInfo(1,"账号与安全","","点击账号与安全");
+        setOps(ops,windowNodeInfoS3,nodeInfoS3);*/
+
+        WindowNodeInfo windowNodeInfoS4 = new WindowNodeInfo("6.6.7","修改密码","微信密码|应急联系人","点击微信密码");
+        NodeInfo nodeInfoS4 = new NodeInfo(1,"微信密码","","点击微信密码");
+        setOps(ops,windowNodeInfoS4,nodeInfoS4);
+
+        WindowNodeInfo windowNodeInfoS5 = new WindowNodeInfo("6.6.7","修改密码","请设置微信密码","自定义-设置密码-结束");//对方没有免验证情况
+        setOps(ops,windowNodeInfoS5,null);
+
+        //替补
+        WindowNodeInfo windowNodeInfoS6 = new WindowNodeInfo("6.6.7","修改密码","微信密码设置成功","自定义-设置密码成功-结束");//对方没有免验证情况
+        setOps(ops,windowNodeInfoS6,null);
+
+        WindowNodeInfo windowNodeInfoS7 = new WindowNodeInfo("6.6.7","修改密码","不允许更改密码","自定义-不允许更改密码-结束");//对方没有免验证情况
+        setOps(ops,windowNodeInfoS7,null);
+
 
         return ops;
     }

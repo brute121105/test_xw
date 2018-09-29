@@ -24,6 +24,7 @@ public class Wx008Data{
     private String phone;
     private String wxId;
     private String wxPwd;//属性名称为pwd无法保存？
+    private String newWxPwd;
     private String expMsg;//登录失败原因
     private int dieFlag;//0正常 1账号异常 2 操作频率过快 3 登录环境异常 长期未登录  批量注册 4手机不在身边
     private String cnNum;//国别区号
@@ -36,6 +37,14 @@ public class Wx008Data{
     private String replacePhone;
     private String wxid19;
     private String dataType;//0所有 1早期的477个
+
+    public String getNewWxPwd() {
+        return newWxPwd;
+    }
+
+    public void setNewWxPwd(String newWxPwd) {
+        this.newWxPwd = newWxPwd;
+    }
 
     public String getDataType() {
         return dataType;
