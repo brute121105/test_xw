@@ -291,7 +291,7 @@
             android:id="@+id/clearAppData"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="清除应用数据"
+            android:text="停止脚本"
             android:textSize="18sp" />
         <Button
             android:layout_weight="1"

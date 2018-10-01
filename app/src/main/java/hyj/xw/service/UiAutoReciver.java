@@ -402,7 +402,7 @@ public class UiAutoReciver extends BroadcastReceiver {
                         System.out.println("UiAutoReciver doAction--->获取远程维护数据成功");
 
                         //如果是辅助登录 && 没有生成新008数据,生成一份新的改机数据，并修改远程
-                        if(GlobalValue.device.getAssistant()==2&&currentWx008Data.getPhoneStrs()==null){
+                        if(GlobalValue.device.getAssistant()==2&&TextUtils.isEmpty(currentWx008Data.getPhoneStrs())){
                             Wx008Data newCurrentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(currentWx008Data.getPhone());
                             newCurrentWx008Data.setId(currentWx008Data.getId());
                             newCurrentWx008Data.setPhone(currentWx008Data.getPhone());
@@ -421,6 +421,8 @@ public class UiAutoReciver extends BroadcastReceiver {
                             }else {
                                 result = "辅助登录,生成一份新的改机数据，修改远程数据失败";
                             }
+                        }else {
+                            System.out.println("doAction---->不是辅助，没有生成新数据 currentWx008Data.getPhoneStrs()："+currentWx008Data.getPhoneStrs());
                         }
 
                     }

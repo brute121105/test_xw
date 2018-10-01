@@ -80,8 +80,8 @@ public class SendAccessMsgThread extends BaseThread {
                 }
 
 
-                //ParseRootUtil.debugRoot(root);
-                //if(true) continue;
+                 //ParseRootUtil.debugRoot(root);
+                 //if(true) continue;
                 //确保init状态是在主界面
                 if("init".equals(doSendAction)){
                     back2MainPage(root);
@@ -167,10 +167,12 @@ public class SendAccessMsgThread extends BaseThread {
         if("输入搜索内容".equals(doSendAction)){
             AccessibilityNodeInfo nodeInfo3 = AutoUtil.findNodeInfosByText(root,"微信号: "+helpLoginMsg.getPhone());
             AccessibilityNodeInfo nodeInfo4 = AutoUtil.findNodeInfosByText(root,"聊天记录");
+            AccessibilityNodeInfo nodeInfo5 = AutoUtil.findNodeInfosByText(root,"联系人");
+            AccessibilityNodeInfo nodeInfo6 = AutoUtil.findNodeInfosByText(root,"最常使用");
             if(WindowOperationUtil.performClickTest(nodeInfo3)){
                 doSendAction = "点击搜索结果";
                 LogUtil.recordDoActionByHour(FilePathCommon.sendAccessLogDir,doSendAction);
-            }else if(nodeInfo4!=null){
+            }else if(nodeInfo4!=null||nodeInfo5!=null||nodeInfo6!=null){
                 AutoUtil.clickXY(540,445);//点击搜索出来第一个聊天记录
                 doSendAction = "点击搜索结果";
                 LogUtil.recordDoActionByHour(FilePathCommon.sendAccessLogDir,doSendAction);
@@ -190,17 +192,31 @@ public class SendAccessMsgThread extends BaseThread {
         }
 
 
-        //if(true) return false;
 
         //4、输入发送内容
         AccessibilityNodeInfo nodeInfo4 = ParseRootUtil.getNodePath(root,"0004010");//发送消息输入框
         if(nodeInfo4==null){
             nodeInfo4 = ParseRootUtil.getNodePath(root,"000410");//发送消息输入框
         }
+        if(nodeInfo4==null){
+            nodeInfo4 = ParseRootUtil.getNodePath(root,"000110");//发送消息输入框
+        }
+        if(nodeInfo4==null){
+            nodeInfo4 = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/aep");//发送消息输入框 6.7.2版本
+        }
+
+        if(nodeInfo4==null){
+            nodeInfo4 = ParseRootUtil.getNodePath(root,"00007010");//发送消息输入框
+        }
+        if(nodeInfo4==null){
+            nodeInfo4 = ParseRootUtil.getNodePath(root,"0000710");//发送消息输入框
+        }
         if(WindowOperationUtil.performSetTextTest(nodeInfo4,helpLoginMsg.getCode())) {
             doSendAction = "输入发送内容";
             LogUtil.recordDoActionByHour(FilePathCommon.sendAccessLogDir,doSendAction);
         }
+
+        //if(true) return false;
 
         //5、点击发送
         AccessibilityNodeInfo nodeInfo7 = AutoUtil.findNodeInfosByText(root,"发送");

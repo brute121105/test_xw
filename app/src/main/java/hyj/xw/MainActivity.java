@@ -358,8 +358,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void clearAppData() {
         AutoUtil.execShell("am force-stop hyj.autooperation");
-        AutoUtil.clearAppData();
-        Toast.makeText(MainActivity.this, "清除完成", Toast.LENGTH_LONG).show();
+        //AutoUtil.clearAppData();
+        Toast.makeText(MainActivity.this, "已执行", Toast.LENGTH_LONG).show();
     }
 
 
