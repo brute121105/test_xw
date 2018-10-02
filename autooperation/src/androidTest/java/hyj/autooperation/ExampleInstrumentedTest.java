@@ -558,13 +558,14 @@ public class ExampleInstrumentedTest {
 
                     //wxid登录
                     if(deviceConfig.getWxidLogin()==2){
+                        System.out.println("doAction--->wxid登录");
                         wxid = currentWx008Data.getWxid19();
                     }
                     String pwd1 = "";
                     if(!windowText.contains(wxid)){
                         uos.get(0).click();
                         AutoUtil.sleep(200);
-                        //wxid = currentWx008Data.getWxid19();
+                        System.out.println("doAction--->输入账号:"+wxid);
                         uos.get(0).setText(wxid);
                         pwd1 = TextUtils.isEmpty(pwd)?"nullnull":pwd;
                         if(!TextUtils.isEmpty(currentWx008Data.getNewWxPwd())){
@@ -1851,7 +1852,10 @@ public class ExampleInstrumentedTest {
                         System.out.println("doAction--->vpnUrl is uiObject2s.size:"+uiObject2s.size());
                     }
                 }else {
-                    System.out.println("doAction ----ddd");
+                    System.out.println("doAction ----ddd:"+lastAction);
+                    if("打开vpn界面".equals(lastAction)&&allText.contains("服务器地址")){
+                        mDevice.pressBack();
+                    }
                 }
                 UiObject2 uiObject2  = mDevice.findObject(By.text("连接"));
                 if(uiObject2!=null){
@@ -2034,6 +2038,15 @@ public class ExampleInstrumentedTest {
             System.out.println("doAction--->获取本次ip失败");
             return false;
         }
+        if(ipAdress.contains("广西")){
+            System.out.println("doAction--->获取ip为广西");
+            return false;
+        }
+        if(ipAdress.contains("失败")){
+            System.out.println("doAction--->获取ip失败");
+            return false;
+        }
+
         if(ipAdress.equals(deviceConfig.getIpAddress())){
             System.out.println("doAction--->获取ip相同："+deviceConfig.getIpAddress());
             return false;
