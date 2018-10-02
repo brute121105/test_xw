@@ -98,7 +98,7 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
     public void save(){
         //主机地址
         String host = hostEditText.getText().toString();
-        if(!host.contains(":")){
+        if(!TextUtils.isEmpty(host)&&!host.contains(":")){
             host = host+":8080";
         }
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_HOST, host);
@@ -116,8 +116,7 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void run() {
                 try {
-                    String deviceNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_DEVICE);
-                    //String deviceNum = deviceEditText.getText().toString();
+                    String deviceNum = deviceEditText.getText().toString();
                     if(TextUtils.isEmpty(deviceNum)){
                         AutoUtil.showToastByRunnable(ServerConfigActivity.this,"设备编号不能为空");
                         return;
@@ -301,7 +300,7 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
         String res = httpRequestService.getStartConifgFromServer(deviceNum);
         if(TextUtils.isEmpty(res)||!res.contains("data")){
             result = "1、获取服务器配置信息失败\n"+res;
-            AutoUtil.showToastByRunnable(ServerConfigActivity.this,result);
+            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),result);
             return result;
         }
         ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
@@ -309,12 +308,12 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
         device = JSONObject.parseObject(responseData.getData(),Device.class);
         if(device==null||TextUtils.isEmpty(device.getNum())){
             result = "2、获取服务器配置信息失败\n"+res;
-            AutoUtil.showToastByRunnable(ServerConfigActivity.this,result);
+            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),result);
             return result;
         }
         if(device.getHookType()==0){
             result = "中控未设置改机方式";
-            AutoUtil.showToastByRunnable(ServerConfigActivity.this,result);
+            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),result);
             return result;
         }
         System.out.println("OkHttpUtil getStartConifgFromServer device--->"+JSON.toJSONString(device));

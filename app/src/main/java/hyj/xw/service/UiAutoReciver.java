@@ -193,7 +193,8 @@ public class UiAutoReciver extends BroadcastReceiver {
                             currentWx008Data = null;
                             String setWxDataResult = setWx008Data(tag);//获取008数据,如果辅助登录，修改远程数据
                             if(!"".equals(setWxDataResult)||currentWx008Data==null){
-                                System.out.println("UiAutoReciver doAction--->获取008数据为空 setWx008DataResult:"+setWxDataResult+" 休眠10秒，启动hyj.xw");
+                                System.out.println("UiAutoReciver doAction--->获取008数据为空  setWx008DataResult:"+setWxDataResult+" 休眠10秒，停止autooperation 启动hyj.xw");
+                                AutoUtil.execShell("am force-stop hyj.autooperation");
                                 AutoUtil.startAppByPackName("hyj.xw","hyj.xw.MainActivity");
                                 AutoUtil.sleep(3000);
                                 AutoUtil.showToastByRunnable(GlobalApplication.getContext(),setWxDataResult);
@@ -346,6 +347,11 @@ public class UiAutoReciver extends BroadcastReceiver {
         String result = "";
         try {
             System.out.println("doAction-->setWx008Data GlobalValue.device:"+JSON.toJSONString(GlobalValue.device));
+            if(GlobalValue.device==null){
+                AutoUtil.sleep(5000);
+                System.out.println("doAction--->GlobalValue.device is null");
+                return "GlobalValue.device is null";
+            }
             if(1==GlobalValue.device.getRunType()){//注册
                 if(tag.equals("next")||currentWx008Data==null){
                     String phone = httpRequestService.getPhone("");
