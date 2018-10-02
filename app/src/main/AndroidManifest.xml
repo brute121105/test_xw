@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="hyj.xw">
-    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
+
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -28,7 +29,6 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.GET_TASKS" />
 
-
     <!--
       <uses-permission android:name="android.permission.CLEAR_APP_USER_DATA" />
       <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />
@@ -51,7 +51,7 @@
             android:name="xposedminversion"
             android:value="54" />
 
-        <activity android:name=".MainActivity" >
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -78,7 +78,6 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".service.UiAutoReciver">
             <intent-filter android:priority="9999">
                 <action android:name="hyj.auto.test" />
@@ -90,17 +89,18 @@
         <activity android:name=".activity.AppSettingActivity" />
         <activity android:name=".activity.YhSettingActivity" />
         <activity android:name=".activity.AfSettingActivity" />
-        <activity android:name=".activity.DataImpExpActivity"></activity>
-
+        <activity android:name=".activity.DataImpExpActivity" />
 
         <!-- Declares the input method service -->
         <service
-            android:name="hyj.xw.inputMethod.AndroidInputMethodService"
-            android:permission="android.permission.BIND_INPUT_METHOD" >
+            android:name=".inputMethod.AndroidInputMethodService"
+            android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
         </service>
+
+        <activity android:name=".activity.ServerConfigActivity"></activity>
     </application>
 
 </manifest>

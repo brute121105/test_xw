@@ -302,8 +302,8 @@ public class UiAutoReciver extends BroadcastReceiver {
         }
         System.out.println("UiAutoReciver main-->doActioni--->res ipStr:"+ipStr);
         String ip = "失败";
-        if(ipStr.contains("广东")){
-            ip = "广东";
+        if(ipStr.contains("广西")){
+            ip = "广西";
         }else if(ipStr.contains("cip")){
             JSONObject jsonObject = JSONObject.parseObject(ipStr.substring(ipStr.indexOf("{"),ipStr.indexOf("}")+1));
             ip = jsonObject.getString("cname")+jsonObject.getString("cip");

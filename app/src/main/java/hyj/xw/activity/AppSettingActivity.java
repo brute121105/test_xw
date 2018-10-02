@@ -19,6 +19,7 @@ import java.util.List;
 import hyj.xw.GlobalApplication;
 import hyj.xw.R;
 import hyj.xw.common.CommonConstant;
+import hyj.xw.common.FilePathCommon;
 import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.model.LitePalModel.AppConfig;
@@ -69,7 +70,13 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
         //辅助微信号
         fzWxNumEdt = (EditText)this.findViewById(R.id.edt_fzWxNum);
         String fzWxNum = AppConfigDao.findContentByCode(CommonConstant.APPCONFIG_FZWXNUM);
-        fzWxNumEdt.setText(TextUtils.isEmpty(fzWxNum)?"":fzWxNum);
+        if(TextUtils.isEmpty(fzWxNum)){
+            //为空，从读取008配置数据
+            String wx008DataSstr = FileUtil.readAllUtf8(FilePathCommon.wx008DataFilePath);
+            Wx008Data currentWx008Data = JSON.parseObject(wx008DataSstr,Wx008Data.class);
+            fzWxNum = currentWx008Data.getPhone();
+        }
+        fzWxNumEdt.setText(fzWxNum);
         //启动长连接
         Button openLongConn = (Button)this.findViewById(R.id.open_long_conn);
         openLongConn.setOnClickListener(this);
