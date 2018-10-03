@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSON;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +15,10 @@ import java.util.Map;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.LitePalModel.Wx008Data;
+import hyj.xw.service.HttpRequestService;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.FileUtil;
+import hyj.xw.util.OkHttpUtil;
 
 /**
  * Created by Administrator on 2018/4/10.
@@ -173,5 +177,38 @@ public class ImpExpData {
             }
         }
         return result;
+    }
+
+    //获取008账号密码
+    public static void getPhonePwd008(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<String> pwds = FileUtil.read008Data(FilePathCommon.phonePwd008Txt);
+                HttpRequestService service = new HttpRequestService(3);
+                int i = 0;
+                for(String pwd:pwds){
+                    ++i;
+                    if(i<467) continue;
+                    String[] arr = pwd.split(",");
+                    String phone = arr[0],password = arr[1];
+                    String url = "http://43.226.47.2/getphone.php?tel="+phone;
+                    System.out.println(i+" doAction----phone:"+phone+" password:"+password+" url:"+url);
+                    try {
+                        String phoneStr008 = OkHttpUtil.okHttpGet(url);
+                        if(phoneStr008.contains(phone)){
+                            System.out.println(i+" doAction 008 数据获取成功res-->"+phoneStr008);
+                            Wx008Data wx008Data = PhoneConf.createReg008DataDeviceTxt2("",phone,password,"86",phoneStr008);
+                            String uploadRes  = service.uploadPhoneData(JSON.toJSONString(wx008Data));
+                            System.out.println(i+" doAction-->上传数据："+uploadRes);
+                        }else {
+                            System.out.println(i+" doAction 008 数据获取失败res-->"+phoneStr008);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 }

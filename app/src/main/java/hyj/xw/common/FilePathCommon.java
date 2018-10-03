@@ -31,6 +31,7 @@ public class FilePathCommon {
     public static final String loginMaintainResultTxt;
     public static final String refreshTimeTxt;
     public static final String bslStrTxt;
+    public static final String phonePwd008Txt;//008账号密码txt文件
 
     public static final String sendAccessLogDir;
     static {
@@ -42,6 +43,7 @@ public class FilePathCommon {
         importData008Path=baseAppPath+"/data008/";
         sl008DataPath=baseAppPath+"/data008/下载机型/";
         sl008DataPwdPath=baseAppPath+"/data008/pwd.txt";
+        phonePwd008Txt=baseAppPath+"/data008/phonePwd.txt";
         phoneTagPath=baseAppPath+"/hk/phoneTag.txt";
         fkFilePath = baseAppPath+"/fangkuai.txt";
         fkScreenShotPath = baseAppPath+"/fangkuai.png";

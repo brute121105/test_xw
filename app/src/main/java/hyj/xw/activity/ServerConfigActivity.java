@@ -244,6 +244,7 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
                                 System.out.println("doAction--StopThread--->获取到状态4，重启手机");
                                 AutoUtil.execShell("reboot");
                             }if(5==device.getRunState()){//启动脚本
+
                                 System.out.println("StopThread--UiAutoReciver doAction--->删除联系人");
                                 AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"删除联系人");
                                 ContactUtil.deleteAll();//删除联系人

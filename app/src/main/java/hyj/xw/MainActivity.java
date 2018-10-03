@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     CheckBox loginSucessPauseCheckBox;
     CheckBox isLocalSettingCheckBox;
     CheckBox gj008CheckBox;
-
+    CheckBox lockBtnBox;
     private String[] phoneStrs;
 
 
@@ -178,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button updateApk = (Button) this.findViewById(R.id.updateApk);
         updateApk.setOnClickListener(this);
 
+        //锁定按钮
+        lockBtnBox = (CheckBox) this.findViewById(R.id.lock_btn);
+        lockBtnBox.setOnClickListener(this);
     }
 
 
@@ -350,7 +353,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bth_serverConfig:
                 startActivity(new Intent(MainActivity.this, ServerConfigActivity.class));
                 break;
+            case R.id.lock_btn:
+                lockBtn();
+                break;
         }
+    }
+    //锁定按钮
+    public void lockBtn(){
+        //AutoUtil.killRunningApp();
+        Button serverConfigConnect = (Button) this.findViewById(R.id.bth_serverConfig);//配置连接
+        Button clearAppData = (Button) this.findViewById(R.id.clearAppData);//停止脚本
+        Button btn_kill_app = (Button) this.findViewById(R.id.btn_kill_app);//关闭
+        Button reqRoot = (Button) this.findViewById(R.id.reqRoot);//申请root1
+        Button reqRoot2 = (Button) this.findViewById(R.id.reqRoot2);//申请root2
+        Button downloadAttach = (Button) this.findViewById(R.id.downloadAttach);//附件下载
+        Button updateApk = (Button) this.findViewById(R.id.updateApk);//附件下载
+        if(lockBtnBox.isChecked()){
+             serverConfigConnect.setClickable(false);
+             clearAppData.setClickable(false);
+             btn_kill_app.setClickable(false);
+             reqRoot.setClickable(false);
+             reqRoot2.setClickable(false);
+             downloadAttach.setClickable(false);
+             updateApk.setClickable(false);
+         }else {
+            serverConfigConnect.setClickable(true);
+            clearAppData.setClickable(true);
+            btn_kill_app.setClickable(true);
+            reqRoot.setClickable(true);
+            reqRoot2.setClickable(true);
+            downloadAttach.setClickable(true);
+            updateApk.setClickable(true);
+         }
     }
     public void downloadAttach(boolean isAlertWindow){
         Apk apk = GetFutureResultUtil.checkVersion1("2");

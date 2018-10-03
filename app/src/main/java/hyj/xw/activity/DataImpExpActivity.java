@@ -86,8 +86,9 @@ public class DataImpExpActivity extends AppCompatActivity implements View.OnClic
                 Toast.makeText(this, npi.getLine1Number(), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_imp008Data:
-                Map<String,Object> resultImport008 =  ImpExpData.import008Data();
-                Toast.makeText(this,"导入成功："+resultImport008.get("countSucc")+"条,失败："+resultImport008.get("countExist")+"条", Toast.LENGTH_SHORT).show();
+                //Map<String,Object> resultImport008 =  ImpExpData.import008Data();
+                //Toast.makeText(this,"导入成功："+resultImport008.get("countSucc")+"条,失败："+resultImport008.get("countExist")+"条", Toast.LENGTH_SHORT).show();
+                //ImpExpData.getPhonePwd008();//上传图给的008数据
                 break;
             case R.id.btn_exp008Data:
                 break;

@@ -662,4 +662,32 @@ public class AutoUtil {
     public static void clickUpLeftXYBack(){
         clickXY(67,133);
     }
+
+    //获取当前运行应用，并杀死
+    public static void killRunningApp(){
+        List<String> killedAppList = new ArrayList<String>();
+        killedAppList.add("gamecenter");
+        killedAppList.add("market");
+        killedAppList.add("wandoujia");
+        killedAppList.add("baidu");
+
+         ActivityManager mActivityManager = (ActivityManager) GlobalApplication.getContext().getSystemService(Context.ACTIVITY_SERVICE);
+         List<ActivityManager.RunningAppProcessInfo> appProcessList = mActivityManager.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcessList) {
+            System.out.println("doAction-->存在:"+appProcess.processName);
+            if(isContainApp(killedAppList,appProcess.processName)){
+                execShell("am force-stop "+appProcess.processName);
+                System.out.println("doAction-->杀死:"+appProcess.processName);
+            }
+        }
+    }
+
+    public static boolean isContainApp(List<String> list,String pkgName){
+        for(String str:list){
+            if(pkgName.contains(str)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -295,6 +295,22 @@ public class PhoneConf {
         return currentWx008Data;
     }
 
+    //2018年10月3日12:44:05 最新 组装购买的008数据，原始数据 手机号、密码、008数据
+    public static Wx008Data createReg008DataDeviceTxt2(String nickName,String phone,String pwd,String cnNum,String phoneStrs008){
+        Wx008Data currentWx008Data = new Wx008Data();
+        currentWx008Data.setNickName(nickName);
+        currentWx008Data.setPhone(phone);
+        currentWx008Data.setWxPwd(pwd);
+        currentWx008Data.setCnNum(cnNum);
+        currentWx008Data.setCreateTime(new Date());
+        currentWx008Data.setLastLoginTime(new Date());
+        currentWx008Data.setDieFlag(0);
+        currentWx008Data.setPhoneStrs(phoneStrs008);
+        currentWx008Data.setRegHookType(2);//改机类型 008改机
+        currentWx008Data.setRegDevice("来自图");
+        return currentWx008Data;
+    }
+
 
     private  static String createTags() {
         String str = "";
