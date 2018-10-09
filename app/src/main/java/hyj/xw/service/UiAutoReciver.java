@@ -204,14 +204,12 @@ public class UiAutoReciver extends BroadcastReceiver {
                             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"关闭、清除数据");
                             AutoUtil.killAndClearWxData();
 
-                            if(GlobalValue.device.getRunType()==1){
-                                System.out.println("UiAutoReciver doAction--->删除联系人");
-                                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"删除联系人");
-                                ContactUtil.deleteAll();//删除联系人
-                                System.out.println("UiAutoReciver doAction--->随机生成联系人");
-                                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"随机生成联系人");
-                                ContactUtil.createContactByNum();//随机生成联系人
-                            }
+                            System.out.println("UiAutoReciver doAction--->删除联系人");
+                            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"删除联系人");
+                            ContactUtil.deleteAll();//删除联系人
+                            System.out.println("UiAutoReciver doAction--->随机生成联系人");
+                            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"随机生成联系人");
+                            ContactUtil.createContactByNum();//随机生成联系人
 
 
                             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"设置手机环境setEnviroment");
@@ -410,6 +408,7 @@ public class UiAutoReciver extends BroadcastReceiver {
                         //如果是辅助登录 && 没有生成新008数据,生成一份新的改机数据，并修改远程
                         if(GlobalValue.device.getAssistant()==2&&TextUtils.isEmpty(currentWx008Data.getPhoneStrs())){
                             Wx008Data newCurrentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(currentWx008Data.getPhone());
+                            newCurrentWx008Data.setCreateTime(null);
                             newCurrentWx008Data.setId(currentWx008Data.getId());
                             newCurrentWx008Data.setPhone(currentWx008Data.getPhone());
                             newCurrentWx008Data.setWxPwd(currentWx008Data.getWxPwd());

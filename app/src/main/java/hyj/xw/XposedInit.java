@@ -84,7 +84,7 @@ public class XposedInit implements IXposedHookLoadPackage {
              System.out.println("hookaw con-->"+con);
              NewPhoneInfo pi = JSON.parseObject(con,NewPhoneInfo.class);
              nsEo5EnMUO99qwl4QERu.O000000o(lpparam,pi);
-             //aw hook结束
+             //aw hook结束hookaw
 
              //-------my hook 开始
             System.out.println("hyj context--->"+PACKAGE_NAME);

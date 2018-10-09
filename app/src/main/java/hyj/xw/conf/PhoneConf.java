@@ -98,24 +98,11 @@ public class PhoneConf {
         for (int i = 0, l = wx008Datas.size(); i < l; i++) {
             Wx008Data wd = wx008Datas.get(i);
             System.out.println(i+" doAction--->Wx008Data 008json:"+wd.getPhoneStrs008Json());
-            if(i<300){
-                System.out.println(i+" wx008Datas-->"+JSON.toJSONString(wd));
-                //DaoUtil.updatePwdByPhone(wd.getPhone(),"www12345");
-            }
+            /*if(wd.getExpMsg().contains("success")){
+                //String str = wd.getPhone()+"-"+wd.getWxId()+"-"+wd.getWxid19();
+            }*/
             //Log.i(i+" friends-->",JSON.toJSONString(wx008Datas.get(i).getFriends()));
             //修改操作开始 wd-->
-            /*System.out.println(i+" dataType-->"+wd.getDataType());
-            wd.setDataFlag("008");
-            int cn1 = wd.updateAll("phone=?",wd.getPhone());
-            System.out.println("cn1-->"+cn1);*/
-            //修改操作结束
-
-            ///删除测试开始
-           /* if(wd.getDataFlag().equals("009")){
-                 int cn1 = wd.delete();
-                 System.out.println("cn1--->"+cn1);
-             }*/
-            ///删除测试结束
 
             //保护开始
             SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss");
@@ -137,8 +124,8 @@ public class PhoneConf {
             String showMsg = i + "-" + wxid + " " + time + " " + (cn == null ? "86" : cn);
             datas.add(showMsg);
 
-            System.out.println(" exp:"+wd.getExpMsg()+"-"+wd.getWxId()+"----"+wd.getWxPwd()+"----"+wd.getWxid19());
-            //System.out.println(showMsg+" --nickName:"+wd.getNickName()+" repPhone:"+wd.getReplacePhone()+" pwd:"+wd.getWxPwd()+" phone:"+wd.getPhone()+" wxid:"+wd.getWxid19()+" exp:"+wd.getExpMsg()+" pwd:"+wd.getWxPwd()+" friends:"+JSON.toJSONString(wd.getFriends()));
+            //System.out.println(" exp:"+wd.getExpMsg()+"-"+wd.getWxId()+"----"+wd.getWxPwd()+"----"+wd.getWxid19());
+            System.out.println(showMsg+" --nickName:"+wd.getNickName()+" repPhone:"+wd.getReplacePhone()+" pwd:"+wd.getWxPwd()+" phone:"+wd.getPhone()+" wxid:"+wd.getWxid19()+" exp:"+wd.getExpMsg()+" pwd:"+wd.getWxPwd()+" friends:"+JSON.toJSONString(wd.getFriends()));
             //AutoUtil.sleep(10);
             //删除测试
             //保护结束
@@ -296,7 +283,7 @@ public class PhoneConf {
     }
 
     //2018年10月3日12:44:05 最新 组装购买的008数据，原始数据 手机号、密码、008数据
-    public static Wx008Data createReg008DataDeviceTxt2(String nickName,String phone,String pwd,String cnNum,String phoneStrs008){
+    public static Wx008Data createReg008DataDeviceTxt2(String nickName,String phone,String pwd,String cnNum,String phoneStrs008,String regDevice){
         Wx008Data currentWx008Data = new Wx008Data();
         currentWx008Data.setNickName(nickName);
         currentWx008Data.setPhone(phone);
@@ -307,7 +294,7 @@ public class PhoneConf {
         currentWx008Data.setDieFlag(0);
         currentWx008Data.setPhoneStrs(phoneStrs008);
         currentWx008Data.setRegHookType(2);//改机类型 008改机
-        currentWx008Data.setRegDevice("来自图");
+        currentWx008Data.setRegDevice(regDevice);
         return currentWx008Data;
     }
 

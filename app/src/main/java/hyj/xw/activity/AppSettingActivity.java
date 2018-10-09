@@ -155,18 +155,21 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
                 List<Wx008Data> wx008Datas = DaoUtil.findByDataBydataFlag();
                 int uploadCn=0,failCn = 0;
                 for(int i=0,l=wx008Datas.size();i<l;i++){
-                    if(i>=startIndex&&i<=endIndex){
-                        Wx008Data wx008Data = wx008Datas.get(i);
-                        wx008Data.setId(null);
-                        //createUploadWxdata1(wx008Data,i);//上次旧008数据
-                        createUploadWxdata2(wx008Data,i);
-                        System.out.println(i+" upload req wx008Data --->"+JSON.toJSONString(wx008Data));
-                        String str = service.uploadPhoneDataReturnAll(JSON.toJSONString(wx008Data));
-                        System.out.println(i+" upload res--->"+str);
-                        if(str.contains("成功")){
-                            uploadCn = uploadCn+1;
-                        }else {
-                            failCn = failCn+1;
+                    if(wx008Datas.get(i).getExpMsg()!=null&&wx008Datas.get(i).getExpMsg().contains("success")){
+                        if(i>=startIndex&&i<=endIndex){
+                            Wx008Data wx008Data = wx008Datas.get(i);
+                            wx008Data.setId(null);
+                            createUploadWxdata1(wx008Data,i);//上次旧008数据
+                            //createUploadWxdata2(wx008Data,i);
+                            System.out.println(i+" upload req wx008Data --->"+JSON.toJSONString(wx008Data));
+                            String str = service.uploadPhoneDataReturnAll(JSON.toJSONString(wx008Data));
+                            System.out.println(i+" upload res--->"+str);
+                            if(str.contains("成功")){
+                                uploadCn = uploadCn+1;
+                            }else {
+                                failCn = failCn+1;
+                            }
+
                         }
                     }
                 }
@@ -177,21 +180,17 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
 
     //上次旧008数据
     public void createUploadWxdata1(Wx008Data wx008Data,int i){
-        if(!TextUtils.isEmpty(wx008Data.getPhoneStrs008Json())){//上传旧数据
-            if(TextUtils.isEmpty(wx008Data.getPhone())){
-                wx008Data.setPhone(wx008Data.getWxId());
-            }
-                            /*if(!TextUtils.isEmpty(wx008Data.getWxId())){
-                                wx008Data.setPhone(wx008Data.getWxId());//避免
-                            }*/
-            wx008Data.setDatas("");
-            wx008Data.setDieFlag(0);
-            wx008Data.setRegDevice("note2三 "+i);
-            wx008Data.setRegHookType(2);
-            wx008Data.setPhoneStrs(wx008Data.getPhoneStrs008Json());
-            wx008Data.setPhoneStrsAw("");
-            wx008Data.setPhoneStrs008Json("");
+        if(!TextUtils.isEmpty(wx008Data.getWxId())){
+            wx008Data.setPhone(wx008Data.getWxId());//避免手机号重复
         }
+        wx008Data.setDieFlag(0);
+        wx008Data.setRegDevice("note2三 "+i);
+        wx008Data.setRegHookType(2);
+        wx008Data.setPhoneStrs("");
+        wx008Data.setPhoneStrsAw("");
+        wx008Data.setPhoneStrs008Json("");
+        wx008Data.setDatas("");
+        wx008Data.setId(null);
     }
     //上次数据，重新创建一份008数据
     public void createUploadWxdata2(Wx008Data wx008Data,int i){
@@ -205,6 +204,7 @@ public class AppSettingActivity extends AppCompatActivity implements View.OnClic
         wx008Data.setPhoneStrs(PhoneConf.create008DataStr(wx008Data.getPhone()));
         wx008Data.setPhoneStrsAw("");
         wx008Data.setPhoneStrs008Json("");
+        wx008Data.setId(null);
     }
 
     private void importAppConfig(){

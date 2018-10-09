@@ -38,9 +38,9 @@ public class ActionService  extends AccessibilityService {
         parameters.setIsStop(0);
 
         //executorService.submit(ThreadFactory.getThread("monitorMessageThread",this,record,parameters));
-        //executorService.submit(ThreadFactory.getThread("autoOperation",this,record,parameters));
+        executorService.submit(ThreadFactory.getThread("autoOperation",this,record,parameters));
         //executorService.submit(ThreadFactory.getThread("recover008Data",this,record,parameters));
-        executorService.submit(ThreadFactory.getThread("sendAccessMsgThread",this,record,parameters));
+        //executorService.submit(ThreadFactory.getThread("sendAccessMsgThread",this,record,parameters));
 
 
 

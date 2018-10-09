@@ -47,8 +47,8 @@ public class WindowNodeInfoConf {
    public static List<WindowNodeInfo> getWindowNodeInfo(){
        List<WindowNodeInfo> infos = new ArrayList<WindowNodeInfo>();
        infos.add(new WindowNodeInfo("注册","a",CommonConstant.APPCONFIG_CEVN));//清除并准备改机环境
-       infos.add(new WindowNodeInfo("注册","b",CommonConstant.APPCONFIG_APM));//飞行模式
-       //infos.add(new WindowNodeInfo("注册","b",CommonConstant.APPCONFIG_VPN));//打开VPN界面
+       //infos.add(new WindowNodeInfo("注册","b",CommonConstant.APPCONFIG_APM));//飞行模式
+       infos.add(new WindowNodeInfo("注册","b",CommonConstant.APPCONFIG_VPN));//打开VPN界面
        infos.add(new WindowNodeInfo("注册","d", CommonConstant.APPCONFIG_SWX));//启动微信
        infos.add(new WindowNodeInfo("注册","注册|登录",1,"e","点击注册1","注册",""));
        infos.add(new WindowNodeInfo("注册","窗口文本",2,"f","输入昵称","","00211"));
@@ -74,8 +74,8 @@ public class WindowNodeInfoConf {
 
 
        infos.add(new WindowNodeInfo("养号","a",CommonConstant.APPCONFIG_CEVN));//清除并准备改机环境
-       infos.add(new WindowNodeInfo("养号","b",CommonConstant.APPCONFIG_APM));//飞行模式 设置了3次登录才修改飞行模式
-       //infos.add(new WindowNodeInfo("养号","b",CommonConstant.APPCONFIG_VPN));//打开VPN界面
+       //infos.add(new WindowNodeInfo("养号","b",CommonConstant.APPCONFIG_APM));//飞行模式 设置了3次登录才修改飞行模式
+       infos.add(new WindowNodeInfo("养号","b",CommonConstant.APPCONFIG_VPN));//打开VPN界面
        //infos.add(new WindowNodeInfo("养号","c",CommonConstant.APPCONFIG_008));//设置008
        infos.add(new WindowNodeInfo("养号","d", CommonConstant.APPCONFIG_SWX));//启动微信
        infos.add(new WindowNodeInfo("养号","注册|登录",1,"e","点击登录1","登录",""));

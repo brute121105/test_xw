@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import hyj.xw.GlobalApplication;
 import hyj.xw.common.FilePathCommon;
 import hyj.xw.hook.newHook.NewPhoneInfo;
 import hyj.xw.model.LitePalModel.Wx008Data;
@@ -19,6 +20,7 @@ import hyj.xw.service.HttpRequestService;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.FileUtil;
 import hyj.xw.util.OkHttpUtil;
+import hyj.xw.util.StringUtilHyj;
 
 /**
  * Created by Administrator on 2018/4/10.
@@ -179,8 +181,8 @@ public class ImpExpData {
         return result;
     }
 
-    //获取008账号密码
-    public static void getPhonePwd008(){
+    //获取008账号密码--来自图
+   /* public static void getPhonePwd008(){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -189,7 +191,6 @@ public class ImpExpData {
                 int i = 0;
                 for(String pwd:pwds){
                     ++i;
-                    if(i<467) continue;
                     String[] arr = pwd.split(",");
                     String phone = arr[0],password = arr[1];
                     String url = "http://43.226.47.2/getphone.php?tel="+phone;
@@ -207,6 +208,74 @@ public class ImpExpData {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                }
+            }
+        }).start();
+    }*/
+
+    //获取008账号密码--来自 少年老婆
+    public static void getPhonePwd008snlp(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                File data008File = new File(FilePathCommon.data008Path);
+                File[] files = data008File.listFiles();
+                String path = "";
+                for(File f:files){
+                    if(!f.getName().contains("上传失败")){
+                        path = f.getPath();
+                        System.out.println("doAction--->读取到路径文件："+path);
+                        AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"读取到路径文件："+f.getName());
+                        break;
+                    }
+                }
+                if(path.equals("")){
+                    AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"找不到文件，请把文件放入/sdcard/data008文件夹里面");
+                    return;
+                }
+                List<String> pwds = FileUtil.read008Data(path);
+                System.out.println("doAction--->pwds:"+JSON.toJSONString(pwds));
+                HttpRequestService service = new HttpRequestService(3);
+                int i = 0;
+                for(String pwd:pwds){
+                    ++i;
+                    if(true){
+                        String[] arr = null;
+                        if(pwd.contains(",")){
+                            arr = pwd.split(",");
+                        }else if(pwd.contains("----")){
+                            arr = pwd.split("----");
+                        }
+                        if(arr==null||arr.length!=2){
+                            System.out.print("doAction--->arr[0]:"+arr[0]);
+                            System.out.println(" doAction--->arr:"+JSON.toJSONString(arr));
+                            continue;
+                        }
+                        String phone = arr[0],password = arr[1];
+                        String url = "http://43.226.47.2/getphone.php?tel="+phone;
+                        System.out.println(i+" doAction----phone:"+phone+" password:"+password+" url:"+url);
+                        try {
+                            String phoneStr008 = OkHttpUtil.okHttpGet(url);
+                            if(phoneStr008.contains(phone)){
+                                System.out.println(i+" doAction 008 数据获取成功res-->"+phoneStr008);
+                                Wx008Data wx008Data = PhoneConf.createReg008DataDeviceTxt2("",phone,password,"86",phoneStr008,"少年老婆");
+                                String uploadRes  = service.uploadPhoneData(JSON.toJSONString(wx008Data));
+                                if(!StringUtilHyj.isNumeric(uploadRes)){
+                                    System.out.println(i+" doAction-->上传数据失败："+uploadRes);
+                                    FileUtil.writeContent2FileForceUtf8(FilePathCommon.phonePwd008TxtFail,pwd);
+                                }else {
+                                    System.out.println(i+" doAction-->上传数据成功："+uploadRes);
+                                }
+                            }else {
+                                System.out.println(i+" doAction 008 数据获取失败res-->"+phoneStr008);
+                            }
+                        } catch (IOException e) {
+                            System.out.println(i+" doAction-->上传数据失败：IOException");
+                            FileUtil.writeContent2FileForceUtf8(FilePathCommon.phonePwd008TxtFail,pwd);
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
             }
         }).start();

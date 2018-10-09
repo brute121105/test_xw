@@ -303,7 +303,9 @@ public class AutoOperatonThread extends BaseThread {
                 }
             }
         }else if(CommonConstant.APPCONFIG_VPN.equals(info.getActionDesc())){
-            if(!info.isActionResultFlag()&&doVPN(root)){
+            if(loginIndex%3==0){
+                flag = true;
+            }else if(!info.isActionResultFlag()&&doVPN(root)){
                 flag = true;
             }
         }else if(CommonConstant.APPCONFIG_008.equals(info.getActionDesc())){
