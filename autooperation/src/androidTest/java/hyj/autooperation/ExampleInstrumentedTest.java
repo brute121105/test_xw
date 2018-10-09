@@ -271,6 +271,14 @@ public class ExampleInstrumentedTest {
                     updateDeviceConfig("regExp发送短信失败或超过最大尝试次数");
                     tellTag("next");
                     return;
+                }else if("自定义-提取好友验证数字并发送广播".equals(wni.getOperation())&&windowText.contains("验证失败")){
+                    updateDeviceConfig("验证失败");
+                    tellTag("next");
+                    return;
+                }else if(windowText.contains("帐号有被盗风险")){
+                    updateDeviceConfig("被盗风险");
+                    tellTag("next");
+                    return;
                 }
                 else if(wni.getOperation().contains("-结束")&&wni.isWindowOperatonSucc()){
                     if(wni.getOperation().contains("判断登录成功")){
@@ -1853,7 +1861,7 @@ public class ExampleInstrumentedTest {
                     }
                 }else {
                     System.out.println("doAction ----ddd:"+lastAction);
-                    if("打开vpn界面".equals(lastAction)&&allText.contains("服务器地址")){
+                    if(("init".equals(lastAction)||"打开vpn界面".equals(lastAction))&&allText.contains("服务器地址")){
                         mDevice.pressBack();
                     }
                 }

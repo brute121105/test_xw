@@ -157,7 +157,7 @@ public class WindowOperationConf {
         setOps(ops,windowNodeInfo01,nodeInfo21);*/
 
         //辅助登录--扫二维码验证
-        WindowNodeInfo windowNodeInfo661 = new WindowNodeInfo("6.6.7","养号","邀请好友辅助验证","自定义-点击扫二维码验证");
+        WindowNodeInfo windowNodeInfo661 = new WindowNodeInfo("6.6.7","养号","邀请好友辅助验证|扫二维码验证","自定义-点击扫二维码验证");
         setOps(ops,windowNodeInfo661,null);
 
         WindowNodeInfo windowNodeInfo65 = new WindowNodeInfo("6.6.7","养号","让好友发送","自定义-提取好友验证数字并发送广播");
@@ -168,6 +168,12 @@ public class WindowOperationConf {
 
         WindowNodeInfo windowNodeInfo67 = new WindowNodeInfo("6.6.7","养号","有人正通过微信密码登录你的微信","自定义-忽略修改密码");
         setOps(ops,windowNodeInfo67,null);
+
+        WindowNodeInfo windowNodeInfo68 = new WindowNodeInfo("6.6.7","养号","系统检测到帐号有被盗风险","自定义-被盗风险");
+        setOps(ops,windowNodeInfo68,null);
+
+        /*WindowNodeInfo windowNodeInfo69 = new WindowNodeInfo("6.6.7","养号","找回密码|紧急冻结|更多","自定义-登录被强退出");
+        setOps(ops,windowNodeInfo69,null);*/
 
 
         /*WindowNodeInfo windowNodeInfo6 = new WindowNodeInfo("6.6.7","发圈","通讯录|发现","点击发现");

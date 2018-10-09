@@ -516,8 +516,9 @@ public class AutoUtil {
     public  static String createPwdByPhone(String phone){
         if(phone==null||phone.length()<7) return "null";
         String[] zm = {"c","v","b","k","p","y","h","f","g","m"};
-        String pwd = zm[Integer.parseInt(phone.substring(2,3))]+zm[Integer.parseInt(phone.substring(3,4))];
-        for(int i=5;i>=0;i--){
+        //String pwd = zm[Integer.parseInt(phone.substring(2,3))]+zm[Integer.parseInt(phone.substring(3,4))];
+        String pwd = zm[Integer.parseInt(phone.substring(4,5))]+zm[Integer.parseInt(phone.substring(5,6))];
+        for(int i=phone.length()-1;i>=phone.length()-6;i--){
             pwd = pwd +phone.charAt(i);
         }
         return pwd;
