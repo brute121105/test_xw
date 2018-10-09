@@ -116,6 +116,10 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void run() {
                 try {
+                    if(stopThread.isAlive()){
+                        AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"已经连接");
+                        return;
+                    }
                     String deviceNum = deviceEditText.getText().toString();
                     if(TextUtils.isEmpty(deviceNum)){
                         AutoUtil.showToastByRunnable(ServerConfigActivity.this,"设备编号不能为空");
@@ -123,17 +127,18 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
                     }
                     HttpRequestService httpRequestService = new HttpRequestService(2);
                     String loginRes = httpRequestService.login();
+                    AutoUtil.showToastByRunnable(ServerConfigActivity.this,"登录->"+loginRes);
                     if(!"成功".equals(loginRes)){
-                        AutoUtil.showToastByRunnable(ServerConfigActivity.this,loginRes);
                         return;
                     }
                     String res = httpRequestService.deviceConnectServer();
-                    AutoUtil.showToastByRunnable(ServerConfigActivity.this,res);
                     if(res.contains("成功")){
                         startUiAuto();
+                    }else {
+                        AutoUtil.showToastByRunnable(ServerConfigActivity.this," 连接失败："+res);
                     }
                 }catch (Exception e){
-                    AutoUtil.showToastByRunnable(ServerConfigActivity.this,"连接异常");
+                    AutoUtil.showToastByRunnable(ServerConfigActivity.this,"连接异常Exception，检查网络是否接通，或断开wifi重连");
                     e.printStackTrace();
                 }
             }
@@ -142,6 +147,7 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
     StopThread stopThread = new StopThread();
 
     public void startUiAuto(){
+        stopThread.interrupt();
         if(!stopThread.isAlive()){
             //先检测版本号，监测到版本低，需要更新，先更新，更新完保存版本号再启动
             //初始化各项
@@ -167,7 +173,8 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
     class StopThread extends Thread{
         @Override
         public void run() {
-
+            boolean isFistConnect = true;//是否第一次连接
+            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"开始连接...");
             GlobalValue.uiautoReveiverRefreshTime = System.currentTimeMillis();
             String result = initDeviceConfig2Txt();
             if(!"".equals(result)) return;
@@ -181,8 +188,7 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
             long activeTimeLength=0;
             while (true){
                 System.out.println("StopThread--"+Thread.currentThread().getName()+"-->"+coutDisNet+" activeTimeLength:"+activeTimeLength);
-                AutoUtil.sleep(2500);
-
+                if(!isFistConnect) AutoUtil.sleep(2500);
                 try {
                     /**
                      * 每隔30秒读取device配置文件查看刷新时间，如果超时，发送广播唤醒服务
@@ -228,6 +234,13 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
                             continue;
                         }
                         coutDisNet = 0;
+                        if(!res.contains("成功")){
+                            AutoUtil.showToastByRunnable(GlobalApplication.getContext()," 获取设备状态信息:"+res);
+                        }
+                        if(isFistConnect){
+                            isFistConnect = false;
+                            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"连接成功");
+                        }
                         ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
                         Device device = JSONObject.parseObject(responseData.getData(),Device.class);
                         if(device!=null){
@@ -256,9 +269,11 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
                             //标志停止状态，告知对方
                             FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,device.getRunState()+"");//暂停标志 1、正常；2、暂停
                         }
+                    }else {
+                        AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"失败，网络连接不通");
                     }
-
                 }catch (Exception e){
+                    AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"StopThread Exception状态异常");
                     e.printStackTrace();
                 }
             }
