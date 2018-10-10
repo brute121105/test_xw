@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">azy</string>
+    <string name="app_name">A Clound</string>
     <string name="title_activity_auto_login_setting">AutoLoginSettingActivity</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"

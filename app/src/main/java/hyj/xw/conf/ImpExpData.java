@@ -239,7 +239,7 @@ public class ImpExpData {
                 int i = 0;
                 for(String pwd:pwds){
                     ++i;
-                    if(true){
+                    if(i>-1){
                         String[] arr = null;
                         if(pwd.contains(",")){
                             arr = pwd.split(",");
@@ -260,9 +260,9 @@ public class ImpExpData {
                                 System.out.println(i+" doAction 008 数据获取成功res-->"+phoneStr008);
                                 Wx008Data wx008Data = PhoneConf.createReg008DataDeviceTxt2("",phone,password,"86",phoneStr008,"少年老婆");
                                 String uploadRes  = service.uploadPhoneData(JSON.toJSONString(wx008Data));
-                                if(!StringUtilHyj.isNumeric(uploadRes)){
+                                if(!StringUtilHyj.isNumeric(uploadRes)&&!uploadRes.contains("手机号码已存在")){
                                     System.out.println(i+" doAction-->上传数据失败："+uploadRes);
-                                    FileUtil.writeContent2FileForceUtf8(FilePathCommon.phonePwd008TxtFail,pwd);
+                                    FileUtil.writeContent2FileAppendUtf8(FilePathCommon.phonePwd008TxtFail,pwd);
                                 }else {
                                     System.out.println(i+" doAction-->上传数据成功："+uploadRes);
                                 }
@@ -270,8 +270,8 @@ public class ImpExpData {
                                 System.out.println(i+" doAction 008 数据获取失败res-->"+phoneStr008);
                             }
                         } catch (IOException e) {
-                            System.out.println(i+" doAction-->上传数据失败：IOException");
-                            FileUtil.writeContent2FileForceUtf8(FilePathCommon.phonePwd008TxtFail,pwd);
+                            System.out.println(i+" doAction-->上传数据失败：IOException "+pwd);
+                            FileUtil.writeContent2FileAppendUtf8(FilePathCommon.phonePwd008TxtFail,pwd);
                             e.printStackTrace();
                         }
                     }

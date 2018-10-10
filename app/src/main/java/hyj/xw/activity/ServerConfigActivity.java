@@ -29,6 +29,7 @@ import hyj.xw.modelHttp.Device;
 import hyj.xw.modelHttp.ResponseData;
 import hyj.xw.service.HttpRequestService;
 import hyj.xw.task.DownLoadAPkListener;
+import hyj.xw.thread.AutoStopThread;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.ContactUtil;
 import hyj.xw.util.DeviceParamUtil;
@@ -112,6 +113,21 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
     }
     public void testConn(){
         save();
+        AutoStopThread stopThread = AutoStopThread.getInstance();
+        //开启前先关闭
+        if(stopThread.isAlive()){
+            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"关闭正在运行线程,请重试");
+            System.out.println("doAction--->isAlive");
+            stopThread.shutDown();
+        }else {
+            stopThread.clearInstance();
+            stopThread = AutoStopThread.getInstance();
+            stopThread.start();
+        }
+
+    }
+   /* public void testConn(){
+        save();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -143,8 +159,9 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
                 }
             }
         }).start();
-    }
-    StopThread stopThread = new StopThread();
+    }*/
+    //StopThread stopThread = new StopThread();
+    AutoStopThread stopThread = AutoStopThread.getInstance();
 
     public void startUiAuto(){
         stopThread.interrupt();
@@ -160,17 +177,17 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"已经连接");
         }
     }
-    //修改ip线程类，tag为next和retry时触发，轮训检测
+   /* //修改ip线程类，tag为next和retry时触发，轮训检测
     class StartChangeIpThread extends Thread{
         @Override
         public void run() {
             System.out.println("main--doAction-->StartChangeIpThread");
             AutoUtil.execShell("am instrument -w -r   -e debug false -e class hyj.autooperation.ExampleInstrumentedTest#changeIp hyj.autooperation.test/android.support.test.runner.AndroidJUnitRunner");
         }
-    }
+    }*/
 
     //暂停标准轮训监测
-    class StopThread extends Thread{
+   /* class StopThread extends Thread{
         @Override
         public void run() {
             boolean isFistConnect = true;//是否第一次连接
@@ -190,9 +207,9 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
                 System.out.println("StopThread--"+Thread.currentThread().getName()+"-->"+coutDisNet+" activeTimeLength:"+activeTimeLength);
                 if(!isFistConnect) AutoUtil.sleep(2500);
                 try {
-                    /**
+                    *//**
                      * 每隔30秒读取device配置文件查看刷新时间，如果超时，发送广播唤醒服务
-                     */
+                     *//*
                     long currentTime = System.currentTimeMillis();
                     if(currentTime-lastTime>30000){
                         lastTime = currentTime;
@@ -278,9 +295,9 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
                 }
             }
         }
-    }
+    }*/
 
-    public  Device getDeviceConfig(){
+  /*  public  Device getDeviceConfig(){
         String srConfigStr = FileUtil.readAllUtf8(FilePathCommon.startRunninConfigTxtPath);
         Device srConfig = JSONObject.parseObject(srConfigStr,Device.class);
         return srConfig;
@@ -300,8 +317,8 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.fkFilePath,"");
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.setEnviromentFilePath,"");
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.startRunninConfigTxtPath,"");
-        /*File file = new File(FilePathCommon.downAPk2Path);
-        if(file.exists()) file.delete();*/
+        *//*File file = new File(FilePathCommon.downAPk2Path);
+        if(file.exists()) file.delete();*//*
         String result = "";
         Device device = null;
 
@@ -338,7 +355,7 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
         FileUtil.writeContent2FileForceUtf8(FilePathCommon.stopTxtPath,device.getRunState()+"");//暂停标志 1、正常；2、暂停
         GlobalValue.device  = device;
         return result;
-    }
+    }*/
 
 
     public void createServerConfig(){

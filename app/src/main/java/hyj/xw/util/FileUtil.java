@@ -103,6 +103,11 @@ public class FileUtil {
         String fileName = filePathAndFileName.substring(filePathAndFileName.lastIndexOf("/")+1);
         writeContent2FileForceUtf8(path,fileName,strcontent);
     }
+    public static void writeContent2FileAppendUtf8(String filePathAndFileName,String strcontent){
+        String path = filePathAndFileName.substring(0,filePathAndFileName.lastIndexOf("/")+1);
+        String fileName = filePathAndFileName.substring(filePathAndFileName.lastIndexOf("/")+1);
+        writeContent2FileUtf8(path,fileName,strcontent);
+    }
 
 
     public static void writeContentToJsonTxt(String fileName,String text){

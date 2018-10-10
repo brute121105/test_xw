@@ -31,6 +31,7 @@ import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.modelHttp.Device;
 import hyj.xw.modelHttp.MaintainResultVO;
 import hyj.xw.task.StartAutoTask;
+import hyj.xw.thread.AutoStopThread;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.ContactUtil;
 import hyj.xw.util.DaoUtil;
@@ -346,8 +347,12 @@ public class UiAutoReciver extends BroadcastReceiver {
         try {
             System.out.println("doAction-->setWx008Data GlobalValue.device:"+JSON.toJSONString(GlobalValue.device));
             if(GlobalValue.device==null){
+                AutoStopThread stopThread = AutoStopThread.getInstance();
+                //stopThread.clearInstance();
+                //stopThread = AutoStopThread.getInstance();
+                stopThread.start();
                 AutoUtil.sleep(5000);
-                System.out.println("doAction--->GlobalValue.device is null");
+                System.out.println("doAction--->GlobalValue.device is null,restart AutoStopThread");
                 return "GlobalValue.device is null";
             }
             if(1==GlobalValue.device.getRunType()){//注册

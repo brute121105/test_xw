@@ -40,6 +40,7 @@ import hyj.xw.modelHttp.ResponseData;
 import hyj.xw.service.HttpRequestService;
 import hyj.xw.service.SmsReciver;
 import hyj.xw.task.DownLoadAPkListener;
+import hyj.xw.thread.AutoStopThread;
 import hyj.xw.util.AutoUtil;
 import hyj.xw.util.ContactUtil;
 import hyj.xw.util.DeviceParamUtil;
@@ -181,6 +182,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //锁定按钮
         lockBtnBox = (CheckBox) this.findViewById(R.id.lock_btn);
         lockBtnBox.setOnClickListener(this);
+
+        //登录连接服务器并启动脚本
+        AutoStopThread stopThread = AutoStopThread.getInstance();
+        if(!stopThread.isAlive()){
+            stopThread.start();
+        }
     }
 
 

@@ -19,7 +19,7 @@ import hyj.xw.GlobalApplication;
 public class ContactUtil {
 
     public static void createContactByNum(){
-        int num = getRandomByQj(15,30);
+        int num = getRandomByQj(5,10);
         for(int i=0;i<num;i++){
             createContact(GlobalApplication.getResolver(),createPersonName(),createTel());
         }
