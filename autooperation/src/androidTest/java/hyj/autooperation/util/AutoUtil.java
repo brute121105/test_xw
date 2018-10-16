@@ -523,4 +523,8 @@ public class AutoUtil {
         }
         return pwd;
     }
+    //点击微信左上角返回，小米4手机坐标
+    public static void clickTopLeftWxBack(){
+        clickXY(50,140);
+    }
 }

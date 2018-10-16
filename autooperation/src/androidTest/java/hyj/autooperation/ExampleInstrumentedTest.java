@@ -855,6 +855,7 @@ public class ExampleInstrumentedTest {
             AutoUtil.sleep(1200);
             UiObject2 uiObject2 = mDevice.findObject(By.textContains("微信号/QQ号/手机号"));
             if(uiObject2!=null){
+                System.out.println("doAction---->输入微信号："+currentWx008Data.getFriends());
                 uiObject2.setText(currentWx008Data.getFriends());
                 AutoUtil.sleep(500);
                 isOperationsSucc = true;
@@ -897,10 +898,12 @@ public class ExampleInstrumentedTest {
                 UiObject2 uiObject21 = mDevice.findObject(By.text("发送"));
                 if(uiObject21!=null){
                     uiObject21.click();
-                    System.out.println("doAction--->输入内容-点击发送");
+                    AutoUtil.sleep(800);
+                    AutoUtil.clickTopLeftWxBack();
+                    System.out.println("doAction--->输入内容-点击发送并点击左上角返回");
                     //httpRequestService.setFriendsNull(currentWx008Data.getId());
                     sendBroadcastByShell("addFriend");
-                    AutoUtil.sleep(8000);
+                    AutoUtil.sleep(7000);
                     isOperationsSucc = true;
                 }
             }else {
@@ -1608,7 +1611,13 @@ public class ExampleInstrumentedTest {
 
     public boolean saveAndGenerate(){
         UiObject2 uiObject21 = mDevice.findObject(By.text("保存"));
-        if(uiObject21!=null){
+        UiObject2 uiObject22 = mDevice.findObject(By.text("随机生成"));
+        if(uiObject21!=null&&uiObject22!=null){
+            if(deviceConfig.getRunType()==1){
+                uiObject22.click();
+                System.out.println("doAction--->随机生成");
+                AutoUtil.sleep(800);
+            }
             uiObject21.click();
             System.out.println("doAction--->点击保存");
             AutoUtil.sleep(2000);
@@ -2011,17 +2020,13 @@ public class ExampleInstrumentedTest {
     public boolean waitAndCheckIp(){
         AutoUtil.sleep(1000);
         String ipAddress = getIp();
-        if("广东".equals(ipAddress)){
-            mDevice.click(973,458);
-            System.out.println("doAction--->获取本次ip广东,点击纠正");
-            return false;
-        }
         if(checkIp(ipAddress)){
             mDevice.pressBack();
             mDevice.pressHome();
             updateDeviceConfigIp(ipAddress);
             return true;
-        }else {
+        }
+        /*else {
             int waitCheckCn = 0;
             while (waitCheckCn<3){
                 waitCheckCn = waitCheckCn+1;
@@ -2035,12 +2040,13 @@ public class ExampleInstrumentedTest {
                     return true;
                 }
             }
-        }
+        }*/
         return false;
     }
 
     public boolean checkIp(String ipAdress){
         System.out.println("doAction--->上次ip："+deviceConfig.getIpAddress()+" 本次获取ip："+ipAdress);
+
 
         if(TextUtils.isEmpty(ipAdress)){
             System.out.println("doAction--->获取本次ip失败");
@@ -2048,6 +2054,10 @@ public class ExampleInstrumentedTest {
         }
         if(ipAdress.contains("广西")){
             System.out.println("doAction--->获取ip为广西");
+            return false;
+        }
+        if(ipAdress.contains("校验失败")){
+            System.out.println("doAction--->校验失败");
             return false;
         }
         if(ipAdress.contains("失败")){
@@ -2115,38 +2125,12 @@ public class ExampleInstrumentedTest {
     public void tesddebugot1(){
         getAllWindowText1();
 
-        AutoUtil.clickXY(518,645);//点击原密码
-        AutoUtil.sleep(200);
-        AutoUtil.inputText("xbyr5221");
-        AutoUtil.sleep(200);
-        AutoUtil.clickXY(518,784);//点击原密码
-        AutoUtil.sleep(200);
-        AutoUtil.inputText("xbyr5221");
-        AutoUtil.sleep(200);
-        AutoUtil.clickXY(518,927);//点击原密码
-        AutoUtil.sleep(200);
-        AutoUtil.inputText("xbyr5221");
-        AutoUtil.sleep(200);
-        AutoUtil.clickXY(986,115);//点击左上角完成设置密码
-        AutoUtil.sleep(1000);
-
-        UiObject2 uiObject2 = mDevice.findObject(By.textContains("微信密码设置成功"));
-        int cn = 0;
-        while (true){
-            System.out.println("doAction--->等待微信密码设置成功 "+cn);
-            if(uiObject2!=null){
-                sendBroadcastByShell("setNewPwdSucess-"+currentWx008Data.getPhone());
-                System.out.println("doAction--->微信密码设置成功");
-                break;
-            }
-            if(cn>45){
-                System.out.println("doAction--->微信密码设置超时");
-            }
-            uiObject2 = mDevice.findObject(By.textContains("微信密码设置成功"));
-            AutoUtil.sleep(1000);
-            cn = cn+1;
+        UiObject2 uiObject2 = mDevice.findObject(By.textContains("微信号/QQ号/手机号"));
+        if(uiObject2!=null){
+            System.out.println("doAction---->输入微信号："+currentWx008Data.getFriends());
+            uiObject2.setText(currentWx008Data.getFriends());
+            AutoUtil.sleep(500);
         }
-
 
     }
 
