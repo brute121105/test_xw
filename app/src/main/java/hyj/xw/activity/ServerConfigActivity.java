@@ -99,7 +99,7 @@ public class ServerConfigActivity extends AppCompatActivity implements View.OnCl
     public void save(){
         //主机地址
         String host = hostEditText.getText().toString();
-        if(!TextUtils.isEmpty(host)&&!host.contains(":")){
+        if(!TextUtils.isEmpty(host)&&host.contains(".")){
             host = host+":8080";
         }
         AppConfigDao.saveOrUpdate(CommonConstant.APPCONFIG_HOST, host);

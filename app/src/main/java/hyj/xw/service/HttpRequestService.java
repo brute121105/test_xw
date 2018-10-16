@@ -101,15 +101,12 @@ public class HttpRequestService {
             System.out.println("HttpRequestService sendSms url-->"+url);
             SendSmsVO sendSmsVO = new SendSmsVO(callNumber,calledNumber,content);
             String postBody = JSON.toJSONString(sendSmsVO);
-            System.out.println("HttpRequestService sendSms postBody-->"+postBody);
+            System.out.println("doAction--->HttpRequestService sendSms postBody-->"+postBody);
             String res = OkHttpUtil.okHttpPostBodyByToken(url,postBody,token);
-            System.out.println("Test HttpRequestService sendSms res-->"+res);
+            System.out.println("doAction--->Test HttpRequestService sendSms res-->"+res);
             if(res.contains("success")){
                 ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
                 result = responseData.getData();
-                /*if(responseData.isSuccess()){
-                    result = "成功";
-                }*/
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -272,8 +269,6 @@ public class HttpRequestService {
     }
 
 
-
-
     public String uploadPhoneData(String wx008DataStr){
         String result = "";
         try {
@@ -385,5 +380,21 @@ public class HttpRequestService {
         }
         return  reponseData;
 
+    }
+
+    //请求服务端对比ip
+    public boolean verifyIpIsPass(String json){
+        try {
+            String url =host+"/ipaddress/add";
+            String res = OkHttpUtil.okHttpPostBodyByToken(url,json,token);
+            System.out.println("doAction-->请求服务端对比ip返回："+res);
+            if(res.contains("success")){
+                ResponseData responseData = JSONObject.parseObject(res,ResponseData.class);
+                return responseData.isSuccess();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 }

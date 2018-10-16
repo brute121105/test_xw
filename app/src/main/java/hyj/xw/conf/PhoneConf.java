@@ -594,6 +594,12 @@ public class PhoneConf {
         System.out.println("createRegData--->"+JSON.toJSONString(data));
         return data;
     }
+    //1 创建内部改机数据  不包含改机数据
+    public static Wx008Data createRegNotHaveStrs(String phone){
+        String pwd = WxNickNameConstant.getZmByCount(8);
+        Wx008Data data = createReg008DataDeviceTxt(WxNickNameConstant.getName1(),phone,pwd,"86","011","");
+        return data;
+    }
 
     public static Wx008Data createRegDataByPhoneCnAndDeviceTxt(String phone,String cn){
         NewPhoneInfo npi = BuildFileUtil.createOneDevice(phone);

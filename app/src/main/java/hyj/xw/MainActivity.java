@@ -361,6 +361,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(MainActivity.this, ServerConfigActivity.class));
                 break;
             case R.id.lock_btn:
+                String str = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
+                System.out.println("doAction--->str:"+str);
                 lockBtn();
                 break;
         }

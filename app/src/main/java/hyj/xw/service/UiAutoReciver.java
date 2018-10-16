@@ -27,6 +27,7 @@ import hyj.xw.conf.PhoneConf;
 import hyj.xw.dao.AppConfigDao;
 import hyj.xw.hook.Phone;
 import hyj.xw.hook.newHook.NewPhoneInfo;
+import hyj.xw.model.Ipaddress;
 import hyj.xw.model.LitePalModel.Wx008Data;
 import hyj.xw.modelHttp.Device;
 import hyj.xw.modelHttp.MaintainResultVO;
@@ -95,7 +96,14 @@ public class UiAutoReciver extends BroadcastReceiver {
                             if(currentWx008Data == null) continue;
                             String res = httpRequestService.sendSms(callNumber,calledNumber,smsContent);
                             System.out.println("UiAutoReciver main-->doAction--->发送短信返回res:"+res);
-                            if(res.contains("提交成功")){
+                            int cn = 0;
+                            while (cn<3&&TextUtils.isEmpty(res)){
+                                cn = cn+1;
+                                res = httpRequestService.sendSms(callNumber,calledNumber,smsContent);
+                                System.out.println("UiAutoReciver main-->doAction--->再次发送短信返回res:"+res+" "+cn);
+                                AutoUtil.sleep(2000);
+                            }
+                            if(res!=null&&res.contains("提交成功")){
                                 saveRegData2Server(currentWx008Data);
                             }
                             return;
@@ -107,6 +115,7 @@ public class UiAutoReciver extends BroadcastReceiver {
                                 continue;
                             }
                             String ip = getIp();
+                            System.out.println("doAction--->getip:"+ip);
                             device.setLastIpAddress(ip);
                             saveDeviceConfig(device);
                             return;
@@ -205,12 +214,17 @@ public class UiAutoReciver extends BroadcastReceiver {
                             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"关闭、清除数据");
                             AutoUtil.killAndClearWxData();
 
-                            System.out.println("UiAutoReciver doAction--->删除联系人");
-                            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"删除联系人");
-                            ContactUtil.deleteAll();//删除联系人
-                            System.out.println("UiAutoReciver doAction--->随机生成联系人");
-                            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"随机生成联系人");
-                            ContactUtil.createContactByNum();//随机生成联系人
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    System.out.println("UiAutoReciver doAction--->删除联系人");
+                                    AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"删除联系人");
+                                    ContactUtil.deleteAll();//删除联系人
+                                    System.out.println("UiAutoReciver doAction--->随机生成联系人");
+                                    AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"随机生成联系人");
+                                    ContactUtil.createContactByNum();//随机生成联系人
+                                }
+                            }).start();
 
 
                             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"设置手机环境setEnviroment");
@@ -269,10 +283,10 @@ public class UiAutoReciver extends BroadcastReceiver {
     }
 */
     public void saveRegData2Server(Wx008Data currentWx008Data){
-        //String phoneStrs = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
+        String phoneStrs = FileUtil.readAllUtf8(FilePathCommon.device008TxtPath);
         currentWx008Data.setRegIp(GlobalValue.ip);
         currentWx008Data.setId(null);
-        //currentWx008Data.setPhoneStrs(phoneStrs);
+        currentWx008Data.setPhoneStrs(phoneStrs);
         String json = JSON.toJSONString(currentWx008Data);
         System.out.println("UiAutoReciver main-->doAction--->发送短信成功上传数据currentWx008Data："+json);
         if(!TextUtils.isEmpty(currentWx008Data.getPhone())){
@@ -301,16 +315,34 @@ public class UiAutoReciver extends BroadcastReceiver {
             e.printStackTrace();
         }
         System.out.println("UiAutoReciver main-->doActioni--->res ipStr:"+ipStr);
-        String ip = "失败";
+        String ipAndAddr = "失败";
         if(ipStr.contains("广西")){
-            ip = "广西";
+            ipAndAddr = "广西";
         }else if(ipStr.contains("cip")){
             JSONObject jsonObject = JSONObject.parseObject(ipStr.substring(ipStr.indexOf("{"),ipStr.indexOf("}")+1));
-            ip = jsonObject.getString("cname")+jsonObject.getString("cip");
+            //ipAndAddr = jsonObject.getString("cname")+jsonObject.getString("cip");
+            String ip = jsonObject.getString("cip");
+            String area = jsonObject.getString("cname");
+            ipAndAddr = ip+area;
+            if(GlobalValue.device.getTestIp()==1&&!verifyIpIsPass(ip,area)){
+                ipAndAddr = "校验失败";
+            }
         }
-        GlobalValue.ip = ip;
-        //updateDeviceConfigIp(ip);
-        return ip;
+        GlobalValue.ip = ipAndAddr;
+        return ipAndAddr;
+    }
+
+    //提交ip到远程服务器校验
+    public boolean verifyIpIsPass(String ip,String area){
+        boolean flag = false;
+        String device = GlobalValue.device.getNum();
+        Ipaddress ipaddress = new Ipaddress();
+        ipaddress.setArea(area);
+        ipaddress.setIp(ip);
+        ipaddress.setDevice(device);
+        String json = JSON.toJSONString(ipaddress);
+        System.out.println("doAction请求ip-->"+json);
+        return httpRequestService.verifyIpIsPass(json);
     }
 
     public void updateWxid(Wx008Data currentWx008Data,Device device){
@@ -364,7 +396,7 @@ public class UiAutoReciver extends BroadcastReceiver {
                     }
                     GlobalValue.data008Phone = phone;
                     if(GlobalValue.device.getHookType()==2){//008改机方式
-                        currentWx008Data = PhoneConf.createRegDataByPhoneAndDeviceTxt(phone); //008机型数据在发送短信成功后获取
+                        currentWx008Data = PhoneConf.createRegNotHaveStrs(phone); //008机型数据在发送短信成功后获取
                     }else if(GlobalValue.device.getHookType()==3){//变色龙
                         FileUtil.writeContent2FileForceUtf8(FilePathCommon.bslStrTxt,"");
                         AutoUtil.startAppByShell("app.aptx.chamelemon/.activity.LaunchActivity");
